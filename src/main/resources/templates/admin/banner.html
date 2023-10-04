@@ -1,0 +1,177 @@
+
+
+<!-- PRODUCT DETAILS -->
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/base::Layout(~{::section})}">
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+  <!-- Your head content here -->
+  <style>
+
+        <!--ENABLE / DISABLE-->
+
+
+        .combined-button {
+            background-color: #E53935; /* Red background for disable */
+        }
+        .combined-button.enabled {
+            background-color: #43A047; /* Green background for enable */
+        }
+        <!--end-->
+
+
+        <!--EDIT BUTTON-->
+
+       .edit-button {
+       background-color: #FFC107 !important;
+       color: black;
+       }
+
+
+        .edit-button:hover {
+            background-color: #F5E618 !important;
+            color:black;
+        }
+
+        <!--side bar-->
+
+        .main-content {
+         padding-left: 20px;
+         padding-right:10px;
+         width: calc(100% - 250px);
+
+
+       .sidebarsection {
+       padding:0;
+       background-color: #344E5C;
+       color: white;
+       height: 100vh;
+       width:250px;
+    }
+    .sidebarsection a {
+      color: white;
+    }
+    .sidebarsection a:hover {
+      color: #D3F0FF;
+    }
+    .sidebarsection .active {
+      background-color: #000000;
+
+    }
+    .sidebar-logo {
+      text-align: center;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #000000;
+    }
+    .sidebar-logo img {
+      width: 80px;
+      height: auto;
+<!--    }-->
+<!--    .sidebar-brand {-->
+<!--      padding-bottom:10px;-->
+<!--      padding-top:20px;-->
+<!--      font-weight:bold;-->
+<!--      text-align: center;-->
+<!--      font-size: 1.3rem;-->
+<!--      background-color:black;-->
+<!--      color:red;-->
+<!--    }-->
+<!--      .row{-->
+<!--    background-color:#344E5C;-->
+<!--    }-->
+
+
+    </style>
+
+</head>
+
+<body>
+<section>
+
+<!--  <div class="container-fluid " style="margin-left:250px;">-->
+<!--    &lt;!&ndash;strt&ndash;&gt;-->
+<!--    <div class="row">-->
+
+<!--banner table-->
+  <div  class="col-md-4 d-flex justify-content-end mb-3 mt-2" style="margin-top:50px;margin-left:250px;">
+    <a th:href="@{/banner/add-banner}"
+       class="btn btn-warning" style="margin-top:10px;border-radius:10px;padding:12px;color:white;">Add Banner</a>
+  </div>
+
+  <div class="col-md-10 main-content" style="padding-left:4px;padding-right:10px;margin-left:250px;">
+    <div class="table-container">
+      <!-- Add the search form here if needed -->
+      <table class="table table-bordered table-hover table-shadow">
+        <thead style="width:100%; background-color:#000000;color:white;">
+        <tr style="margin-left:2px;">
+          <th scope="col" class="text-center">NO</th>
+          <th scope="col" class="text-center">Name</th>
+          <th scope="col" class="text-center">Image</th>
+          <th scope="col" class="text-center">Enable/Disable</th>
+          <th scope="col" class="text-center">Action</th>
+        </tr>
+        </thead>
+<!--        <tbody>-->
+        <tbody>
+        <tr th:each="banner, rowStat : ${bannerInfo}">
+          <td th:text="${rowStat.index + 1}" class="text-center"></td>
+          <td th:text="${banner.fileName}" class="text-center"></td>
+          <td class="text-center">
+            <!-- Display the image here -->
+<!--            <img style="width: 140px; height: 107px; border-radius: 20%;"-->
+<!--                 th:src="@{|/uploads/${banner.fileName}|}" th:alt="${banner.fileName}">-->
+            <img style="margin-left: 4px; width: 450px; height: 187px; border-radius: 10%;"
+                 th:src="@{|/uploads/${banner.fileName}|}"
+                 th:alt="${banner.fileName}">
+          </td>
+
+          <td >
+            <a th:if="${banner.enable}"
+               th:href="@{'/banner/block/'+${banner.uuid}}"
+               class="btn btn-warning">Enable</a>
+            <a th:unless="${banner.enable}"
+               th:href="@{'/banner/unblock/'+${banner.uuid}}"
+               class="btn btn-success"> Disable </a>
+          </td>
+
+
+          <td>
+            <a th:href="@{/banner/edit/{uuid}(uuid=${banner.uuid})}" class="btn"
+               style="background-color: #000; border-radius: 10px; border: 1px solid #1657FA;
+               font-weight: 900; padding: 8px 18px; font-size: 12px;color:white;">Edit</a>
+          </td>
+        </tr>
+        </tbody>
+
+        <!--        <tr th:each="banner, rowStat : ${bannerInfo}">-->
+<!--          <td th:text="${rowStat.index + 1}" class="text-center"></td>-->
+
+<!--          <td th:text="${banner.fileName}" class="text-center"></td>-->
+
+<!--          <td class="text-center">-->
+<!--            &lt;!&ndash; Display the image here &ndash;&gt;-->
+<!--            <img style="width: 140px; height: 107px; border-radius: 20%;"-->
+<!--                 th:src="@{|/uploads/${banner.fileName}|}" th:alt="${banner.fileName}">-->
+<!--          </td>-->
+
+<!--          <td>-->
+<!--            <a th:href="@{/banner/edit/{uuid}(uuid=${banner.uuid})}" class="btn"-->
+<!--               style="background-color: #000; border-radius: 10px; border: 1px solid #1657FA;-->
+<!--                            font-weight: 900; padding: 8px 18px; font-size: 12px;color:white;">Edit</a>-->
+<!--          </td>-->
+
+<!--        </tr>-->
+<!--        </tbody>-->
+      </table>
+    </div>
+  </div>
+
+
+
+<!--end banner table-->
+</section>
+</body>
+</html>

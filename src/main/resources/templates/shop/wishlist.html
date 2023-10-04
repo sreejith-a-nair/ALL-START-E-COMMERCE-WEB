@@ -1,0 +1,151 @@
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="shop/base::Layout(~{::section})">
+<head>
+  <meta charset="UTF-8">
+  <title>Your WishList</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+        crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <!--  <link rel="stylesheet" th:href="@{/path/to/zooming.css}"/>-->
+</head>
+<body>
+<section>
+
+  <section>
+
+    <div class="row" style="margin-left:10px;margin-right:10px;">
+
+      <div class="col-md-12">
+        <div class="container" style=" background-color:white;">
+          <div class="heading">
+            <h2>Your WishList</h2>
+          </div>
+          <div class="row">
+            <!-- Iterate over your products here -->
+            <div th:each="item : ${wishListItems}" class="col-md-4">
+              <div class="card mb-3" style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
+                <img th:src="@{|/uploads/${item.productInfo.images[0].fileName}|}" class="card-img-top" alt="Product Image">
+                <div class="card-body">
+                  <h5 class="card-title" th:text="${item.productInfo.name}">Product Name</h5>
+                  <p class="card-text">Price: <span th:text="${item.productInfo.price}">Price</span></p>
+                <div class="card-footer">
+                  <button class="bag-button">
+                    <a style="text-decoration: none; color:white;"
+                       th:href="@{'/wishlist/addToCartRemoveFromWishlist/' + ${item.uuid}}">Move to Bag</a>
+                  </button>
+
+<!--                  <button class="remove-button">-->
+<!--                    <a style="text-decoration: none; color: white;" th:href="@{'/wishlist/removeFromWishlist/' + ${item.uuid}}">-->
+<!--&lt;!&ndash;                      <i class="fas fa-trash-alt" style="margin-right: 6px;"></i> Remove&ndash;&gt;-->
+<!--                      <i class="fa-light fa-xmark" style="color: #000000;"></i>-->
+<!--                    </a>-->
+<!--                  </button>-->
+
+                  <a style="text-decoration: none; color: white;" th:href="@{'/wishlist/removeFromWishlist/' + ${item.uuid}}">
+                    <i class="fas fa-times fa-2x" style="color: #000000;"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <!-- End of product iteration -->
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+  </section>
+  <!--CSS-->
+  <style>
+        .heading {
+            background-color: #02246E;
+            height: 60px;
+            margin-top: 250px;
+            margin-bottom: 50px;
+            color: white;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .margin {
+            background-color: #3B448F;
+            height: 60px;
+            margin-top: 250px;
+            margin-bottom: 50px;
+            text-align: center;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .checkout-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: green;
+            color: white;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        /* Hover effect */
+        .checkout-button:hover {
+            background-color: #028A0F;
+            color: white;
+        }
+
+          .remove-button {
+              display: inline-block;
+              padding: 8px 16px;
+              background-color: #FA1711;
+              color: white;
+              text-decoration: none;
+              border: none;
+              cursor: pointer;
+              border-radius: 10px;
+              margin-right: 10px;
+              border: 1px solid black;
+          }
+
+          /* Hover effect - Light Orange */
+          .remove-button:hover {
+              background-color: #FD3E47;
+              border: 1px solid black;
+          }
+
+          .bag-button {
+            display: inline-block;
+            padding: 10px 90px;
+            background-color: #F61B81;
+            color: white;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            border-radius: 2px;
+            margin-right: 10px;
+            border: 1px solid black;
+        }
+
+        /* Hover effect - Light Orange */
+        .bag-button:hover {
+              background-color: #FF3E6C;
+            border: 1px solid black;
+        }
+
+        .card {
+            margin-bottom: 20px;
+        }
+    </style>
+
+</section>
+</body>
+</html>

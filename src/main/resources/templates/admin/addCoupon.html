@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Coupon</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css">
+  <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: gray;
+        }
+
+        h2 {
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: -.3px -.3px 0 #000000, .5px -.5px 0 #000000, -.3px .3px 0 #000000, .3px .3px 0 #000000;
+            font-weight: bold;
+        }
+
+        .center-button {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        form {
+            background-color: #E6F9FF;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        label {
+            font-weight: medium;
+            font-size: 15px;
+            padding: 10px 5px;
+            margin: 10px 0;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button[type="submit"] {
+            background-color: #17264F;
+            color: #fff;
+            border: none;
+            border-radius: 7px;
+            padding: 10px 40px;
+            font-size: 16px;
+            cursor: pointer;
+            display: block;
+            margin: 10px auto;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #1B2B5B;
+            color: #ffdd00;
+        }
+    </style>
+</head>
+<body>
+<h2>Add Coupon</h2>
+
+
+<form th:action="@{/coupon/saveCoupon}" method="post" th:object="${coupon}">
+
+
+  <div th:if="${error}" class="alert alert-danger text-center" role="alert">
+    <span th:text="${error}"></span>
+  </div>
+
+
+  <div class="input-group">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" placeholder="Name" required>
+  </div>
+
+  <div class="input-group">
+    <label for="code">Code:</label>
+    <input type="text" id="code" name="code" placeholder="Code" required>
+  </div>
+
+  <div class="input-group">
+    <label for="offPercentage">Off Percentage:</label>
+    <input type="number" id="offPercentage" name="offPercentage" placeholder="Off Percentage" required>
+  </div>
+
+  <div class="input-group">
+    <label for="maxOff">Max Off:</label>
+    <input type="number" id="maxOff" name="maxOff" placeholder="Max Off" required>
+  </div>
+
+  <div class="input-group">
+    <label for="expiryDate">Expiry Date:</label>
+    <input type="date" id="expiryDate" name="expiryDate" required>
+  </div>
+
+  <div class="input-group">
+    <label for="count">Count:</label>
+    <input type="number" id="count" name="count" placeholder="Count" required>
+  </div>
+
+  <button type="submit">Create Coupon</button>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

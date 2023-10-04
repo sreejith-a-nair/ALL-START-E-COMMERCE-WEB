@@ -1,0 +1,238 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="shop/base::Layout(~{::section})">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <title>Home page</title>
+</head>
+<body>
+<section >
+  <section>
+  <div  style="margin-left: 100px; margin-right: 100px;">
+    <div class="row">
+      <div   class="heading">
+        <h2 class="text-center">Product Details</h2>
+      </div>
+      <div class="col-md-12">
+        <!--error message-->
+        <div th:if="${error}" class="alert alert-danger">
+          <p th:text="${error}"></p>
+        </div>
+        <!--error end-->
+
+        <!-- Product Images and Description in the same row -->
+        <div class="product-container" th:each="product : ${productInfo}">
+          <!-- Small product images -->
+          <div class="product-gallery" >
+              <div style="margin-top:60px;border: 2px solid #FF0000;" class="product-gallery-item" th:each="image : ${product.get().images}">
+                  <img th:src="@{|/uploads/${image.fileName}|}" class="card-img-top" alt="Product Image">
+              </div>
+          </div>
+          <!-- Main product image -->
+          <div style="margin-top: 35px; margin-right: 50px;">
+            <h1 th:text="${product.get().name}" style="padding-bottom:30px;">Product Name</h1>
+              <div class="img" style="width:400;height:500px;">
+                <img th:src="@{|/uploads/${product.get().images[0].fileName}|}"  class="card-img-top"  alt="Product Image">
+              </div>
+<!--            <div class="d-flex  align-items-center">-->
+              <!--new-->
+<!--              <a href="#" class="btn size-chart mr-2">Size Chart</a>-->
+
+              <a th:href="@{/cart/addToCart/{uuid}(uuid=${product.get().uuid})}" style="text-decoration: none; color: black;">
+                <p class="card-text p-2 mx-2"
+                   style="background-color: black; color: white; font-weight: bold;width:416px;text-align: center;" >Price:
+                  <span th:text="${product.get().price}" >Price</span></p>
+                <button type="submit" class="cart-button mb-3 mx-1">Add to cart</button>
+              </a>
+
+                   <a   th:href="@{/wishlist/moveToWishlist/{uuid}(uuid=${product.get().uuid})}">
+                      <i class="fas fa-heart fa-2x   wishlist-buttons" style="color: #ff0000;"></i>
+                   </a>
+
+<!--            </div>-->
+          </div>
+          <div class="product-details" style="margin-left: 50px;">
+            <!-- Product Description -->
+            <h3 th:text="${product.get().name}"  style="font-weight: bold;width:216px;text-align: center;">Product Name</h3>
+            <p th:text="${product.get().description}">Product Description</p>
+            <!-- Price -->
+            <p th:text="'Price: RS  : ' + ${product.get().price}">Price: RS:</p>
+            <!-- Rating (You can replace this with your actual rating logic) -->
+
+          </div>
+        </div>
+      </div>
+
+      <!--specification-->
+
+
+      <!--end end -->
+    </div>
+  </div>
+  </section>
+  <!-- Add your CSS styles here -->
+  <style>
+
+  .img {
+  max-width: 500px; /* Adjust the size as needed */
+  height: 600px; /* Maintain aspect ratio */
+}
+
+      /* Style for buttons */
+      .action-button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+      }
+
+      /* Add any other styles you need */
+      .product-image {
+        max-width: 100%;
+        margin-top: 50px;
+        height: auto;
+      }
+
+      .product-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+      }
+
+      .product-gallery {
+        display: flex;
+        flex-direction: column;
+        margin-right: 20px;
+        margin-top: 50px; /* Add some margin between small images and the main image */
+      }
+
+      .product-gallery-item {
+        max-width: 100px;
+        margin: 5px;
+        cursor: pointer;
+      }
+
+<!--      .product-main-image {-->
+<!--        max-width: 100%;-->
+<!--        height: auto;-->
+<!--      }-->
+
+      .product-details {
+        flex: 1;
+        margin-top: 50px;
+      }
+
+      .product-actions {
+        margin-top: 50px;
+      }
+
+            .cart-button {
+            display: inline-block;
+            padding: 10px 70px;
+            background-color: #F61B81;
+            color: white;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            border-radius: 2px;
+            margin-right: 10px;
+            border: 1px solid black;
+        }
+
+
+        .cart-button:hover {
+            background-color:  #FF3E6C;
+            border: 2px solid #FF0000;
+        }
+   .wishlist-buttons {
+            margin-top:34px;
+            display: inline-block;
+            padding: 6px 12px;
+             background-color: white;
+
+            color: white;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+            margin-right: Opx;
+             border: 1px solid black;
+        }
+
+
+      .wishlist-buttons:hover {
+
+         border: 2px solid #FF0000;
+        }
+     .size-chart {
+      background-color: #535766;
+      color:white;
+      margin-top:30px;
+      padding: 10px 10px;
+      border-radius: 3px;
+     }
+
+         .heading {
+    background-color: #3B448F;
+    height: 70px;
+    margin-top: 240px;
+    margin-bottom: 50px;
+    color: white;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+.heart-icon {
+    font-size: 24px; /* Adjust the size as needed */
+}
+
+
+
+.wishlist-button {
+    margin-top:6opx;
+    text-decoration: none;
+    border-radius: 50%;
+    transition: border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    text-align: center;
+    line-height: 20px;
+    width: 20px;
+    height: 20px;
+    color: #ff0000; /* Default icon color */
+}
+
+
+
+
+}
+    </style>
+
+<!--   JavaScript to change the main image -->
+  <script th:inline="javascript">
+      function changeMainImage(newImage) {
+        var mainImage = document.getElementById("mainImage");
+        mainImage.src = newImage.src;
+      }
+
+      function addToCart(productId) {
+        // Implement your add to cart logic here
+        alert('Added product with ID ' + productId + ' to cart.');
+      }
+
+      function addToWishlist(productId) {
+        // Implement your add to wishlist logic here
+        alert('Added product with ID ' + productId + ' to wishlist.');
+      }
+    </script>
+</section>
+</body>
+</html>

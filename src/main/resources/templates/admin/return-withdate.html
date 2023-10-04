@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/base::Layout(~{::section})}">
+<head>
+    <!-- Add your head content here -->
+
+</head>
+<body>
+<section style="margin-left: 253px; margin-top: 1px;">
+    <!-- Your existing styles here -->
+
+    <div class="container" style="margin-top:100px;margin-bottom:50px;">
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-bordered table-hover table-shadow">
+                    <thead style="background-color:black;color:white;">
+                    <tr>
+                        <th scope="col">S.No</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Products name</th>
+                        <th scope="col">Return Date</th>
+                        <th scope="col">Product Image</th>
+                        <th scope="col">price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Total</th>
+                        <th scope="col">Contact</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Use Thymeleaf to iterate through return details and populate the table -->
+                    <tr th:each="returnDetail, iterStat : ${returnOrders}">
+                        <td th:text="${iterStat.index + 1}">1</td> <!-- S No -->
+                        <td th:text="${returnDetail.userEntity.username}"></td>
+                        <td>
+                            <!-- Nested loop to display product names -->
+                            <div th:each="name, iterStat2 : ${productNames[iterStat.index]}">
+                                <span th:text="${name}">Product Name</span>
+                            </div>
+                        </td>
+                        <!-- Username -->
+                        <td th:text="${returnDetail.cancellationDate}"></td> <!-- Return Date -->
+                        <td>
+                            <!-- Nested loop to display product images -->
+                            <div th:each="product, iterStat2 : ${productInfo[iterStat.index]}">
+                                <img th:src="@{|/uploads/${product.images[0].fileName}|}" alt="Product Image" width="120" height="100" />
+                            </div>
+                        </td> <!-- Returned Product Image -->
+                        <td>
+                            <!-- Nested loop to display product prices -->
+                            <div th:each="item, iterStat2 : ${orderItems[iterStat.index]}">
+                                <span th:text="${item.price}">$0.00</span>
+                            </div>
+                        </td> <!-- Product Price -->
+                        <td>
+                            <!-- Nested loop to display product quantities -->
+                            <div th:each="item, iterStat2 : ${orderItems[iterStat.index]}">
+                                <span th:text="${item.quantity}">0</span>
+                            </div>
+                        </td>
+                        <!-- Product Quantity -->
+
+                        <td>
+                            <!-- Nested loop to display total prices -->
+
+                                <span th:text="${returnDetail.order.totalPrice}">$0.00</span>
+                        </td>
+                        <td th:text="${returnDetail.userEntity.contact}">123-456-7890</td> <!-- Contact Number -->
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!--    <div class="container">-->
+<!--        <div class="row">-->
+<!--            <div class="col-md-12">-->
+<!--                <table class="table table-bordered table-hover table-shadow">-->
+<!--                    <thead>-->
+<!--                    <tr>-->
+<!--                        <th scope="col">S No</th>-->
+<!--                        <th scope="col">Username</th>-->
+<!--                        <th scope="col">Return Date</th>-->
+<!--                        <th scope="col">Returned Product Image</th>-->
+<!--                        <th scope="col">Products Quantity</th>-->
+<!--                        <th scope="col">Product Total Price</th>-->
+<!--                        <th scope="col">Contact Number</th>-->
+<!--                    </tr>-->
+<!--                    </thead>-->
+<!--                    <tbody>-->
+<!--                    &lt;!&ndash; Use Thymeleaf to iterate through return details and populate the table &ndash;&gt;-->
+<!--                    <tr th:each="returnDetail, iterStat : ${returnDetails}">-->
+<!--                        <td th:text="${iterStat.index + 1}">1</td> &lt;!&ndash; S No &ndash;&gt;-->
+<!--                        <td th:text="${returnDetail.username}">User</td> &lt;!&ndash; Username &ndash;&gt;-->
+<!--                        <td th:text="${returnDetail.returnDate}">2023-10-02</td> &lt;!&ndash; Return Date &ndash;&gt;-->
+<!--                        <td>-->
+<!--                            <img th:src="${returnDetail.productImage}" alt="Product Image" width="100" height="100">-->
+<!--                        </td> &lt;!&ndash; Returned Product Image &ndash;&gt;-->
+<!--                        <td th:text="${returnDetail.productsQuantity}">1</td> &lt;!&ndash; Products Quantity &ndash;&gt;-->
+<!--                        <td th:text="${returnDetail.productTotalPrice}">$100.00</td> &lt;!&ndash; Product Total Price &ndash;&gt;-->
+<!--                        <td th:text="${returnDetail.contactNumber}">123-456-7890</td> &lt;!&ndash; Contact Number &ndash;&gt;-->
+<!--                    </tr>-->
+<!--                    </tbody>-->
+<!--                </table>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+
+    <style>
+
+        <!--ENABLE / DISABLE-->
+
+
+        .combined-button {
+            background-color: #E53935; /* Red background for disable */
+        }
+        .combined-button.enabled {
+            background-color: #43A047; /* Green background for enable */
+        }
+        <!--end-->
+
+
+        <!--EDIT BUTTON-->
+
+       .edit-button {
+       background-color: #FFC107 !important;
+       color: black;
+       }
+
+
+        .edit-button:hover {
+            background-color: #F5E618 !important;
+            color:black;
+        }
+
+        <!--side bar-->
+
+        .main-content {
+         padding-left: 20px;
+         padding-right:10px;
+         width: calc(100% - 250px);
+
+
+       .sidebarsection {
+       padding:0;
+       background-color: #344E5C;
+       color: white;
+       height: 100vh;
+       width:250px;
+    }
+    .sidebarsection a {
+      color: white;
+    }
+    .sidebarsection a:hover {
+      color: #D3F0FF;
+    }
+    .sidebarsection .active {
+      background-color: #000000;
+
+    }
+    .sidebar-logo {
+      text-align: center;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #000000;
+    }
+    .sidebar-logo img {
+      width: 80px;
+      height: auto;
+<!--    }-->
+<!--    .sidebar-brand {-->
+<!--      padding-bottom:10px;-->
+<!--      padding-top:20px;-->
+<!--      font-weight:bold;-->
+<!--      text-align: center;-->
+<!--      font-size: 1.3rem;-->
+<!--      background-color:black;-->
+<!--      color:red;-->
+<!--    }-->
+<!--      .row{-->
+<!--    background-color:#344E5C;-->
+<!--    }-->
+
+
+    </style>
+
+    <!-- Your pagination section, if needed, can be placed here -->
+</section>
+</body>
+</html>

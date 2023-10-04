@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="shop/base::Layout(~{::section})" xmlns="http://www.w3.org/1999/html">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+  <title>Home page</title>
+</head>
+
+<!--body start-->
+<body>
+<!--section-->
+<section>
+  <!--heading-->
+  <div class="heading">
+    <h2 class="text-center"> SHOP PRODUCTS </h2>
+  </div>
+  <!--heading end-->
+
+<!--card -->
+  <div class="row">
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-4 d-flex" style="margin-left:100px;" th:each="product : ${productInfoList}">
+      <div class="card mb-4 shadow" th:if="${product.enable}">
+        <!-- Product Image -->
+        <a th:href="@{/shop/singleProduct/{uuid}(uuid=${product.uuid})}">
+          <img th:if="${product.images != null and product.images.size() > 0}"
+               th:src="@{|/uploads/${product.images[0].fileName}|}" class="card-img-top" alt="Product Image">
+        </a>
+
+        <div class="card-body">
+          <!-- Product Title -->
+          <h5 class="card-title" th:text="${product.name}">Product Name</h5>
+          <!-- Product Price -->
+          <p class="card-text p-2 mx-2">Price: <span th:text="${product.price}">Price</span></p>
+          <!-- Explore Button -->
+<!--          <a th:href="@{/shop/singleProduct/{uuid}(uuid=${product.uuid})}" class="btn btn-primary">Explore</a>-->
+        </div>
+      </div>
+    </div>
+  </div>
+   <!--css-->
+  <style>
+  .heading {
+  background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%);
+  border-radius: 10rem;
+  height: 60px;
+  margin-top: 150px;
+  margin-bottom: 200px;
+  color: white;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  }
+
+
+</style>
+  <!--css end-->
+
+<!--card end-->
+</section>
+<!--section end-->
+</body>
+</html>h

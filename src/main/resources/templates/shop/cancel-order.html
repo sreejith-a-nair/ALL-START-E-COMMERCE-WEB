@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="shop/base::Layout(~{::section})" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home Page</title>
+
+    <!-- Include Bootstrap CSS (You can choose either Bootstrap 4 or Bootstrap 5, not both) -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- OR -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css">
+
+    <!-- Include Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css">
+
+    <!-- Include AdminLTE CSS (Make sure this is the correct URL for your project) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1.0/dist/css/adminlte.min.css">
+
+    <!-- Add your custom CSS here -->
+
+</head>
+
+<body>
+<section>
+
+      <div  style="background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%);
+            border-radius: 10rem;
+            height: 40px;
+            margin-top: 250px;
+            margin-bottom: 70px;">
+        <h4 style="padding-top:5px;margin-bottom:60px;color:white;text-align:center;">Cancel Order</h4>
+      </div>
+
+      <section style="margin-left:400px;margin-right:400px;padding-top:10px;padding:bottom;30px;margin-bottom:50px;">
+         <div class="container" style="margin-bottom:50px;">
+            <div style="border: 3px solid #13EE02;border-radius: 50px;padding:20px;background-color:#D7A59F">
+               <div style="width: 100%; height: 5%; color: #000; border: 3px solid white; border-radius: 50px;
+                 font-weight: bold; margin-bottom: 15px; text-align: center; margin-top: 30px;">
+                <h4 style="padding-top: 7px;">SELECT CANCEL REASON</h4>
+
+                </div>
+                 <div style="padding-left:200px;margin-top:30px;padding-top:50px;padding-bottom:50px;margin-bottom:50px;border-radius: 50px;"
+                      class="card">
+
+<!--                     <form th:action="@{/order/cancelOrder}" method="post">-->
+                         <form th:action="@{/order/cancel-order}" method="post" th:object="${orderCancelRequest}">
+                         <div class="form-check" th:each="reason : ${T(com.mydemo.demoproject.Entity.enumlist.CancelReason).values()}">
+                             <input class="form-check-input" type="radio" name="cancelReason" th:id="'reason-' + ${reason}" th:value="${reason}" />
+                             <label th:for="'reason-' + ${reason}" th:text="${reason}" class="form-check-label"></label>
+                         </div>
+                         <button type="submit" class="btn btn-success my-2">Submit</button>
+                     </form>
+
+                 </div>
+            </div>
+         </div>
+     </section>
+
+
+    <style>
+        .margin {
+            background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%);
+            border-radius: 10rem;
+            height: 40px;
+            margin-top: 390px;
+            margin-bottom: 70px;
+        }
+    </style>
+</section>
+
+<!-- Add your JavaScript libraries here, such as jQuery and Bootstrap JS. -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<!-- Bootstrap JavaScript (Bootstrap 5 version) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

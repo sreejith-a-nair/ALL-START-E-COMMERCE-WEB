@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org"
+      th:fragment="Layout(content)">
+
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Product Dashboard</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Include Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <!-- Include AdminLTE CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1.0/dist/css/adminlte.min.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body  >
+
+<div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand " style="background-color:#29384A;padding-top:20px;padding-bottom:2px">
+
+      <!--new-->
+
+    <div class="container-fluid">
+
+      <!-- Search Form -->
+
+      <form th:action="@{/admin/search}" class="d-flex ml-auto" method="get">
+<!--        <input class="form-control me-2 container" type="text" name="keyword" th:value="${keyword}"-->
+<!--               placeholder="Search " aria-label="Search">-->
+<!--        <button class="btn btn-primary" type="submit" style="border: 2px solid #ffffff;margin-right:30px;">Search</button>-->
+
+        <ul class="navbar-nav me-0 mb-2 mb-lg-0 ml-auto">
+          <li class="nav-item">
+            <a class="btn " th:href="@{/admin/logout}" style="border: 2px solid #ffffff;color :white; margin-right:15px; background-color:#D10007;
+                     transition: background-color 0.3s, color 0.3s;"
+               onmouseover="this.style.backgroundColor='#E60023'; this.style.color='white';"
+               onmouseout="this.style.backgroundColor='#A62310'; this.style.color='white';">
+              <i class="fas fa-power-off" style="margin-right: 5px;"></i></a>
+          </li>
+        </ul>
+
+      </form>
+
+    </div>
+
+    <!--end-->
+
+    <!-- Add your navigation links and components here -->
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="#"><i class="fas fa-bell" style="color: #ffffff;"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#"><i class="fas fa-user" style="color: #ffffff;"></i></a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Sidebar -->
+
+  <aside class="main-sidebar  elevation-4" style="background-color:#1b2632">
+
+    <!-- Sidebar content goes here -->
+
+    <div class="sidebar">
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <img src="./pictures/img.png" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+          <a href="#" class="d-block" style="color: #ffffff;font-weight:bold;">A L L S T A R</a>
+        </div>
+      </div>
+
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
+          <li class="nav-item">
+            <a th:href="@{/admin/dashboard}" class="nav-link">
+              <i class="nav-icon fas fa-tachometer-alt" style="color: #ffffff;"></i>
+              <p style="font-size:18px;margin-left:15px;font-weight:bold;" >Dashboard</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a th:href="@{/product/home}" class="nav-link">
+              <i class="nav-icon fas fa-cubes" style="color: #ffffff;"></i>
+              <p style="font-size:18px;margin-left:15px;font-weight:bold;" >Products</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a th:href="@{/brand/home}" class="nav-link">
+              <i class="fas fa-plus" style="color:white;"></i>
+              <p style="font-size:18px;margin-left:22px;font-weight:bold;" >Brands</p>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a th:href="@{/category/home}" class="nav-link">
+              <i class="fa-solid fa-grip" style="color: #ffffff;"></i>
+              <p style="font-size:18px;margin-left:23px;font-weight:bold;">Category</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a th:href="@{/admin/home}" class="nav-link">
+              <i class="fa-solid fa-users" style="color: #ffffff;"></i>
+              <p  style="font-size:18px;margin-left:18px;font-weight:bold;">Customers</p>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a th:href="@{/coupon/home}" class="nav-link">
+              <i class="fa-solid fa-ticket" style="color: #ffffff;"></i>
+              <p  style="font-size:18px;margin-left:18px;font-weight:bold;">Coupon</p>
+            </a>
+          </li>
+
+
+          <li class="nav-item">
+            <a th:href="@{/offer/home}" class="nav-link">
+              <i class="fa-solid fa-ticket" style="color: #ffffff;"></i>
+              <p style="font-size:18px;margin-left:22px;font-weight:bold;" >Offer </p>
+            </a>
+          </li>
+
+
+          <li class="nav-item">
+            <a th:href="@{/order/admin}" class="nav-link">
+              <i class="fas fa-shopping-cart" style="color: #ffffff;"></i>
+              <p  style="font-size:18px;margin-left:18px;font-weight:bold;">Orders</p>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a th:href="@{/banner/home}" class="nav-link">
+              <i class="fas fa-plus" style="color:white;"></i>
+              <p style="font-size:18px;margin-left:22px;font-weight:bold;" >Banner</p>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a th:href="@{/order/returnOrder}" class="nav-link">
+              <i  class="fas fa-shopping-cart" style="color:white;"></i>
+              <p style="font-size:18px;margin-left:22px;font-weight:bold;" >Return </p>
+            </a>
+          </li>
+
+        </ul>
+      </nav>
+    </div>
+  </aside>
+
+  <div th:replace="${content}"></div>
+
+
+  <!-- Content Wrapper -->
+
+  <div   style="background-color:rgb(24,24,27);height:100px;" >
+    <section class="content">
+
+      <!-- Page content goes here -->
+      <div style="background-color: #171717;">
+        <div class="row">
+
+          <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+          <link rel="stylesheet" type="text/css" href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/bootstrap-extended.min.css">
+          <link rel="stylesheet" type="text/css" href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/fonts/simple-line-icons/style.min.css">
+          <link rel="stylesheet" type="text/css" href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/colors.min.css">
+          <link rel="stylesheet" type="text/css" href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/bootstrap.min.css">
+          <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+        </div>
+      </div>
+    </section>
+    </div>
+
+
+
+</div>
+
+<style>
+    .text{
+    color:white;
+       }
+       .card
+       {
+       background-color:black;
+       }
+
+  .btn-danger:hover {
+    background-color: #d50000;
+    color: white;
+  }
+  .btn-narrow {
+    width: auto; /* Adjust this value to your preference */
+    padding: 5px 10px; /* Adjust padding to control height and button size */
+}
+
+
+</style>
+
+
+<!-- Include Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Include AdminLTE JS -->
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1.0/dist/js/adminlte.min.js"></script>
+
+</body>
+</html>

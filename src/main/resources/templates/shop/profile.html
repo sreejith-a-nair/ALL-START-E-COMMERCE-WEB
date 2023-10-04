@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="shop/base::Layout(~{::section})">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>user</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Include Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Include AdminLTE CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1.0/dist/css/adminlte.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+<section>
+    <div class="row" style="margin-top:150px;background-color:#1b2632;">
+                       <div class=" container col-md-2 wrapper" style="background-color:#1b2632;margin-top:100px;">
+                                  <div style="text-align:center;" >
+                                    <p class="d-block" style="color: #ffffff;font-weight:bold;">A L L S T A R</p>
+                                  </div>
+
+                                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
+                                     <li class="nav-item">
+                                         <div style="display: flex; align-items: center;">
+                                             <i class="fa-solid fa-user" style="color: #ffffff;margin-left:32px;"></i>
+                                            <a th:href="@{/shop/profile}" class="nav-link" style="display: flex; align-items: center;">
+                                             <p style="font-size: 18px;margin-left:20px; font-weight: bold; color: white;margin-top:14px;">Profile</p>
+                                            </a>
+                                         </div>
+                                     </li>
+                                        <li class="nav-item">
+                                            <div style="display: flex; align-items: center;">
+                                            <i class="nav-icon fas fa-cubes" style="color: #ffffff;margin-left:30px;"></i>
+                                               <a th:href="@{/order/myOrder}" class="nav-link" style="display: flex; align-items: center;">
+<!--                                                 <i class="nav-icon fas fa-cubes" style="color: #ffffff;"></i>-->
+                                                   <p style="font-size:18px;margin-left:19px;font-weight:bold;color:white;margin-top:17px;">My Orders</p>
+                                               </a>
+                                            </div>
+                                        </li>
+                                        <li class="nav-item">
+                                            <div style="display: flex; align-items: center;margin-left:30px;">
+                                                <i class="fas fa-plus" style="color:white;"></i>
+                                               <a th:href="@{/address/show}" class="nav-link">
+<!--                                                  <i class="fas fa-plus" style="color:white;"></i>-->
+                                                     <p style="font-size:18px;margin-left:22px;font-weight:bold;color:white;margin-top:17px;" >Address </p>
+                                               </a>
+                                            </div>
+                                        </li>
+                                 </ul>
+                       </div>
+
+      <!-- Content Wrapper -->
+        <div class=" container col-md-10 content-wrapper pt-3" style="background-color:rgb(24,24,27);">
+               <div class="row" style="margin-left:40px;margin-right:40px;">
+                    <div class="margin" style="text-align:center;margin-bottom:50px;">
+                        <h4 style="color:white;">User Profile</h4>
+                    </div>
+                    <form th:action="@{/logout}" method="post" style="padding:40px;" >
+
+                        <div style="margin-top:5px;margin-left:270px;">
+                            <div class="card" style="width: 40rem;">
+                                <div class="card-header">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h5 style="color:white; margin-left:170px;text-align:center; margin-top:20px; font-size:27px; font-weight:bold;">Welcome</h5>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h5 style="color:white; margin-top:20px; font-size:27px; font-weight:bold;" th:text="${user.username}"></h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <p>UserName:</p>
+                                        <h6 th:text="${user.username}"></h6>
+                                    </li>
+
+                                    <li class="list-group-item">
+                                        <p>FirstName:</p>
+                                        <h6 th:text="${user.firstname}"></h6>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <p>LastName:</p>
+                                        <h6 th:text="${user.lastname}"></h6>
+                                    </li>
+
+                                    <li class="list-group-item">
+                                        <p>Email:</p>
+                                        <h6 th:text="${user.email}"></h6>
+                                    </li>
+
+
+                                    <li class="list-group-item">
+                                        <p>Contact:</p>
+                                        <h6 th:text="${user.contact}"></h6>
+                                    </li>
+
+                                </ul>
+                                <div class="logout-button" style="margin-left:30px;height:70px;">
+                                    <button style="margin-left:250px;margin-top:20px;"
+                                            class="btn btn-primary" type="submit">Logout</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+               </div>
+        </div>
+<style>
+    .text{
+    color:white;
+       }
+       .card
+       {
+       background-color:black;
+       }
+
+  .btn-danger:hover {
+    background-color: #d50000;
+    color: white;
+  }
+  .btn-narrow {
+    width: auto; /* Adjust this value to your preference */
+    padding: 5px 10px; /* Adjust padding to control height and button size */
+}
+   .margin {
+               background: rgb(131,58,180);
+                background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%);
+                border-radius: 10rem;
+               height: 40px;
+               margin-top: 30px;}
+
+</style>
+
+
+<!-- Include Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Include AdminLTE JS -->
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1.0/dist/js/adminlte.min.js"></script>
+
+    </div>
+</section>
+</body>
+</html>

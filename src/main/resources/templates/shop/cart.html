@@ -1,0 +1,337 @@
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html"
+      th:replace="shop/base::Layout(~{::section})">
+<head>
+  <meta charset="UTF-8">
+  <title>Product Cart</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+        crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+      <link rel="stylesheet" th:href="@{/path/to/zooming.css}"/>
+</head>
+<body >
+<section>
+
+    <section>
+        <div  th:unless="${cartEmpty}" class="   row" style="margin-left:40px;margin-right:40px;">
+
+                    <div class="margin">
+                        <h2 >Your cart</h2>
+                    </div>
+
+              <div class="col-md-9" >
+                <div class="container"
+                         style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; background-color:white;">
+
+                          <div  class="heading">
+                           <h2 >Cart Details</h2>
+                          </div>
+<!--                show user in cart-->
+                        <div style=" margin-bottom:30px;padding:10px;border-radius: 10px;width:30%;background-color:#9CBFD9;color:#fff}" th:each="userdata : ${user}">
+                            <a th:href="@{/profile}">
+                                <i class="fas fa-user-circle user-icon"></i>
+                            </a>
+                            <div>
+                            <strong class="user-name" style="" th:text="${userdata.username}">User Name</strong>
+                            </div>
+                            <div>
+                            <strong class="user-name" th:text="${userdata.contact}"> Contact</strong>
+                            </div>
+                            <div>
+                            <strong class="user-name" th:text="${userdata.email}">Email</strong>
+                            </div>
+                        </div>
+                    <!--user -->
+                                <table style="width:100%;">
+                                    <thead>
+                                      <tr>
+                                         <th style="width: 10%;">Product</th>
+                                          <th style="width: 10%;">Name</th>
+                                         <th style="width: 5%;">Price</th>
+                                         <th style="width: 16%;">Description</th>
+                                         <th style="width: 3%;">Quantity</th>
+                                         <th style="width: 4%;">Total</th>
+                                         <th style="width: 4%;">Action</th>
+                                      </tr>
+                                    </thead>
+                                 <tbody>
+
+                                    <tr th:each="item : ${cartItems}">
+                                       <td style="width: 10%;">
+                                           <div class="product-container">
+                                               <img th:src="@{|/uploads/${item.productInfo.images[0].fileName}|}" class="card-img-top" alt="Product Image">
+                                           </div>
+                                           <div  th:if="${not #lists.isEmpty(cartItems)}" class="button-container"
+                                                 style="margin-top:20px;margin-bottom:10px;">
+
+
+                                                   <a class="buy-now btn btn-primary" th:if="${not #lists.isEmpty(cartItems)}"
+                                                      th:href="@{/order/show-single-product/{productId}/{quantity}(productId=${item.productInfo.uuid},
+                                                       quantity=${item.quantity})}"
+                                                   >Buy Now</a>
+
+
+                                                   <a   th:href="@{/cart/addToWishlistRemoveFromCart/{uuid}(uuid=${item.uuid})}">
+                                                       <i class="fas fa-heart   wishlist-buttons"
+                                                          style="color: #ff0000;font-size: 22px;margin-left:7px;"></i>
+                                                   </a>
+
+                                           </div>
+
+                                       </td>
+                                        <td style="width: 10%;" th:text="${item.productInfo.name}"></td>
+                                       <td style="width: 5%;" th:text="${item.productInfo.price}"></td>
+                                       <td style="width: 16%;" th:text="${item.productInfo.description}"></td>
+                                        <td style="width: 3%;">
+                                            <form th:action="@{/cart/setQuantity}" method="post">
+                                                <input type="hidden" name="uuid" th:value="${item.uuid}" />
+                                                <div class="d-flex">
+                                                    <select style="width: 100px;" class="form-select me-2" name="quantity">
+                                                        <option th:each="quantity : ${#numbers.sequence(1, 10)}"
+                                                                th:value="${quantity}" th:text="${quantity}"
+                                                                th:selected="${quantity == item.quantity}">1</option>
+                                                    </select>
+                                                    <button type="submit" class="btn btn-primary btn-sm">Set</button>
+                                                </div>
+                                            </form>
+                                        </td>
+
+                                       <td style="width: 4%;"  th:text="${item.productInfo.price * item.quantity}"></td>
+
+                                       <td style="width: 4%; display: flex; justify-content: space-between;">
+
+                                               <a style="margin-top:90px;" th:href="@{/cart/removeFromCart/{uuid}(uuid=${item.productInfo.uuid})}" type="submit" class="btn btn-light border text-danger icon-hover-danger">Remove</a>
+
+                                       </td>
+                                    </tr>
+                                 </tbody>
+                                </table>
+                    </div>
+              </div>
+
+                         <div class="col-md-3">
+                               <div class="container" style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;background-color:white;">
+                                       <div  class="heading">
+                                        <h2 >Price Details</h2>
+                                        </div>
+                                       <table style="width:100%;">
+                                          <thead>
+                                             <tr>
+                                                 <th >
+                                                   <h6 style="font-weight:bold;">Price Details</h6>
+                                                 </th>
+                                                 <th >
+                                                   <h6 style="font-weight:bold;">Charges</h6>
+                                                 </th>
+                                             </tr>
+                                          </thead>
+                                          <tbody>
+                                              <tr>
+                                                  <td style="padding-top:25px;padding-bottom:10px;"><strong>Total Price:</strong></td>
+                                                  <td>   <strong th:text="${total}"></strong></td>
+                                              </tr>
+                                          </tbody>
+                                       </table>
+                                   <div th:if="${not #lists.isEmpty(cartItems)}">
+                                       <a class="checkout-button" th:href="@{'/order/show/' + ${cartItems[0].uuid}}">Check Out</a>
+                                   </div>
+                               </div>
+                         </div>
+        </div>
+<!--        </div>-->
+
+        <!--cart is empty-->
+        <div th:if="${cartEmpty}" class="row" >
+            <div class="margin">
+                <h2 >Your cart</h2>
+            </div>
+            <div  style=" padding: 150px; text-align: center; font-weight: bold;background-color: #000; color: white; ">
+                <span >Your cart is empty. Please add items to your cart.</span>
+                <div>
+                    <button style="  margin-top:100px;margin-bottom:100px; display: inline-block;padding: 10px 20px;background-color: #FFA500;
+                    color: white;text-decoration: none; border: 2px solid white; cursor: pointer;border-radius: 10px;margin-right: 10px; ">
+                        <a style=" text-decoration: none;color:white;" th:href="@{/home}">View Products</a>
+                    </button>
+                </div>
+<!--                <div style="background-color:white ;padding:50px;">-->
+<!--                    <img src="/baner/Screenshot%202023-09-09%20230309.png" style="max-width: 100%; max-height: 100%;" alt="Description of the image">-->
+
+<!--                </div>-->
+            </div>
+        </div>
+
+    </section>
+    <!--CSS-->
+    <style>
+            .product-container {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px;
+                border-bottom: 1px solid #ccc;
+            }
+
+            .product-image {
+                max-width: 50px;
+                max-height: 50px;
+                margin-right: 20px;
+            }
+              table {
+             width: 65%;
+            border-collapse: collapse;
+            }
+           th {
+             text-align: left;
+             padding: 8px;
+             border-bottom: 2px solid #ddd;
+            }
+
+
+              .heading {
+                background: rgb(41,49,201);
+                background: radial-gradient(circle, rgba(41,49,201,1) 3%, rgba(29,37,179,1) 23%, rgba(53,19,180,1) 43%, rgba(57,36,184,1) 57%, rgba(31,36,173,1) 72%, rgba(50,27,184,1) 87%, rgba(46,18,203,1) 94%);
+               height: 60px;
+               margin-top: 70px;
+               margin-bottom:50px;
+               color: white;
+               text-align: center;
+               display: flex;
+               justify-content: center;
+               align-items: center;
+               }
+
+                  .margin {
+               background: rgb(131,58,180);
+                background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%);
+                border-radius: 10rem;
+               height: 60px;
+               margin-top: 260px;
+
+               text-align: center;
+               color: white;
+               display: flex;
+               justify-content: center;
+               align-items: center;
+               }
+
+             .checkout-button {
+             display: inline-block;
+             padding: 8px 16px;
+             background-color: green;
+             color: white;
+             text-decoration: none;
+             border: none;
+             cursor: pointer;
+             border-radius: 5px;
+             margin-left:110px;
+             margin-top:30px;
+             margin-bottom:20px;
+            }
+
+
+            .checkout-button:hover {
+             background-color:#028A0F;
+             color:white;
+            }
+
+            buy-now{
+             display: inline-block;
+             padding: 8px 16px;
+             background-color: #F0FFFF;
+             text-decoration:one;
+             color: white;
+             text-decoration: none;
+             border: none;
+             cursor: pointer;
+             border-radius: 5px;
+             margin-left:110px;
+             margin-top:30px;
+             margin-bottom:20px;
+            }
+
+
+
+
+
+
+.remove-button {
+    display: inline-block;
+    padding: 7px 15px;
+    background-color: #FD1E1E;
+    color: white;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    margin-right: 10px;
+     margin-left: 10px;
+    margin-top:10px;
+
+}
+
+.remove-button:hover {
+    background-color: #FD3F26;
+}
+
+.with-margin-top {
+  margin-top:48px;
+}
+
+.wishlist {
+    border: 2px solid #ff0000;
+    padding: 3px 5px;
+    transition: border-color 0.3s ease;
+     border-radius: 10px;
+
+        margin-left: 20px;
+.wishlist:hover {
+    border-color: #ff3333; /* Change border color on hover */
+}
+
+.viewProducts-button{
+    margin-top:100px;
+    margin-bottom:100px;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #FFA500;
+    color: white;
+    text-decoration: none;
+    border: 2px solid white;
+    cursor: pointer;
+    border-radius: 10px;
+    margin-right: 10px;
+}
+.viewProducts-button:hover {
+    background-color: green;
+}
+
+ button:hover {
+        background-color: green;
+    }
+.buy-button {
+    background-color: white;
+    color: blue;
+    border: 2px solid blue;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.buy-button:hover {
+    background-color: lightblue;
+    color: white;
+}
+
+
+        </style>
+
+</section>
+</body>
+</html>
+
