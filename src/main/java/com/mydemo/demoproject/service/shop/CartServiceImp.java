@@ -105,6 +105,12 @@ public class CartServiceImp implements CartService{
         Double total = (double) 0;
         for (Cart cart : cartItems) {
             total += cart.getQuantity() * cart.getProductInfo().getPrice();
+//          List <ProductInfo> productInfo= (List<ProductInfo>) cart.getProductInfo();
+//           for (ProductInfo products:productInfo){
+//              Float discount=  products.getDiscountedPrice();
+//               System.out.println("discount>>price ofe all products service in cart"+discount);
+//
+//           }
         }
         System.out.println("total"+total);
         return total;

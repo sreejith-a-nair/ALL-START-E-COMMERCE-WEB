@@ -7,10 +7,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -26,15 +24,35 @@ public class Offer {
     @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID uuid;
 
+    @Column(name = "Category_Off_Percentage")
     private int CategoryOffPercentage;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate expiryDate;
 
-    private boolean enabled = true;
+    private boolean enabled ;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+
+    private CategoryInfo categoryInfo;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private ProductInfo productInfo;
+
+
 
     private int count;
 
-
-
+    @Override
+    public String toString() {
+        return "Offer{" +
+                "uuid=" + uuid +
+                ", CategoryOffPercentage=" + CategoryOffPercentage +
+                ", expiryDate=" + expiryDate +
+                ", enabled=" + enabled +
+                ", count=" + count +
+                '}';
+    }
 }

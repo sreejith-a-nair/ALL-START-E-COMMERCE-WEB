@@ -27,6 +27,6 @@ public interface UserRepo extends JpaRepository<UserEntity,UUID> {
 //
 //    Optional<UserEntity>findBypassword(String password );
 
-
+    UserEntity findByNewUserReferral(String referralCode);
 
 }

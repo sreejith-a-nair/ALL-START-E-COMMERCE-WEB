@@ -40,13 +40,24 @@ public class ProductInfo {
     @Column(name = "product_price")
      private float price;
 
+    @Column(name = "discount_price")
+    private Float discountedPrice = 0.0f;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private CategoryInfo category;
 
+    @ManyToOne
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
+
     @OneToMany(mappedBy = "product_id",cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Image> images;
+
+
+    @OneToMany(mappedBy = "productInfo")
+    private List<Offer> offer;
 
 
     @Override

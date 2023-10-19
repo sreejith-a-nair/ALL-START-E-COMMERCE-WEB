@@ -10,24 +10,36 @@ import com.mydemo.demoproject.Repository.admin.OrderRepo;
 import com.mydemo.demoproject.Repository.shop.CancelOrderRepo;
 import com.mydemo.demoproject.Repository.shop.CartRepo;
 import com.mydemo.demoproject.Repository.shop.ReturnOrderRepo;
+import com.mydemo.demoproject.service.admin.cartegory.CategoryService;
 import com.mydemo.demoproject.service.admin.coupon.CouponService;
+import com.mydemo.demoproject.service.admin.offer.OfferService;
 import com.mydemo.demoproject.service.admin.order.OrderService;
 import com.mydemo.demoproject.service.admin.product.ProductService;
 import com.mydemo.demoproject.service.shop.AddressService;
 import com.mydemo.demoproject.service.shop.CartService;
+import com.mydemo.demoproject.service.shop.ShopService;
+import com.mydemo.demoproject.service.user.ReturnOrderService;
 import com.mydemo.demoproject.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.math.BigDecimal;
+import java.nio.channels.FileLock;
+import java.nio.file.WatchService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -60,6 +72,9 @@ public class OrderController {
     @Autowired
     ReturnOrderRepo returnOrderRepo;
 
+    @Autowired
+    ReturnOrderService returnOrderService;
+
 
     @Autowired
     CancelOrderRepo cancelOrderRepo;
@@ -67,11 +82,21 @@ public class OrderController {
     @Autowired
     OrderItemRepo orderItemsRepo;
 
+    @Autowired
+    ShopService shopService;
 
-    /*Order show*/
+    @Autowired
+    OfferService offerService;
+
+/*...............SHOW ORDER .....................(GET)*/
+
     @GetMapping("/show/{uuid}")
     public String showOrder(@PathVariable UUID uuid, Model model,
+                            @RequestParam(name = "totalDiscountPrice", required = true) float totalDiscountPrice,
                             @AuthenticationPrincipal(expression = "username") String username) {
+
+
+        System.out.println("TOTAL DISCOUNT PRICE IN CHECKOUT   >>"+totalDiscountPrice);
 
         Optional<UserEntity> user = userService.getUserdata(username);
         List<Address> useraddresses = user.map(UserEntity::getAddresses).orElse(Collections.emptyList());
@@ -79,22 +104,64 @@ public class OrderController {
                 .filter(Address::isEnabled)
                 .collect(Collectors.toList());
         List<Cart> cartList = cartService.findByUserEntity_Usernames(username);
-        System.out.println("cartList>>>>>>>>>>>>>>>" + useraddresses);
+
+
+
+
+        /*new*/
+        float discountPrice = 0;
+        for (Cart cartItem : cartList) {
+
+            ProductInfo productInfo = cartItem.getProductInfo();
+            CategoryInfo categoryInfo=productInfo.getCategory();
+               List<Offer> categoryOffers=offerService.getCategoryOffers(categoryInfo);
+               List<Offer>productOffers=offerService.getProductOffers(productInfo);
+            System.out.println("CATEGORY OFFER   "+categoryOffers);
+            System.out.println("PRODUCT OFFER    "+productOffers);
+
+/*new update */
+            for (Offer productWiseOffer : productOffers) {
+                for (Offer categoryOffer : categoryOffers) {
+                    if (productWiseOffer.getCategoryOffPercentage() > categoryOffer.getCategoryOffPercentage()) {
+
+                        discountPrice = productInfo.getPrice() - (productInfo.getPrice() * productWiseOffer.getCategoryOffPercentage() / 100);
+                        System.out.println(" products discount Amount  is = " + discountPrice);
+                        productInfo.setDiscountedPrice(discountPrice);
+                    } else {
+
+                        discountPrice = productInfo.getPrice() - (productInfo.getPrice() * categoryOffer.getCategoryOffPercentage() / 100);
+                        System.out.println(" CATEGORY discount Amount  is = " + discountPrice);
+                        productInfo.setDiscountedPrice(discountPrice);
+                    }
+
+                }
+            }
+        }
+        /*end*/
 
         List<Coupon> couponList = couponService.findAll();
-        System.out.println(">>>..couponList" + couponList);
-        Double totalprice= (double) cartService.findTotal(cartList);
+
+
+        Double totalprice = (double) cartService.findTotal(cartList);
+
         boolean available;
-        if(totalprice>10000){available=true;
-            System.out.println("true..............."+totalprice);
+        if (totalDiscountPrice > 10000) {
+            available = true;
+
+        } else {
+            available = false;
         }
-        else{available=false;
-            System.out.println("fale................."+totalprice);
-        }
-//        if()
-        model.addAttribute("available",available);
+
+        Wallet wallet  =shopService.getWalletByUser(username);
+        float totalMoney  =wallet.getTotalMoney();
+        System.out.println("wallet>>>>>>>>>>>>"+username  +"user"+totalMoney);
+
+        model.addAttribute("totalMoney",totalMoney);
+        model.addAttribute("available", available);
         model.addAttribute("couponList", couponList);
-        model.addAttribute("total",totalprice );
+        model.addAttribute("totalDiscountPrice", totalDiscountPrice);
+        model.addAttribute("total", totalprice);
+        model.addAttribute("discountPrice", discountPrice);
         model.addAttribute("user", user);
         model.addAttribute("useraddresses", enabledAddresses);
         model.addAttribute("cartList", cartList);
@@ -102,16 +169,94 @@ public class OrderController {
     }
 
 
-    /*Buy single product*/
+
+
+
+
+
+//    @GetMapping("/show/{uuid}")
+//    public String showOrderd(@PathVariable UUID uuid, Model model,
+//                            @AuthenticationPrincipal(expression = "username") String username) {
+//
+//
+//        Optional<UserEntity> user = userService.getUserdata(username);
+//        List<Address> useraddresses = user.map(UserEntity::getAddresses).orElse(Collections.emptyList());
+//        List<Address> enabledAddresses = useraddresses.stream()
+//                .filter(Address::isEnabled)
+//                .collect(Collectors.toList());
+//        List<Cart> cartList = cartService.findByUserEntity_Usernames(username);
+//
+//
+//
+//
+//        /*new*/
+//        int productQuantity = 0;
+//        float price = 0;
+//        float totalDiscountPrice = 0.0f;
+//        float discountPrice = 0;
+//        for (Cart cartItem : cartList) {
+//
+//            ProductInfo productInfo = cartItem.getProductInfo();
+//            productQuantity = cartItem.getQuantity();
+//            price = cartItem.getProductInfo().getPrice();
+//            String productName = cartItem.getProductInfo().getName();
+//            List<Offer> productOffer = productInfo.getOffer();
+//
+//            int productOfferPercent = productOffer.get(0).getCategoryOffPercentage();
+//            discountPrice = productInfo.getPrice() - (productInfo.getPrice() * productOfferPercent / 100);
+//            totalDiscountPrice += discountPrice * productQuantity;
+//            productInfo.setDiscountedPrice(discountPrice);
+//
+//        }
+//        /*end*/
+//
+//        List<Coupon> couponList = couponService.findAll();
+//
+//
+//        Double totalprice = (double) cartService.findTotal(cartList);
+//
+//        boolean available;
+//        if (totalDiscountPrice > 10000) {
+//            available = true;
+//
+//        } else {
+//            available = false;
+//        }
+//
+//        Wallet wallet  =shopService.getWalletByUser(username);
+//        float totalMoney  =wallet.getTotalMoney();
+//        System.out.println("wallet>>>>>>>>>>>>"+username  +"user"+totalMoney);
+//
+//        model.addAttribute("totalMoney",totalMoney);
+//        model.addAttribute("available", available);
+//        model.addAttribute("couponList", couponList);
+//        model.addAttribute("totalDiscountPrice", totalDiscountPrice);
+//        model.addAttribute("total", totalprice);
+//        model.addAttribute("discountPrice", discountPrice);
+//        model.addAttribute("user", user);
+//        model.addAttribute("useraddresses", enabledAddresses);
+//        model.addAttribute("cartList", cartList);
+//        return "shop/order";
+//    }
+
+    /* ************************END SHOW ORDER    (GET)  ***********************************/
+
+
+
+
+ /*.......................SHOW SINGLE PRODUCT UUID (GET)........................*/
     @GetMapping("/show-single-product/{productId}/{quantity}")
     public String showSingleOrder(
             @PathVariable("productId") UUID productId,
             @PathVariable("quantity") float quantity,
+            @RequestParam(name = "discountedPrice", required = false) Float discountedPrice,
             Model model,
             @AuthenticationPrincipal(expression = "username") String username,
             HttpSession session) {
 
-        System.out.println(">>>>>>>>>>>>>>>>>>>>productuuid" + productId);
+        System.out.println("DISCOUNT PRICE IN SINGLE PRODUCT ORDER  ...."+discountedPrice);
+        float totalDiscountPrice=(discountedPrice*quantity);
+        System.out.println("DISCOUNT PRICE IN SINGLE PRODUCT ORDER the total   ...."+totalDiscountPrice);
 
         /*ADDRESS FILTERING*/
         Optional<UserEntity> user = userService.getUserdata(username);
@@ -120,25 +265,25 @@ public class OrderController {
                 .filter(Address::isEnabled)
                 .collect(Collectors.toList());
 
+        float discountPrice = discountedPrice;
+//        float totalDiscountPrice = 0.0f;
 
         Optional<ProductInfo> product = productService.getProduct(productId);
 
 
-        Double totalprice = (double) 0;
-        if (product.isPresent()) {
-            ProductInfo productPrice = product.get();
-            long price = (long) productPrice.getPrice();
-            System.out.println("Product Price: " + price);
-            totalprice = (double) orderService.findTotalUseQuantity(price, quantity);
+        ProductInfo products =product.get();
 
-        } else {
-
-            System.out.println("Product not found.");
+        float productPrice=products.getPrice();
+        List<Offer> offer=products.getOffer();
+        int productOffer=0;
+        for (Offer  productBaseOffer : offer){
+            productOffer  =   productBaseOffer.getCategoryOffPercentage();
         }
 
+        System.out.println("product offer"+productOffer);
 
-        List<Cart> cartList = orderService.getCartByUser(username);
-
+//        discountPrice=productPrice-(productPrice*productOffer)/100;
+//        totalDiscountPrice=discountPrice*quantity;
 
         List<Coupon> couponList = couponService.findAll();
     session.setAttribute("productUUID", productId);
@@ -146,36 +291,54 @@ public class OrderController {
     session.setAttribute("user", user);
     /*new*/
     boolean available;
-    if(totalprice>10000){available=true;
-        System.out.println("true..............."+totalprice);
+    if(totalDiscountPrice>10000){
+        available=true;
+        System.out.println("true..............."+totalDiscountPrice);
          }
     else{available=false;
-        System.out.println("fale................."+totalprice);
+        System.out.println("fale................."+totalDiscountPrice);
        }
+
+        Wallet wallet  =shopService.getWalletByUser(username);
+        float totalMoney  =wallet.getTotalMoney();
+        System.out.println("wallet>>>>>>>>>>>>"+username  +"user"+totalMoney);
+
+        model.addAttribute("totalMoney",totalMoney);
         model.addAttribute("available",available);
+        model.addAttribute("discountPrice",discountPrice);
         model.addAttribute("couponList", couponList);
         model.addAttribute("quantity" + quantity);
-        model.addAttribute("total", totalprice);
+        model.addAttribute("totalDiscountPrice",totalDiscountPrice);
         model.addAttribute("user", user);
         model.addAttribute("userAddresses", enabledAddresses);
         model.addAttribute("product", product.orElse(null));
 
         return "shop/single-order";
     }
+/* **************************** END SHOW SINGLE PRODUCT (GET)  ********************************/
 
 
-    /*Apply single order coupon*/
+
+
+    /*.....................APPLY SINGLE ORDER COUPON..(POST)....BUY-NOW ................*/
     @PostMapping("/applySingleOrderCoupon")
     /*End  Apply single order coupon*/
     public String applySingleOrderCoupon(@RequestParam(name = "couponCode") String couponCode,
-                              @AuthenticationPrincipal(expression = "username") String username,
-                              Model model, HttpSession session) {
-
+                                         @RequestParam(name = "totalDiscountPrice") float totalDiscountAmount,
+                                         @AuthenticationPrincipal(expression = "username") String username,
+                                         Model model, HttpSession session) {
         session.setAttribute("couponCode", couponCode);
 
-        Optional<UUID> productUUIDOptional = Optional.ofNullable((UUID) session.getAttribute("productUUID"));
+        System.out.println("TOTAL SINGLE PRODUCT DISCOUNT AMOUNT IN APPLY COUPON    "+totalDiscountAmount);
 
+        Optional<UUID> productUUIDOptional = Optional.ofNullable((UUID) session.getAttribute("productUUID"));
+        UUID productInfo=productUUIDOptional.get();
+      Optional<ProductInfo> productData =productService.getProduct(productInfo);
+      ProductInfo productInfo1=productData.get();
+
+      float discountPrice =productInfo1.getDiscountedPrice();
         float quantity = (float) session.getAttribute("productQuantity");
+
         Optional<UserEntity> user = (Optional<UserEntity>) session.getAttribute("user");
 
         List<Address> userAddresses = user.map(UserEntity::getAddresses).orElse(Collections.emptyList());
@@ -197,43 +360,55 @@ public class OrderController {
 
             oldtotal = orderService.findTotalUseQuantity(price, quantity);
 
-        Double totalprice = orderService.applySingleCouponFindTotal(coupons, username, oldtotal);
 
+        Double totalDiscountPrice=0d;
+//        totalDiscountPrices = orderService.findTotalUseQuantity(quantity,discountPrice);
+        System.out.println("total price =>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+totalDiscountAmount);
         boolean available;
-        if(totalprice>10000){available=true;
+        if(discountPrice>10000){
+            totalDiscountPrice = orderService.applySingleCouponFindTotal(coupons, username, totalDiscountAmount);
+            System.out.println("totalprice>>>>>>>>>>>>>>>apply coupon>>>>>>>>>"+totalDiscountPrice);
+            available=true;
 
         }
         else{available=false;
-
         }
-
+        System.out.println(totalDiscountPrice);
             ArrayList allCoupon = new ArrayList();
 
+            Wallet wallet  =shopService.getWalletByUser(username);
+            float totalMoney  =wallet.getTotalMoney();
+            System.out.println("wallet>>>>>>>>>>>>"+username  +"user"+totalMoney);
+
+            model.addAttribute("totalMoney",totalMoney);
             model.addAttribute("available",available);
             model.addAttribute("couponApplied", true);
-            model.addAttribute("quantity" + quantity);
-            model.addAttribute("total", totalprice);
+            model.addAttribute("quantity" , quantity);
+            model.addAttribute("discountPrice",discountPrice);
+            model.addAttribute("totalDiscountPrice", totalDiscountPrice);
             model.addAttribute("user", user);
             model.addAttribute("userAddresses", enabledAddresses);
             model.addAttribute("product", product.orElse(null));
 
             return "shop/single-order";
-//        }
     }
+    /* ***************************** END APPLY SINGLE ORDER COUPON..(POST)....BUY-NOW ********************************* */
 
 
-    /*Check outCoupon*/
+
+
+  /*.....................APPLY COUPON..(POST)....CHECK-OUT ................*/
     @PostMapping("/applyCoupon")
     public String applyCoupon(@RequestParam(name = "couponCode") String couponCode,
+                              @RequestParam(name = "totalDiscountPrice") float totalDiscountPrices,
                               @AuthenticationPrincipal(expression = "username") String username,
                               Model model, HttpSession session) {
 
+        System.out.println("TOTAL DISCOUNT PRICE IN APPLY COUPON POST     "+totalDiscountPrices);
         session.setAttribute("couponCode", couponCode);
         List<Cart> cartList = cartRepo.findByUserEntity_Username(username);
 
         List<Coupon> coupons = orderService.findCouponByCode(couponCode);
-
-
 
         /*address filter*/
         Optional<UserEntity> user = userService.getUserdata(username);
@@ -244,52 +419,64 @@ public class OrderController {
 
         List<Coupon> couponlist = couponService.findAll();
 
-
         Double existTotal = 0d;
         for (Cart cart : cartList) {
             existTotal += cart.getQuantity() * cart.getProductInfo().getPrice();
         }
         System.out.println("existTotal" + existTotal);
 
-
-        Double total = orderService.applyCouponFindTotal(coupons, username);
+        float totalDiscountPrice = orderService.applyCouponFindTotal(coupons, username,totalDiscountPrices);
+        System.out.println(".....total apply coupon price"+totalDiscountPrice);
 
         boolean available;
-        if(total>10000){available=true;
-            System.out.println("true.....aply checkout.........."+total);
+        if(totalDiscountPrice>10000){available=true;
+            System.out.println("true.....aply checkout.........."+totalDiscountPrice);
         }
         else{available=false;
-            System.out.println("fale..aply...ckeckout............"+total);
+            System.out.println("fale..aply...ckeckout............"+totalDiscountPrice);
         }
-
-
-
 
         System.out.println("product uuid is not present");
             ArrayList couponList = new ArrayList();
 
-            System.out.println("newTotal==+" + total);
+            Wallet wallet  =shopService.getWalletByUser(username);
+            float totalMoney  =wallet.getTotalMoney();
+            System.out.println("wallet>>>>>>>>>>>>"+username  +"user"+totalMoney);
+
+            model.addAttribute("totalMoney",totalMoney);
+            System.out.println("newTotal==+" + totalDiscountPrice);
             model.addAttribute("available",available);
             model.addAttribute("couponApplied", true);
             model.addAttribute("couponList", couponList);
             model.addAttribute("user", user);
-            model.addAttribute("total", total);
+            model.addAttribute("totalDiscountPrice", totalDiscountPrice);
             model.addAttribute("useraddresses", enabledAddresses);
             model.addAttribute("cartList", cartList);
             return "shop/order";
-//        }
+
     }
+/* **************************** END APPLY COUPON (POST) CHECK - OUT  **************************/
 
 
-    /*Post order*/
+
+
+
+    /*.......................................CREATE ORDER (GET)...........................................................*/
     @PostMapping("/submit-selected-address-and-payment")
     public String submitOrder(@RequestParam("selectedAddress") UUID selectedAddress,
                               @RequestParam("paymentMethod") PaymentMode selectedPaymentOption,
-                              @RequestParam("total") Double total, // Adjust the type if necessary
+                              @RequestParam("totalDiscountPrice") float totalDiscountPrice,
                               @AuthenticationPrincipal(expression = "username") String username,
                               Model model, HttpSession session) {
-
+       Double total= (double) totalDiscountPrice;
+        System.out.println(total);
         String couponCode = (String) session.getAttribute("couponCode");
+
+//        if(selectedAddress!=null){
+//        System.out.println("wallet payment oir not checking"+selectedPaymentOption+"amount "+totalDiscountPrice+" username "+username);
+//            System.out.println("address "+selectedAddress);
+//        return  null;
+//        }
 
         List<Coupon> coupons = orderService.findCouponByCode(couponCode);
 
@@ -301,18 +488,138 @@ public class OrderController {
 
         Double totalPrice = cartList.stream().mapToDouble(
                 cartItems -> cartItems.getProductInfo().getPrice() * cartItems.getQuantity()).sum();
-
+        System.out.println("cart total totalPrice>>>>>>>>>>>>>>"+totalPrice);
         Optional<Address> address = orderService.getAddressById(selectedAddress);
 
         Address userAddresses = address.get();
 
 
-        /*RAZORPAY*/
 
+        /*......WALLET PAYMENT..... */
+
+        if (selectedPaymentOption == PaymentMode.WALLET){
+            System.out.println("payment mode is in if...."+selectedPaymentOption);
+
+            /*check single odr or not*/
+            if (total.equals(totalPrice)){
+                TransactionDetails transactionDetails = createTransaction(totalPrice);
+                System.out.println(   "newTotal>>>>>>> price not equal offer price transaction "+total);
+                if (userAddresses==null) {
+
+                    model.addAttribute("error", "Please add an address before proceeding.");
+                    return "redirect:/addresses";
+                }
+
+                Wallet wallet  =shopService.getWalletByUser(username);
+                float  walletTotalMoney =  wallet.getTotalMoney();
+
+                float walletPay= orderService.walletPay(total,walletTotalMoney);
+                System.out.println("controller >>>wallet money"+walletPay);
+                orderService.updateWallet(walletPay,username,total);
+
+                Order createOrder = orderService.createOrder(userAddresses, total,totalPrice, userEntity, selectedPaymentOption, cartList, username,coupons);
+                System.out.println("after order");
+                UUID savedUuid = createOrder.getUuid();
+                Optional<Order> order = orderService.findOrderById(savedUuid);
+                Order recentOrder = order.get();
+                List<OrderItems> orderItem = recentOrder.getOrderItems();
+                System.out.println("order 1");
+                orderService.removeProductFromCart(orderItem, cartList);
+
+                System.out.println("order 2");
+                ProductInfo productInfo1;
+                for (OrderItems orderProduct : orderItem) {
+                    System.out.println("order 3");
+                    productInfo1 = orderProduct.getProductInfo();
+                    UUID orderProductUuid=  productInfo1.getUuid();
+                    System.out.println("order 4");
+                    Integer orderQuantity=orderProduct.getQuantity();
+                    Optional<ProductInfo> existProduct=productService.getProduct(orderProductUuid);
+                    System.out.println("order 5");
+                    UUID existProductUuid=existProduct.get().getUuid();
+                    System.out.println("order 6");
+                    if(existProductUuid.equals(orderProductUuid)){
+                        System.out.println("order 7");
+                        Long newStock= orderService.updateStockOrder(orderQuantity,  existProductUuid) ;
+                        ProductInfo product=existProduct.get();
+                        product.setStock(newStock);
+                        System.out.println("order 8");
+                        productService.update(product);
+                    }
+                }
+                System.out.println("order 9");
+                model.addAttribute("username", username);
+
+                return "shop/order-confirmation";
+
+
+            }else {
+                System.out.println("order 10");
+                /*check out not a single order*/
+                TransactionDetails transactionDetails = createTransaction(total);
+                System.out.println(   "newTotal>>>>>>> price not equal offer price transaction "+total);
+                if (userAddresses==null) {
+
+                    model.addAttribute("error", "Please add an address before proceeding.");
+                    return "redirect:/addresses";
+                }
+
+
+               Wallet wallet  =shopService.getWalletByUser(username);
+               float  walletTotalMoney =  wallet.getTotalMoney();
+
+                float walletPay=  orderService.walletPay(total,walletTotalMoney);
+                System.out.println("controller >>>wallet money"+walletPay);
+                orderService.updateWallet(walletPay,username,total);
+
+
+                Order createOrder = orderService.createOrder(userAddresses, total,totalPrice, userEntity, selectedPaymentOption, cartList, username,coupons);
+
+                /*find order*/
+                UUID savedUuid = createOrder.getUuid();
+                Optional<Order> order = orderService.findOrderById(savedUuid);
+                Order recentOrder = order.get();
+                List<OrderItems> orderItem = recentOrder.getOrderItems();
+
+                orderService.removeProductFromCart(orderItem, cartList);
+
+                ProductInfo productInfo1;
+                for (OrderItems orderProduct : orderItem) {
+
+                    productInfo1 = orderProduct.getProductInfo();
+                    UUID orderProductUuid=  productInfo1.getUuid();
+
+                    Integer orderQuantity=orderProduct.getQuantity();
+                    Optional<ProductInfo> existProduct=productService.getProduct(orderProductUuid);
+
+                    UUID existProductUuid=existProduct.get().getUuid();
+
+                    if(existProductUuid.equals(orderProductUuid)){
+
+                        Long newStock= orderService.updateStockOrder(orderQuantity,  existProductUuid) ;
+                        ProductInfo product=existProduct.get();
+                        product.setStock(newStock);
+                        productService.update(product);
+                    }
+                }
+
+                model.addAttribute("username", username);
+
+                return"shop/order-confirmation";
+
+            }
+
+        }
+            /*....END WALLET PAYMENT.........*/
+
+
+
+
+
+
+
+        /*,,,,,,,RAZORPAY,,,,,,,,,,,*/
         if (selectedPaymentOption == PaymentMode.RAZORPAY) {
-
-            System.out.println("razor pay only");
-
             if (total.equals(totalPrice)) {
                 TransactionDetails transactionDetails = createTransaction(totalPrice);
                 System.out.println("Total>>>>>>   transaction  " + totalPrice);
@@ -329,9 +636,6 @@ public class OrderController {
                 Optional<Order> order = orderService.findOrderById(savedUuid);
                 Order recentOrder = order.get();
                 List<OrderItems> orderItem = recentOrder.getOrderItems();
-
-
-//                orderService.stockManage(orderItemsList, productInfo);
 
                 orderService.removeProductFromCart(orderItem, cartList);
 
@@ -364,11 +668,10 @@ public class OrderController {
 
                 TransactionDetails transactionDetails = createTransaction(total);
                 System.out.println(   "newTotal>>>>>>> price not equal offer price transaction "+total);
-
                 if (userAddresses==null) {
 
                     model.addAttribute("error", "Please add an address before proceeding.");
-                    return "redirect:/addresses"; // Redirect to the address management page or a custom error page
+                    return "redirect:/addresses";
                 }
 
                 Order createOrder = orderService.createOrder(userAddresses, total,totalPrice, userEntity, selectedPaymentOption, cartList, username,coupons);
@@ -377,9 +680,6 @@ public class OrderController {
                 Optional<Order> order = orderService.findOrderById(savedUuid);
                 Order recentOrder = order.get();
                 List<OrderItems> orderItem = recentOrder.getOrderItems();
-
-//                orderService.stockManage(orderItemsList, productInfo);
-
                 orderService.removeProductFromCart(orderItem, cartList);
 
                 ProductInfo productInfo1;
@@ -408,8 +708,9 @@ public class OrderController {
             }
 
         }
+        /*,,,,,END,,RAZORPAY,,,,,,,,,,,*/
 
-        /* Create order */
+
         Order createOrder = orderService.createOrder(userAddresses, total,totalPrice, userEntity, selectedPaymentOption, cartList, username,coupons);
 
         Order saveOrder = orderService.saveOrder(createOrder);
@@ -420,12 +721,8 @@ public class OrderController {
         List<OrderItems> orderItems = recentOrder.getOrderItems();
 
         /*new update*/
-
         for (OrderItems orderItem : orderItems) {
             ProductInfo productData = orderItem.getProductInfo();
-
-            System.out.println("new update in stock");
-
             UUID orderProductUuid = productData.getUuid();
             Integer orderQuantity=orderItem.getQuantity();
            Optional<ProductInfo> existProduct=productService.getProduct(orderProductUuid);
@@ -439,22 +736,16 @@ public class OrderController {
                 product.setStock(newStock);
                 productService.update(product);
              }
-
-
         }
-
-//        orderService.stockManage(orderItemsList, productInfo);
-
         orderService.removeProductFromCart(orderItems, cartList);
-
-
         model.addAttribute("username", username);
         return "shop/order-confirmation";
 
     }
+    /* ******************************************* END CREATE ORDER (POST) ************************************ */
 
-    /*MyOrder Show in user side */
 
+    /*........................MY ORDER (GET).......................*/
     @GetMapping("/myOrder")
     public String  myOrder( @AuthenticationPrincipal(expression = "username") String username,
                             Model model){
@@ -471,9 +762,12 @@ public class OrderController {
         model.addAttribute("myOrders",myOrders);
    return  "shop/my-order";
     }
+    /* ************************ END MY ORDER (GET) ******************** */
 
 
-    /*Update order status*/
+
+
+    /*........................UPDATE ORDER STATUS (POST).......................*/
 
     @PostMapping("/updateStatus")
     public String updateStatus(@RequestParam("selectedStatus") OrderStatus  selectedStatus,
@@ -495,10 +789,10 @@ public class OrderController {
     }
 
 
-    /*end Update order status*/
+    /* ************************ END UPDATE ORDER STATUS (POST) ******************** */
 
 
-    /*pagination*/
+    /*......................../ADMIN PAGINATION  PAGE NUMBER (GET).......................*/
     @GetMapping("/admin")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String showAllOrder(Model model) {
@@ -506,15 +800,11 @@ public class OrderController {
     }
 
 
-    /*pagination*/
-
     @GetMapping("/page/{pageNo}")
     public String findPaginated(@PathVariable(value = "pageNo") int pageNo, Model model) {
         int pageSize = 5;
         Page<Order> page = orderService.findPaginated(pageNo, pageSize);
         List<Order> orders = page.getContent();
-        System.out.println("orders in pagination" + orders);
-        System.out.println("page in pagination" + page);
 
         model.addAttribute("currentPage", pageNo);
         model.addAttribute("totalPages", page.getTotalPages());
@@ -523,7 +813,7 @@ public class OrderController {
 
         return "admin/order-list";
     }
-
+    /* ************************ END PAGINATION NUMBER (GET) ******************** */
 
 
     /*pagination end*/
@@ -536,7 +826,7 @@ public class OrderController {
 //    }
 
 
-    /*pagination*/
+    /*........................PAGINATION UUID (GET).......................*/
 
     @GetMapping("/pages/{uuid}")
     public String findPaginate(@PathVariable("uuid") UUID uuid, Model model) {
@@ -561,48 +851,45 @@ public class OrderController {
 
         return "admin/order-detail";
     }
+    /* ************************ END PAGINATION UUID (GET) ******************** */
 
 
-    /*end View order pagination*/
 
-
-    /*Razorpay Transaction*/
+    /*........................CREATE TRANSACTION (GET).......................*/
     @PostMapping("/createTransaction/{amount}")
     @PreAuthorize("hasRole('Admin')")
     public TransactionDetails createTransaction(@PathVariable(name = "amount") Double amount) {
         return orderService.createTransaction(amount);
 
     }
+    /* ************************ END CREATE TRANSACTION (GET) ******************** */
 
 
-    //  Razorpay payment success
+
+    /*........................PAYMENT SUCCESS PAGE (GET).......................*/
     @GetMapping("/payment/success")
     public String handlePaymentSuccess() {
         System.out.println("razorr oredr  pay suuces");
 
         return "shop/success";
     }
+    /* ************************ END PAYMENT SUCCESS PAGE (GET) ******************** */
 
 
 
-    /*search*/
+    /*........................SEARCH ORDER (GET).......................*/
     @GetMapping(value = "/search", params = "keyword")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String searchOrderUser(Model model, @Param("keyword") String keyword) {
-//        System.out.println("search>begin.....>>>>>>>");
         try {
             List<Order> orders;
 
             if (keyword != null && !keyword.isEmpty()) {
                 orders = orderService.searchOrderUserName(keyword);
-                System.out.println("search>>>>if" + orders);
-
             } else {
-                //System.out.println("search--else------->>>");
 
                 orders = orderService.loadAllUser();
             }
-            System.out.println("orderList>>>>>>>" + orders);
 
             model.addAttribute("orders", orders);
 
@@ -617,13 +904,11 @@ public class OrderController {
         }
 
     }
+    /* **********************************************  END SEARCH ORDER (GET) ********************************** */
 
 
 
-    /*address add and update */
-
-
-    /*Update address post*/
+    /*........................UPDATE  ADDRESS (POST).......................*/
     @PostMapping("/edit")
     public String  updatesAddress(@RequestParam("uuid") UUID uuid,
                                   @RequestParam("houseNumberOrName") String houseNumberOrName,
@@ -655,8 +940,10 @@ public class OrderController {
 
         return  "redirect:/address/show";
     }
+    /* **********************************************  END UPDATE ADDRESS (POST) ********************************** */
 
-    /*Cancel order <<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
+
+    /*........................CANCEL ORDER VIEW (GET).......................*/
 
     @GetMapping("/cancel")
     public  String cancelOrder(
@@ -670,8 +957,10 @@ public class OrderController {
         model.addAttribute("order",order);
         return "shop/cancel-order";
     }
+    /* **********************************************  END CANCEL ORDER (GET) ********************************** */
 
 
+    /*........................CANCEL ORDER VIEW (POST).......................*/
     @PostMapping("/cancel-order")
     public String cancelOrder(@ModelAttribute CancelReason orderCancelRequest,
                               HttpSession session,
@@ -687,10 +976,10 @@ public class OrderController {
         Order order=orders.get();
         return "redirect:/order/myOrder";
     }
+    /* **********************************************  END CANCEL ORDER (POST) ********************************** */
 
 
-
-    /*return order*/
+    /*........................RETURN ORDER VIEW (GET).......................*/
     @GetMapping("/return")
     public  String returnOrder(
             @RequestParam(name = "orderUuid") UUID orderUuid,
@@ -703,7 +992,72 @@ public class OrderController {
         model.addAttribute("order",order);
         return "shop/return-order";
     }
+    /* **********************************************  END RETURN ORDER (GET) ********************************** */
 
+
+
+
+
+    /*........................RETURN ORDER WITH DATE  (GET).......................*/
+
+
+    @GetMapping("/home")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public String showAllReturnOrder(Model model){
+        return   orderReturned(1,model);
+    }
+
+    @GetMapping("/returnOrder/{pageNo}")
+    public String orderReturned(@PathVariable(value = "pageNo") int pageNo,Model model){
+            int pageSize = 4;
+            Page<ReturnOrder> page = returnOrderService.findPaginated(pageNo, pageSize);
+            List<ReturnOrder> returnOrders = page.getContent();
+
+        List<List<ProductInfo>> productInfo = new ArrayList<>();
+        List<List<OrderItems>> orderItems = new ArrayList<>();
+        List<List<String>> productNames = new ArrayList<>();
+        List<Double> totalPrices = new ArrayList<>();
+
+
+        for (ReturnOrder returnOrder : returnOrders) {
+            Order orderList = returnOrder.getOrder();
+            List<ProductInfo> productInfos = new ArrayList<>();
+            List<OrderItems> items = new ArrayList();
+            List<String> names = new ArrayList();
+
+            double totalPrice = 0.0;
+
+            for (OrderItems orderItem : orderList.getOrderItems()) {
+                ProductInfo productInf = orderItem.getProductInfo();
+                productInfos.add(productInf);
+                items.add(orderItem);
+                names.add(productInf.getName());
+
+                double itemPrice = orderItem.getPrice() * orderItem.getQuantity();
+                totalPrice += itemPrice;
+            }
+            productNames.add(names);
+            productInfo.add(productInfos);
+            orderItems.add(items);
+            totalPrices.add(totalPrice);
+
+        }
+        model.addAttribute("currentPage", pageNo);
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("totalItems", page.getTotalElements());
+        model.addAttribute("totalPrices", totalPrices);
+        model.addAttribute("productNames", productNames);
+        model.addAttribute("orderItems", orderItems);
+        model.addAttribute("productInfo", productInfo);
+        model.addAttribute("returnOrders", returnOrders);
+        return "admin/return-withdate";
+    }
+    /* **********************************************  END RETURN ORDER  ********************************** */
+
+
+
+
+    /*........................RETURN ORDER  (POST).......................*/
     @PostMapping("/return-order")
     public String returnOrders(@ModelAttribute ReturnReason returnRequest,
                                HttpSession session,
@@ -736,77 +1090,109 @@ public class OrderController {
         return "shop/track-order";
     }
 
-//    @GetMapping("/returnOrder")
-//    public String orderReturned(Model model) {
-//        List<ReturnOrder> returnOrders = returnOrderRepo.findAll();
-//        List<ProductInfo> productInfo = new ArrayList<>();
-//        List<OrderItems> orderItems = new ArrayList<>();
-//
-//        for (ReturnOrder returnOrder : returnOrders) {
-//            Order orderList = returnOrder.getOrder();
-//            for (OrderItems orderItem : orderList.getOrderItems()) {
-//                ProductInfo productInfos = orderItem.getProductInfo();
-//                productInfo.add(productInfos);
-//                orderItems.add(orderItem);
-//            }
-//        }
-//        model.addAttribute("orderItems",orderItems);
-//        model.addAttribute("productInfo", productInfo);
-//        model.addAttribute("returnOrders", returnOrders);
-//        return "admin/return-withdate";
-//    }
 
-    @GetMapping("/returnOrder")
-    public String orderReturned(Model model) {
-        List<ReturnOrder> returnOrders = returnOrderRepo.findAll();
-        List<List<ProductInfo>> productInfo = new ArrayList<>();
-        List<List<OrderItems>> orderItems = new ArrayList<>();
-        List<List<String>> productNames = new ArrayList<>();
-        List<Double> totalPrices = new ArrayList<>();
+    /*............RETURN CAH IN WALLET RAZORPAY..................*/
+    @GetMapping("/returnCashInWalletRazorPay")
+    public String returnCashInWallet( @RequestParam(name = "orderUuid") UUID orderUuid,
+                                      @AuthenticationPrincipal(expression = "username") String username, Model model) {
+
+        Optional<Order> orders = orderService.findOrderById(orderUuid);
+        Order returnOrder = orders.get();
+
+        PaymentMode paymentMode=returnOrder.getPaymentMode();
+        UserEntity user = userService.findByUsernames(username);
+        System.out.println(paymentMode);
+        PaymentMode paymentMode1 = returnOrder.getPaymentMode();
+        String status = String.valueOf(returnOrder.getOrderStatus());
+
+        String userReferralCode = user.getNewUserReferral();
+        Wallet wallet = shopService.getWalletByUser(username);
+        Double orderTotalPrice=0d;
+
+        if (PaymentMode.RAZORPAY==(paymentMode)) {
+
+
+            if(!returnOrder.isEnable()) {
 
 
 
+                System.out.println("if condition vlid");
 
-        for (ReturnOrder returnOrder : returnOrders) {
-            Order orderList = returnOrder.getOrder();
-            List<ProductInfo> productInfos = new ArrayList<>();
-            List<OrderItems> items = new ArrayList();
-            List<String> names = new ArrayList();
 
-            double totalPrice = 0.0;
+                float earnedMoney = wallet.getEarnedMoney();
+                float totalMoney = 0f;
+                if (returnOrder != null) {
 
-            for (OrderItems orderItem : orderList.getOrderItems()) {
-                ProductInfo productInf = orderItem.getProductInfo();
-                productInfos.add(productInf);
-                items.add(orderItem);
-                names.add(productInf.getName());
 
-                double itemPrice = orderItem.getPrice() * orderItem.getQuantity();
-                totalPrice += itemPrice;
+                    String orderStatus = String.valueOf(returnOrder.getOrderStatus());
+                    orderTotalPrice = returnOrder.getTotalPrice();
+                    totalMoney = earnedMoney += orderTotalPrice;
+                    System.out.println("total moneyyyyyyyyyyyyyyyyy" + totalMoney);
+                    wallet.setTotalMoney(totalMoney);
+                    returnOrder.setEnable(true);
+                    shopService.saveWallet(wallet);
+                }
+
             }
-            productNames.add(names);
-            productInfo.add(productInfos);
-            orderItems.add(items);
-            totalPrices.add(totalPrice);
+            model.addAttribute("orderTotalPrice",orderTotalPrice);
+            model.addAttribute("userWallet", wallet);
+            model.addAttribute("user", user);
+            model.addAttribute("userReferralCode", userReferralCode);
+            return "shop/wallet";
+        }else {
+            float totalMoney=wallet.getEarnedMoney();
+             wallet.setTotalMoney(totalMoney);
+             shopService.saveWallet(wallet);
+            model.addAttribute("errorMessage", "Cash on Delivery refund is not applicable.");
+            model.addAttribute("userWallet", wallet);
+            model.addAttribute("user", user);
+            model.addAttribute("userReferralCode", userReferralCode);
+            return "shop/wallet";
 
         }
 
-        model.addAttribute("totalPrices", totalPrices);
-        model.addAttribute("productNames", productNames);
-        model.addAttribute("orderItems", orderItems);
-        model.addAttribute("productInfo", productInfo);
-        model.addAttribute("returnOrders", returnOrders);
-        return "admin/return-withdate";
+    }
+
+    /* ********************************************** END  RETURN CAH IN WALLET RAZORPAY  ********************************** */
+
+
+
+/*............INVOICE..................*/
+    @GetMapping("/getinvoice")
+    public ResponseEntity<byte[]> getInvoice(@RequestParam(name = "orderUuid") UUID orderUuid) throws Exception {
+
+        System.out.println("Selected Format:2 ");
+        Optional<Order> order =orderService.findOrderById(orderUuid);
+        Order ordersInRange=order.get();
+        System.out.println("Selected Format:2 " + ordersInRange);
+        byte[] reportBytes;
+        String contentType;
+        String filename;
+        reportBytes = orderService.getOrderInvoice(ordersInRange);
+        contentType = MediaType.APPLICATION_PDF_VALUE;
+        filename = "Invoice.pdf";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(contentType));
+        headers.setContentDispositionFormData("attachment", filename);
+
+        return new ResponseEntity<>(reportBytes, headers, HttpStatus.OK);
     }
 
 
+    /* *************************** END  INVOICE  ********************************** */
 
 
+
+   /*.................REFERRAL DISCOUNT  (GET).................................*/
+    @GetMapping("/referral-discount")
+    public String applyReferralDiscount(@RequestParam("walletMoney") float walletMoney,
+                                        @RequestParam("totalDiscountPrice") float totalDiscount, Model model) {
+
+        float  totalDiscountPrice   = shopService.walletDiscount(walletMoney,totalDiscount);
+        return "redirect:/cart/viewCart";
+    }
+
+    /* ************************************* END   REFERRAL DISCOUNT ********************************** */
 }
-
-
-
-
-
 
 

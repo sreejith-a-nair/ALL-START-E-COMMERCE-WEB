@@ -70,11 +70,12 @@
                                                  style="margin-top:20px;margin-bottom:10px;">
 
 
-                                                   <a class="buy-now btn btn-primary" th:if="${not #lists.isEmpty(cartItems)}"
-                                                      th:href="@{/order/show-single-product/{productId}/{quantity}(productId=${item.productInfo.uuid},
-                                                       quantity=${item.quantity})}"
-                                                   >Buy Now</a>
 
+<!--                                                      th:href="@{/order/show-single-product/{productId}/{quantity}(productId=${item.productInfo.uuid},quantity=${item.quantity})}"-->
+                                               <a class="buy-now btn btn-primary" th:if="${not #lists.isEmpty(cartItems)}"
+                                                        th:href="@{/order/show-single-product/{productId}/{quantity}(productId=${item.productInfo.uuid}, quantity=${item.quantity},
+                                                                    discountedPrice=${item.productInfo.discountedPrice})}">
+                                               Buy Now</a>
 
                                                    <a   th:href="@{/cart/addToWishlistRemoveFromCart/{uuid}(uuid=${item.uuid})}">
                                                        <i class="fas fa-heart   wishlist-buttons"
@@ -85,11 +86,17 @@
 
                                        </td>
                                         <td style="width: 10%;" th:text="${item.productInfo.name}"></td>
-                                       <td style="width: 5%;" th:text="${item.productInfo.price}"></td>
+                                        <td style="width: 5%;">
+                                            <span th:text="${item.productInfo.price}"></span> <!-- Original price -->
+                                            <span th:if="${item.productInfo.discountedPrice != null}">
+                                                  <span th:text="' (Discounted: ' + ${item.productInfo.discountedPrice} + ')'" style="color: red;"></span> <!-- Discounted price -->
+                                            </span>
+                                        </td><!-- Discounted price -->
                                        <td style="width: 16%;" th:text="${item.productInfo.description}"></td>
                                         <td style="width: 3%;">
                                             <form th:action="@{/cart/setQuantity}" method="post">
                                                 <input type="hidden" name="uuid" th:value="${item.uuid}" />
+                                                <input type="hidden" name="price" th:value="${item.productInfo.discountedPrice != null ? item.productInfo.discountedPrice : item.productInfo.price}" />
                                                 <div class="d-flex">
                                                     <select style="width: 100px;" class="form-select me-2" name="quantity">
                                                         <option th:each="quantity : ${#numbers.sequence(1, 10)}"
@@ -101,7 +108,7 @@
                                             </form>
                                         </td>
 
-                                       <td style="width: 4%;"  th:text="${item.productInfo.price * item.quantity}"></td>
+                                       <td style="width: 4%;"  th:text="${item.productInfo.discountedPrice * item.quantity}"></td>
 
                                        <td style="width: 4%; display: flex; justify-content: space-between;">
 
@@ -133,12 +140,17 @@
                                           <tbody>
                                               <tr>
                                                   <td style="padding-top:25px;padding-bottom:10px;"><strong>Total Price:</strong></td>
-                                                  <td>   <strong th:text="${total}"></strong></td>
+                                                  <td>   <strong th:text="${totalDiscountPrice}"></strong></td>
                                               </tr>
                                           </tbody>
                                        </table>
+
+
+
                                    <div th:if="${not #lists.isEmpty(cartItems)}">
-                                       <a class="checkout-button" th:href="@{'/order/show/' + ${cartItems[0].uuid}}">Check Out</a>
+<!--                                       <a class="checkout-button" th:href="@{'/order/show/' + ${cartItems[0].uuid}}">Check Out</a>-->
+                                       <a class="checkout-button" th:href="@{'/order/show/' + ${cartItems[0].uuid} + '?totalDiscountPrice=' + ${totalDiscountPrice}}">Check Out</a>
+
                                    </div>
                                </div>
                          </div>

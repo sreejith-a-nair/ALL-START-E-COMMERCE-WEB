@@ -1,6 +1,7 @@
 package com.mydemo.demoproject.Repository.admin;
 
 import com.mydemo.demoproject.Entity.CategoryInfo;
+import com.mydemo.demoproject.Entity.Offer;
 import com.mydemo.demoproject.Entity.ProductInfo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,7 +34,7 @@ public interface ProductRepo extends JpaRepository<ProductInfo,UUID> {
     Optional<ProductInfo>findByCategory(UUID uuid);
 
     Optional<ProductInfo>findByStock(UUID uuid);
-//    Optional<ProductInfo> findById(PageRequest uuid);
+
 
     List<ProductInfo> findByCategory_Uuid(UUID categoryUuid);
 
@@ -41,25 +42,34 @@ public interface ProductRepo extends JpaRepository<ProductInfo,UUID> {
     /*product search*/
     Page<ProductInfo> findBynameContaining(String name, Pageable pageable);
 
-//    @Query("SELECT p FROM Product p WHERE p.categoryIds LIKE %:categoryId%")
-//    Page<ProductInfo> findByCategoryId(@Param("categoryId") String categoryId, Pageable pageable);
+
     Page<ProductInfo> findByCategory_Uuid(UUID categoryUuid, Pageable pageable);
 
 
 
+    Page<ProductInfo> findByBrand_Uuid(UUID brandUuid, Pageable pageable);
+
     Page<ProductInfo> findByPriceBetween(double minPrice, double maxPrice, Pageable pageable);
 
-//    @Query("SELECT Product_info FROM ProductInfo product_info WHERE product_info.price BETWEEN :minPrice AND :maxPrice")
-//    Page<ProductInfo> findProductsInPriceRange(
-//            @Param("minPrice") float minPrice,
-//            @Param("maxPrice") float maxPrice,
-//            Pageable pageable
-//    );
+
 @Query("SELECT p FROM ProductInfo p WHERE p.price BETWEEN :minPrice AND :maxPrice")
 Page<ProductInfo> findProductsInPriceRange(
         @Param("minPrice") float minPrice,
         @Param("maxPrice") float maxPrice,
         Pageable pageable
 );
+
+    @Query("SELECT p FROM ProductInfo p JOIN p.offer o WHERE o.CategoryOffPercentage BETWEEN :minPercentage AND :maxPercentage")
+    Page<ProductInfo> findProductsInOfferPercentageRange(
+            @Param("minPercentage") int minPercentage,
+            @Param("maxPercentage") int maxPercentage,
+            Pageable pageable
+    );
+
+
+    boolean existsByUuid(UUID uuid);
+
+//    @Query("SELECT p FROM ProductInfo p JOIN p.offer o WHERE o IN :offers")
+//    Page<ProductInfo> findProductsByOffers(@Param("offers") List<Offer> offers, Pageable pageable);
 
 }

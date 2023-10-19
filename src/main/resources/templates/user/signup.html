@@ -28,12 +28,21 @@
             <div th:if="${errorMessage}">
                 <p class="alert alert-danger mr-5" th:text="${errorMessage}"></p>
             </div>
+            <div th:if="${successMessage}">
+                <p class="alert alert-success mr-5" th:text="${successMessage}"></p>
+            </div>
+
             <input type="text" class="form-control ip2" name="username"  placeholder="User Name" required><br>
             <input type="text" class="form-control ip2" name="firstname" pattern="[A-Za-z]+"  placeholder="First Name" required><br>
             <input type="text" class="form-control ip2" name="lastname" pattern="[A-Za-z]+"  placeholder="Last Name" required><br>
             <input type="email" class="form-control ip2" name="email"  placeholder="Email" required><br>
             <input type="text" class="form-control ip2" name="contact"  placeholder="Contact " required><br>
             <input type="password" class="form-control ip2" name="password" placeholder="Password" required><br>
+            <!--confirm ppassword-->
+            <input type="password" class="form-control ip2" name="confirmPassword" placeholder="Confirm-password" required><br>
+
+            <!-- Referral Code Input -->
+            <input type="text" class="form-control ip2" name="referralCode" placeholder="Referral Code (optional)"><br>
 
             <button class="btn btn1 btn-success" type="submit">Sing Up</button>
 

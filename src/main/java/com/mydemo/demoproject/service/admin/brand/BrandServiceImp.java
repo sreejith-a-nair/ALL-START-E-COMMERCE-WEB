@@ -3,6 +3,7 @@ package com.mydemo.demoproject.service.admin.brand;
 import com.mydemo.demoproject.Entity.Brand;
 import com.mydemo.demoproject.Entity.ProductInfo;
 import com.mydemo.demoproject.Repository.admin.BrandRepo;
+import com.mydemo.demoproject.Repository.admin.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +20,9 @@ public class BrandServiceImp implements BrandService{
 
     @Autowired
     BrandRepo brandRepo;
+
+    @Autowired
+    ProductRepo productRepo;
     @Override
     public List<Brand> findAll() {
         return brandRepo.findAll();
@@ -76,6 +80,11 @@ public class BrandServiceImp implements BrandService{
         } else {
             throw new EntityNotFoundException("User not found with ID: " + uuid);
         }
+    }
+
+    @Override
+    public Page<ProductInfo> getBrandProducts(UUID selectedBrandUuid, Pageable pageable) {
+        return productRepo.findByBrand_Uuid(selectedBrandUuid,pageable);
     }
 
 }

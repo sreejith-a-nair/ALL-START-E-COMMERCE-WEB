@@ -25,26 +25,28 @@
       <div class="card text-center custom-card">
         <div class="card-body">
           <h5 class="card-title">Progress</h5>
+          <P id="progressStatus" th:text="${orderStatus}"></P>
           <div class="progress">
-            <P th:text="${orderStatus}"></P>
-            <div th:unless="${orderStatus == 'RETURN' or orderStatus == 'CANCELLED'}" class="progress mt-3">
-              <div class="progress-bar" role="progressbar"
-                   th:style="'width: ' + (${orderStatus == 'PENDING' ? '20%' : '0'})"
-                   th:class="${orderStatus == 'PENDING' ? 'bg-danger' : 'bg-dark'}"
-                   aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
-              <div class="progress-bar bg-success" role="progressbar"
-                   th:style="'width: ' + (${orderStatus == 'CONFIRMED' ? '55%' : '0'})"
-                   th:class="${orderStatus == 'CONFIRMED' ? 'bg-primary' : 'bg-dark'}"
-                   aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
-              <div class="progress-bar bg-info" role="progressbar"
-                   th:style="'width: ' + (${orderStatus == 'SHIPPED' ? '75%' : '0'})"
-                   th:class="${orderStatus == 'SHIPPED' ? 'bg-success' : 'bg-dark'}"
-                   aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
-              <div class="progress-bar bg-success" role="progressbar"
-                   th:style="'width: ' + (${orderStatus == 'DELIVERED' ? '100%' : '0'})"
-                   th:class="${orderStatus == 'DELIVERED' ? 'bg-info' : 'bg-dark'}"
-                   aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
+            <div id="progressBar" class="progress" style="width: 0%; position: relative; transition: .5s"></div>
+
+<!--            <div th:unless="${orderStatus == 'RETURN' or orderStatus == 'CANCELLED'}" class="progress mt-3">-->
+<!--              <div class="progress-bar" role="progressbar"-->
+<!--                   th:style="'width: ' + (${orderStatus == 'PENDING' ? '20%' : '0'})"-->
+<!--                   th:class="${orderStatus == 'PENDING' ? 'bg-danger' : 'bg-dark'}"-->
+<!--                   aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>-->
+<!--              <div class="progress-bar bg-success" role="progressbar"-->
+<!--                   th:style="'width: ' + (${orderStatus == 'CONFIRMED' ? '55%' : '0'})"-->
+<!--                   th:class="${orderStatus == 'CONFIRMED' ? 'bg-primary' : 'bg-dark'}"-->
+<!--                   aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>-->
+<!--              <div class="progress-bar bg-info" role="progressbar"-->
+<!--                   th:style="'width: ' + (${orderStatus == 'SHIPPED' ? '75%' : '0'})"-->
+<!--                   th:class="${orderStatus == 'SHIPPED' ? 'bg-success' : 'bg-dark'}"-->
+<!--                   aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>-->
+<!--              <div class="progress-bar bg-success" role="progressbar"-->
+<!--                   th:style="'width: ' + (${orderStatus == 'DELIVERED' ? '100%' : '0'})"-->
+<!--                   th:class="${orderStatus == 'DELIVERED' ? 'bg-info' : 'bg-dark'}"-->
+<!--                   aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>-->
+<!--            </div>-->
           </div>
         </div>
       </div>
@@ -83,6 +85,26 @@
   <!--        crossorigin="anonymous"></script>-->
   <!-- Bootstrap JavaScript and Popper.js (if needed) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const progressBar = document.getElementById('progressBar');
+    const progressStatus = document.getElementById('progressStatus').innerText.toLowerCase().trim();
+    if (progressStatus === 'pending') {
+      progressBar.style.width = '20%';
+      progressBar.className = "progress bg-danger";
+    } else if (progressStatus === 'confirmed') {
+      progressBar.style.width = '55%';
+      progressBar.className = "progress bg-primary";
+    } else if (progressStatus === 'shipped') {
+      progressBar.style.width = '75%';
+      progressBar.className = "progress bg-success";
+    }  else if (progressStatus === 'delivered') {
+      progressBar.style.width = '100%';
+      progressBar.className = "progress bg-info";
+    } else if (progressStatus === 'canceled') {
+      progressBar.style.width = '100%';
+      progressBar.className = "progress bg-danger";
+    }
+  </script>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css">
 </section>

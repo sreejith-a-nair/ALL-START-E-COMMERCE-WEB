@@ -1,5 +1,6 @@
 package com.mydemo.demoproject.service.admin.product;
 
+import com.mydemo.demoproject.Entity.Offer;
 import com.mydemo.demoproject.Entity.ProductInfo;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
@@ -56,7 +57,7 @@ public interface ProductService {
     /*find by all page*/
     public Page<ProductInfo> findAllByPage(int pageNo, int pageSize, String field, String sortDirection) ;
 
-    public ProductInfo addProduct(ProductInfo product, UUID categoryId) throws ChangeSetPersister.NotFoundException;
+    public ProductInfo addProduct(ProductInfo product, UUID categoryId,UUID brandId) throws ChangeSetPersister.NotFoundException;
 
     void updateStock(UUID uuid, Long stock);
 
@@ -67,4 +68,9 @@ public interface ProductService {
 
   Page<ProductInfo> getProductsInPriceRange(float minPrice, float maxPrice, Pageable pageable);
 
-    }
+
+
+    Page<ProductInfo> getProductsInOfferPercentageRange(int minPrice, int maxPrice, Pageable pageable);
+
+       float  getDiscountPrice(float productPrice,int offerPercent);
+}

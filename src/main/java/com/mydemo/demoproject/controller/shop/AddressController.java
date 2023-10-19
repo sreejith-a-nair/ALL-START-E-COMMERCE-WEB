@@ -27,19 +27,7 @@ public class AddressController {
     UserService userService;
 
 
-//  @GetMapping("/addAddress")
-//  public String getAddressPage(@RequestParam(name = "uuid", required = false) UUID productUuid) {
-//      System.out.println("productUuid>>>>>>>>>>>>>"+productUuid);
-//      if(productUuid==null)
-//      {
-//          System.out.println("product in ifffffffffffffffffffffffffffffffffff");
-//      }
-//
-//      return "shop/add-address";
-//  }
-
   /*new update*/
-
 
     //    Address add
     @GetMapping("/addAddress")
@@ -49,7 +37,6 @@ public class AddressController {
         System.out.println("quantity>>>>>>>>>>>>>" + quantity);
         if(productUuid!=null&&quantity!=null)
         {
-            System.out.println("product in ifffffffffffffffffffffffffffffffffff");
             model.addAttribute("productUuid",productUuid);
             model.addAttribute("quantity", quantity);
             return "shop/add-address";
@@ -65,10 +52,7 @@ public class AddressController {
                                  @RequestParam(name = "quantity", required = false) Float quantity,
                                  @ModelAttribute Address address,
                                  @AuthenticationPrincipal(expression = "username")String  username){
-        System.out.println("productUuid.................is present"+productUuid);
-        System.out.println("Quantity>>>>>>>>>>>>>>>>>>>>>>is present"+quantity);
         if (productUuid!=null&&quantity!=null) {
-            System.out.println("productUuid.................is present");
             address.setUserEntity(userService.getUserdata(username).orElse(null));
 
             addressService.saveToAddress(address);
@@ -76,9 +60,7 @@ public class AddressController {
             return "redirect:/order/show-single-product/" + productUuid + "/" + quantity;
 
         }
-
         address.setUserEntity(userService.getUserdata(username).orElse(null));
-
         addressService.saveToAddress(address);
         return "redirect:/address/show";
 }
@@ -90,7 +72,6 @@ public class AddressController {
     public String showAddress( @AuthenticationPrincipal(expression = "username")String  username,
                                Model model ) {
         List<Address> useraddress=addressService.findByUserEntity_Usernames(username);
-        System.out.println("userAddress?????"+useraddress);
         List<Address> enabledAddresses = useraddress.stream()
                 .filter(Address::isEnabled)
                 .collect(Collectors.toList());
@@ -105,17 +86,7 @@ public class AddressController {
         return "shop/address";
 }
 
-
-
-
-
-
-
     /*end update*/
-
-
-
-
 
 //    @GetMapping("/show")
 //    public String showAddress( @AuthenticationPrincipal(expression = "username")String  username,
@@ -136,9 +107,6 @@ public class AddressController {
 //        return "shop/address";
 //    }
 
-
-
-
 //    @PostMapping("/create")
 //    public UserEntity createAddress(@ModelAttribute Address address,
 //                                    @AuthenticationPrincipal(expression = "username") String username) {
@@ -154,12 +122,6 @@ public class AddressController {
 //
 //        return userEntity;
 //    }
-
-
-
-
-
-
 
 //    @PostMapping("/create")
 //    public String  createAddress(
@@ -219,10 +181,8 @@ public class AddressController {
             addressList.setEnabled(true);
             addressService.saveToAddress(addressList);
         }
-
         return  "redirect:/address/show";
     }
-
 
     /*block unblock*/
 
@@ -235,7 +195,6 @@ public class AddressController {
         return "redirect:/address/show";
     }
 
-
     /*Un-block Product*/
     @GetMapping("/enable/{uuid}")
     public String unBlockAddress(@PathVariable UUID uuid)
@@ -245,7 +204,6 @@ public class AddressController {
         return  "redirect:/address/show";
     }
 
-
   @GetMapping("/remove/{uuid}")
     public String removeAddress(@PathVariable UUID uuid){
       addressService.removeAddress(uuid);
@@ -254,8 +212,3 @@ public class AddressController {
 
 
     }
-
-
-
-
-

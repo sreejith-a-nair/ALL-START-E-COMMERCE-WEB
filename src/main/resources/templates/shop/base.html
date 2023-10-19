@@ -43,6 +43,15 @@ background: linear-gradient(90deg, rgba(6,4,20,1) 0%, rgba(2,2,9,0.9865196078431
     <!--end-->
     <ul class="navbar-nav " style="margin-right:40px;">
 
+        <li class="nav-item">
+            <a  class="btn " th:href="@{/shop/referral-code}" style="border: 2px solid #ffffff;color :white; margin-right:35px;width:140px;
+                     transition: background-color 0.3s, color 0.3s;"
+               onmouseover="this.style.backgroundColor='#fff'; this.style.color='black';"
+               onmouseout="this.style.backgroundColor='#000'; this.style.color='white';">
+                <i style="padding-left:10px;" class="fa-solid fa-users fa-sm"></i>
+                Refer Now</a>
+        </li>
+
       <li class="nav-item" style="margin-right:15px;">
         <a th:href="@{/shop/profile}"><i class="fa-regular fa-user" style="color: white;"></i>
         </a>
@@ -82,14 +91,14 @@ background: linear-gradient(90deg, rgba(6,4,20,1) 0%, rgba(2,2,9,0.9865196078431
         <a class="nav-link active" aria-current="page" href="#">NEW</a>
       </li>
       <li class="nav-item dropdown" style="margin-left:100px;">
-        <a class="nav-link dropdown-toggle"  th:href="@{/brand/brandItems}"
+        <a class="nav-link dropdown-toggle"
            id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="true" style="color :black;" >
           BRANDS
         </a>
         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <li><a class="dropdown-item" th:href="@{/brands.name}">LINING</a></li>
-          <li><a class="dropdown-item" th:href="@{/brands.name}">YONEX</a></li>
-          <li><a class="dropdown-item" th:href="@{brands.name}">VICTOR</a></li>
+<!--          <li><a class="dropdown-item" th:href="@{/brands.name}">LINING</a></li>-->
+<!--          <li><a class="dropdown-item" th:href="@{/brands.name}">YONEX</a></li>-->
+<!--          <li><a class="dropdown-item" th:href="@{brands.name}">VICTOR</a></li>-->
           <li><hr class="dropdown-divider"></li>
 <!--          <li><a class="dropdown-item" th:href="@{/other}">Something else here</a></li>-->
         </ul>
@@ -123,10 +132,8 @@ background: linear-gradient(90deg, rgba(6,4,20,1) 0%, rgba(2,2,9,0.9865196078431
                <div style="padding-top:40px;padding-bottom:20px;color:black;">
                  <a class="mt-1 block transaction-color duration-300 hover:text-primary-accent"
                  style="text-decoration:none;color:black;"
-                     href="tel:+91-79008-99008"><h2  onmouseover="this.style.color='blue'"
-                                             onmouseout="this.style.color='black'">+91-79008-99008</h2></a>
+                     href="tel:+91-79008-99008"><h2  onmouseover="this.style.color='blue'" onmouseout="this.style.color='black'">+91-79008-99008</h2></a>
                </div>
-
                       <i class="fa-brands fa-whatsapp " style=" font-size: 1.5em; margin-right:20px;color:black;"  onmouseover="this.style.color='blue'"
                        onmouseout="this.style.color='black'" ></i>
                        <i class="fa-regular fa-message " style=" font-size: 1.3em; margin-left:20px;color:black;"  onmouseover="this.style.color='blue'"

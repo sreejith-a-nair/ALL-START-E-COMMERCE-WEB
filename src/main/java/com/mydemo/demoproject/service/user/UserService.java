@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.util.List;
 import java.util.Optional;
 @Service
 public class UserService{
@@ -18,10 +19,11 @@ public class UserService{
 
 
 
-    public  String  addUser(UserEntity userEntity , Model model)
+    public  String  addUser(UserEntity userEntity , Model model,String referralId)
     {
         Optional<UserEntity> varifyUsername  =userRepo.findByusername(userEntity.getUsername());
         Optional<UserEntity> varifyEmail= userRepo.findByemail(userEntity.getEmail());
+        Optional<UserEntity>varifyContact= Optional.ofNullable(userRepo.findByContact(userEntity.getContact()));
 
         if (varifyUsername.isPresent())
         {
@@ -33,8 +35,14 @@ public class UserService{
             model.addAttribute("errorMessage","E-mail already exists");
             return "user/signup";
         }
+        else if(varifyContact.isPresent()){
+
+        model.addAttribute("errorMessage","Contact already exists");
+        return "user/signup";
+        }
 
         else {
+            userEntity.setNewUserReferral(referralId);
             userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
             userRepo.save(userEntity);
             return  "user/login";
@@ -47,6 +55,9 @@ public class UserService{
         return userRepo.findByUsernameNot("admin");
     }
 
+    public List<UserEntity> getAll(){
+      return   userRepo.findAll();
+    }
 
     public  Optional<UserEntity>getUserdata(String username)
     {
@@ -71,6 +82,18 @@ public UserEntity findByUsernames(String username) {
 
     public UserEntity save(UserEntity userEntity) {
         return userRepo.save(userEntity);
+    }
+
+
+    public UserEntity findByUserContact(Long contact){
+     return userRepo.findByContact(contact);
+    }
+
+
+
+    public  UserEntity findByReferralCode(String referralCode){
+
+    return userRepo.findByNewUserReferral(referralCode);
     }
 }
 

@@ -10,4 +10,6 @@ import java.util.UUID;
 public interface CouponRepo extends JpaRepository<Coupon, UUID> {
 
   List<Coupon>findByCode(String code);
+
+
 }

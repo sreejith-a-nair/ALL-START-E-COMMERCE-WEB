@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @Entity
-public class CategoryInfo {
+public class  CategoryInfo {
    /*datatype change*/
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "uuid2")
@@ -30,6 +30,10 @@ public class CategoryInfo {
 
     @OneToMany(mappedBy = "category")
     private List<ProductInfo> products;
+
+    @OneToMany(mappedBy = "productInfo")
+    private List<Offer> offer;
+
 
     private boolean enable;
 

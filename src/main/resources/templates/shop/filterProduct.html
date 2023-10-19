@@ -39,27 +39,38 @@
                          padding-top:7px;margin-bottom:40px;margin-top:20px;">
                              <h6 >BRAND</h6 >
                          </div>
-                        <form action="/filterByBrand" method="get" style="max-height: 300px;">
 
+                          <form action="/shop/filterByBrand" method="get" style="max-height: 300px;">
+                             <div class="form-group" style="margin-bottom: 0; padding-bottom: 0;">
+                                 <th:block th:if="${brand.enable}"  th:each="brand : ${brands}">
+                                     <label style="margin-left:30px;padding-bottom:26px;">
+                                         <input type="radio" name="selectedBrandUuid" th:value="${brand.uuid}">
+                                         <span style="margin-bottom:40px;" th:text="${brand.name}"></span>
+                                     </label>
+                                     <br>
+                                 </th:block>
+                             </div>
+                             <button class="apply-filter" type="submit">Apply Filter</button>
+                          </form>
 
-                            <div class="form-group" style="margin-bottom: 0; padding-bottom: 0;">
-                                <th:block th:if="${brand.enable}"  th:each="brand : ${brands}">
-                                    <label  style="margin-bottom: 10px;">
-                                        <ul  class="no-bullets">
-                                            <li>
-                                                <input type="radio" name="selectedCategoryUuid" th:value="${brand.uuid}">
-                                                <span th:text="${brand.name}"></span>
-                                            </li>
-                                        </ul>
-                                    </label>
-                                    <br>
-                                </th:block>
-                            </div>
-                            <button class="apply-filter" type="submit">Apply Filter</button>
-                        </form>
+<!--                        <form action="shop/filterByBrand" method="get" style="max-height: 300px;">-->
+
+<!--                            <div class="form-group" style="margin-bottom: 0; padding-bottom: 0;">-->
+<!--                                <th:block th:if="${brand.enable}"  th:each="brand : ${brands}">-->
+<!--                                    <label  style="margin-bottom: 10px;">-->
+<!--                                        <ul  class="no-bullets">-->
+<!--                                            <li>-->
+<!--                                                <input type="radio" name="selectedBrandUuid" th:value="${brand.uuid}">-->
+<!--                                                <span th:text="${brand.name}"></span>-->
+<!--                                            </li>-->
+<!--                                        </ul>-->
+<!--                                    </label>-->
+<!--                                    <br>-->
+<!--                                </th:block>-->
+<!--                            </div>-->
+<!--                            <button class="apply-filter" type="submit">Apply Filter</button>-->
+<!--                        </form>-->
                      </div>
-
-
 
 
                      <div style="margin-bottom:60px;">
@@ -88,14 +99,13 @@
                      </div>
                         <!--                  end      Category filtering-->
 
-
-
                         <!--pRICE FILTERING-->
                         <div style="margin-bottom:60px;">
                             <div style="background-color:#253B4D;height:40px;text-align:center;color:white;padding-top:7px;
                             margin-bottom:40px;margin-top:100px;">
                                 <h6 >PRICE</h6>
                             </div>
+
                             <form th:action="@{/shop/priceFilter}" method="get">
                                 <div class="form-group">
                                     <label>Price Range:</label>
@@ -110,25 +120,85 @@
                             </form>
                         </div>
 
-                    </div>
+
 <!--END-->
 
+                    <!--OFFER FILTERING-->
+                        <div style="margin-bottom:60px;">
+                            <div style="background-color:#253B4D;height:40px;text-align:center;color:white;padding-top:7px;
+                             margin-bottom:40px;margin-top:100px;">
+                                <h6 >OFFER PERCENTAGE</h6>
+                            </div>
 
+                            <form th:action="@{/shop/offerPercentageFilter}" method="get">
+                                <div class="form-group">
+                                    <label>Offer Percentage Range:</label>
+                                    <div th:each="range : ${T(com.mydemo.demoproject.Entity.enumlist.OfferPercentageRange).values()}">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="offerPercentageRange" th:id="${'offerPercentageRange_' + range}" th:value="${range.value}">
+                                            <label class="form-check-label" th:for="${'offerPercentageRange_' + range}" th:text="${range.label}"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="apply-filter" type="submit">Apply Filter</button>
+                            </form>
+
+                        </div>
+
+
+
+
+                        <!--END OFFER FILTERING-->
+
+                    </div>
 
 <!--PRODUCT CART-->
                     <div class=" row col-md-10">
                         <!-- Your product cards here -->
                         <div th:each="filterProducts : ${productInfo}" class="col-md-4">
-                            <div  style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;margin-left:37px;margin-top:100px;">
-                                <a th:href="@{/shop/singleProduct/{uuid}(uuid=${filterProducts.uuid})}">
-                                    <img th:src="@{|/uploads/${filterProducts.images[0].fileName}|}"
-                                         class="card-img-top" alt="Product Image" height="290" width="50">
-                                </a>
+
+                            <div  style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;margin-left:37px;margin-top:90px;">
+                                <div  th:if="${offerPercentage != null}">
+                                   <div style="margin-left:30px;margin-right:40px;margin-top:30px;padding:6px;font-weight:bold;color:red;padding-left:60px;margin-bottom:30px;
+                                              background-color:#background: rgb(246,215,97);
+                                              background: linear-gradient(90deg, rgba(246,215,97,1) 0%, rgba(231,205,75,0.9865196078431373) 18%,
+                                              rgba(242,200,87,0.9781162464985994) 39%, rgba(244,208,62,0.9837184873949579) 54%, rgba(219,186,40,1) 68%,
+                                              rgba(226,196,72,0.9697128851540616) 83%, rgba(227,193,68,1) 100%); border-bottom-right-radius: 20px;   border-bottom-left-radius: 20px;"
+                                      th:text="${offerPercentage+ '% '+' OFF ' }">
+
+                                   </div>
+                                </div>
+
+                                <div th:unless="${offerPercentage != null}">
+                                    <div style="margin-left:30px;margin-right:40px;margin-top:30px;padding:6px;font-weight:bold;color:red;padding-left:60px;margin-bottom:30px;
+                                              background-color:#background: rgb(246,215,97);
+                                              background: linear-gradient(90deg, rgba(246,215,97,1) 0%, rgba(231,205,75,0.9865196078431373) 18%,
+                                              rgba(242,200,87,0.9781162464985994) 39%, rgba(244,208,62,0.9837184873949579) 54%, rgba(219,186,40,1) 68%,
+                                              rgba(226,196,72,0.9697128851540616) 83%, rgba(227,193,68,1) 100%); border-bottom-right-radius: 20px;   border-bottom-left-radius: 20px;">
+                                                <p th:if="${filterProducts.offer.size() > 0}">
+                                                    <span th:each="offer : ${filterProducts.offer}">
+                                                     <span style="margin-left:49px;color: #fff; font-weight: bold;" th:text="${ offer.CategoryOffPercentage + '% '+' OFF ' }"></span>
+                                                    </span>
+                                               </p>
+                                    </div>
+                                </div>
+
+                                     <a   th:href="@{/shop/singleProduct/{uuid}(uuid=${filterProducts.uuid})}">
+                                          <img   th:src="@{|/uploads/${filterProducts.images[0].fileName}|}"
+                                          class="card-img-top" alt="Product Image" height="260" width="50" >
+                                     </a>
 
                                 <div class="card-body">
                                     <h5 class="card-title" th:text="${filterProducts.name}">Product Name</h5>
-                                    <h5 class="card-title" th:text="${filterProducts.description}">Product Name</h5>
-                                    <p class="card-text">Price: <span th:text="${filterProducts.price}">Price Rs:</span></p>
+                                    <br>
+                                    <h6 class="card-title" th:text="${filterProducts.description}">Description</h6>
+                                    <br>
+                                    <p class="card-text">M R P : <span style="color: black; font-weight: bold;" th:text="${filterProducts.price}">Price Rs:</span></p>
+                                    <!--new-->
+                                    <p class="card-text">
+                                        Discounted Price: <span style="color: black; font-weight: bold;" th:text="${filterProducts.discountedPrice}">Price Rs:</span>
+                                    </p>
+                                    <!--end-->
                                     <div class="card-footer">
                                         <!-- Your buttons or links here -->
                                     </div>
@@ -142,6 +212,14 @@
                    </div>
 
         <div class="pagination" style="background-color:black;height:170px;margin-top:70px;margin-bottom:2px;width:100%;" >
+            <div style="width: 200px;display:flex;">
+                <form th:action="@{/shop/showAllProductsList}" method="get" class="form-inline">
+                    <div style="display:flex;">
+                        <input type="number" id="pageSize" name="pageSize" class="form-control" placeholder="Products per Page" value="${product.size}" min="1">
+                       <button style=" margin-left:10px;margin-right:10px;" type="submit" class="btn btn-primary">Set</button>
+                    </div>
+                </form>
+            </div>
             <ul>
                 <li th:if="${productInfo.hasPrevious()}">
                     <a th:href="@{/shop/showAllProductsList(pageSize=${pageSize}, page=${productInfo.number - 1})}">Previous</a>

@@ -2,6 +2,9 @@ package com.mydemo.demoproject.Repository.admin;
 
 import com.mydemo.demoproject.Entity.Brand;
 import com.mydemo.demoproject.Entity.CategoryInfo;
+import com.mydemo.demoproject.Entity.ProductInfo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,5 +21,5 @@ public interface BrandRepo extends JpaRepository<Brand, UUID> {
 
    Optional<Brand>findById(UUID uuid);
 
-
+//    Page<ProductInfo> findByBrand_Uuid(UUID brandUuid, Pageable pageable);
 }

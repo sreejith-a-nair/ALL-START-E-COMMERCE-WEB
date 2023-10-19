@@ -72,44 +72,6 @@
         </div>
     </div>
 
-
-
-
-    <!--    <div class="container">-->
-<!--        <div class="row">-->
-<!--            <div class="col-md-12">-->
-<!--                <table class="table table-bordered table-hover table-shadow">-->
-<!--                    <thead>-->
-<!--                    <tr>-->
-<!--                        <th scope="col">S No</th>-->
-<!--                        <th scope="col">Username</th>-->
-<!--                        <th scope="col">Return Date</th>-->
-<!--                        <th scope="col">Returned Product Image</th>-->
-<!--                        <th scope="col">Products Quantity</th>-->
-<!--                        <th scope="col">Product Total Price</th>-->
-<!--                        <th scope="col">Contact Number</th>-->
-<!--                    </tr>-->
-<!--                    </thead>-->
-<!--                    <tbody>-->
-<!--                    &lt;!&ndash; Use Thymeleaf to iterate through return details and populate the table &ndash;&gt;-->
-<!--                    <tr th:each="returnDetail, iterStat : ${returnDetails}">-->
-<!--                        <td th:text="${iterStat.index + 1}">1</td> &lt;!&ndash; S No &ndash;&gt;-->
-<!--                        <td th:text="${returnDetail.username}">User</td> &lt;!&ndash; Username &ndash;&gt;-->
-<!--                        <td th:text="${returnDetail.returnDate}">2023-10-02</td> &lt;!&ndash; Return Date &ndash;&gt;-->
-<!--                        <td>-->
-<!--                            <img th:src="${returnDetail.productImage}" alt="Product Image" width="100" height="100">-->
-<!--                        </td> &lt;!&ndash; Returned Product Image &ndash;&gt;-->
-<!--                        <td th:text="${returnDetail.productsQuantity}">1</td> &lt;!&ndash; Products Quantity &ndash;&gt;-->
-<!--                        <td th:text="${returnDetail.productTotalPrice}">$100.00</td> &lt;!&ndash; Product Total Price &ndash;&gt;-->
-<!--                        <td th:text="${returnDetail.contactNumber}">123-456-7890</td> &lt;!&ndash; Contact Number &ndash;&gt;-->
-<!--                    </tr>-->
-<!--                    </tbody>-->
-<!--                </table>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-
-
     <style>
 
         <!--ENABLE / DISABLE-->
@@ -170,24 +132,43 @@
     .sidebar-logo img {
       width: 80px;
       height: auto;
-<!--    }-->
-<!--    .sidebar-brand {-->
-<!--      padding-bottom:10px;-->
-<!--      padding-top:20px;-->
-<!--      font-weight:bold;-->
-<!--      text-align: center;-->
-<!--      font-size: 1.3rem;-->
-<!--      background-color:black;-->
-<!--      color:red;-->
-<!--    }-->
-<!--      .row{-->
-<!--    background-color:#344E5C;-->
-<!--    }-->
 
 
     </style>
 
     <!-- Your pagination section, if needed, can be placed here -->
+
+    <!--new pagination-->
+    <div class="row" style="background-color: #000;height: 100px; margin-top: 2px; margin-bottom: 2px; display: flex;">
+        <div class="col-md-3" style="background-color#000: ;margin:0px auto;display: flex; align-items: center; justify-content: center;">
+            <div style="border-radius:10px;background-color:#fff;color:black;padding:15px;">
+                Total Rows: [[${totalItems}]]
+            </div>
+        </div>
+        <div class="col-md-4" style="background-color:#000;display: flex; align-items: center; justify-content:start;">
+                              <span style="background-color:#0D6EFD;padding-bottom:7px;padding-top:3px;color:white;border-radius:20px;margin:7px;"
+                                    th:each="i : ${#numbers.sequence(1,totalPages)}">
+                                     <a style="color:white;height:70px;width:auto;padding:15px;"  th:if="${currentPage != i}"
+                                        th:href="@{'/order/returnOrder/' + ${i} + '?field=' + ${field} + '&sortDirection=' + ${sortDirection}}">[[${i}]]</a>
+                                  <span    th:unless="${currentPage != i}"[[${i}]]></span>
+                                </span>
+        </div>
+        <div class="col-md-4" style="background-color: #000;display: flex; align-items: center; justify-content:start;padding-right:0px;">
+            <a  style="padding:14px;margin-right:20px;" th:if="${currentPage < totalPages}"
+                th:href="@{'/order/returnOrder/' + ${currentPage + 1}+'?field='+${field} + '&sortDirection=' + ${sortDirection}}"
+                class="btn btn-sm btn-primary">Next</a>
+
+            <span style="padding: 14px; margin-right: 20px; background-color: red; color: white;" th:unless="${currentPage < totalPages}" class="btn btn-sm btn-primary">Next</span>
+
+            <a style="padding:14px;"  th:if="${currentPage < totalPages}"
+               th:href="@{'/order/returnOrder/' + ${currentPage + 1}+'?field='+${field} + '&sortDirection=' + ${sortDirection}}"
+               class="btn btn-sm btn-primary">Last</a>
+
+            <span style="padding: 14px; margin-right: 20px; background-color: red; color: white;" th:unless="${currentPage < totalPages}" class="btn btn-sm btn-primary">Last</span>
+        </div>
+    </div>
+    <!--pagination end-->
+
 </section>
 </body>
 </html>

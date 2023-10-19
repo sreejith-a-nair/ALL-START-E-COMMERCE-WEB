@@ -74,11 +74,11 @@
     </style>
 </head>
 <body>
-<h2>Add Coupon</h2>
+<h2>Add Offer</h2>
 
 
-<form th:action="@{/offer/saveOffer}" method="post" th:object="${offer}">
-
+<!--<form th:action="@{/offer/saveOffer}" method="post" th:object="${offer}" >-->
+  <form th:action="@{/offer/saveOffer}" method="post"  >
 
   <div th:if="${error}" class="alert alert-danger text-center" role="alert">
     <span th:text="${error}"></span>
@@ -86,10 +86,55 @@
 
   <div class="input-group">
     <label for="CategoryOffPercentage">Off Percentage:</label>
-    <input type="number" id="CategoryOffPercentage" name="CategoryOffPercentage" placeholder="Category Off Percentage" required>
+    <input type="number" id="CategoryOffPercentage" name="CategoryOffPercentage" placeholder="Offer-percentage" required>
   </div>
 
-  <div class="input-group">
+  <div class="input-group" >
+    <label for="categoryUuid">select Category:</label>
+    <select id="categoryUuid" name="categoryUuid" required style="width: 800px; background-color: white; border-radius: 5px; padding: 10px;">
+      <option th:each="category : ${categoryInfo}" th:value="${category.uuid}" th:text="${category.categoryname}">Category Name</option>
+    </select>
+  </div>
+
+
+  <div class="input-group" >
+    <label for="productUuid">select Product:</label>
+    <select id="productUuid" name="productUuid" required style="width: 800px; background-color: white; border-radius: 5px; padding: 10px;">
+      <option th:each="product : ${productInfo}" th:value="${product.uuid}" th:text="${product.name}">Category Name</option>
+    </select>
+  </div>
+
+    <script>
+    const categorySelect = document.getElementById("categoryUuid");
+    const productSelect = document.getElementById("productUuid");
+
+    categorySelect.addEventListener("change", function () {
+        const categoryValue = this.value;
+        if (categoryValue !== "") {
+            productSelect.disabled = true;
+            productSelect.value = "";
+            // You can use categoryValue here
+            console.log("Selected category value: " + categoryValue);
+        } else {
+            productSelect.disabled = false;
+        }
+    });
+
+    productSelect.addEventListener("change", function () {
+        const productValue = this.value;
+        if (productValue !== "") {
+            categorySelect.disabled = true;
+            categorySelect.value = "";
+            // You can use productValue here
+            console.log("Selected product value: " + productValue);
+        } else {
+            categorySelect.disabled = false;
+        }
+    });
+</script>
+
+
+    <div class="input-group">
     <label for="count">Count:</label>
     <input type="number" id="count" name="count" placeholder="Count" required>
   </div>
@@ -99,7 +144,7 @@
     <input type="date" id="expiryDate" name="expiryDate" required>
   </div>
 
-  <button type="submit">Create Coupon</button>
+  <button type="submit">Create Offer</button>
 </form>
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"

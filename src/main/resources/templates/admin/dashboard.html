@@ -1,436 +1,1017 @@
 
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://thymeleaf.org"
-      th:replace="~{admin/base::Layout(~{::section})}">
+      th:replace="~{admin/base::Layout(~{::section})}" xmlns="http://www.w3.org/1999/html">
 
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Product Dashboard</title>
-    <!-- Include Bootstrap CSS -->
-<!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">-->
-<!--    &lt;!&ndash; Include Font Awesome &ndash;&gt;-->
-<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">-->
-<!--    &lt;!&ndash; Include AdminLTE CSS &ndash;&gt;-->
-<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1.0/dist/css/adminlte.min.css">-->
-
-<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />-->
 </head>
 <body class="hold-transition sidebar-mini " >
 <section>
-<!--<div class="wrapper">-->
-<!--     Navbar-->
-<!--    <nav class="navbar navbar-expand " style="background-color:#000000;">-->
-<!--        <a class="navbar-brand" href="#">Admin Dashboard</a>-->
-<!--        &lt;!&ndash; Add your navigation links and components here &ndash;&gt;-->
-<!--        <ul class="navbar-nav ml-auto">-->
-<!--            <li class="nav-item">-->
-<!--                <a class="nav-link" href="#"><i class="fas fa-bell" style="color: #ffffff;"></i></a>-->
-<!--            </li>-->
-<!--            <li class="nav-item">-->
-<!--                <a class="nav-link" href="#"><i class="fas fa-user" style="color: #ffffff;"></i></a>-->
-<!--            </li>-->
-<!--        </ul>-->
-<!--    </nav>-->
+<!--Dashboard-->
+    <div class="row" style="display: flex; align-items: flex-start;">
+        <div class="col-md-3 by-period" style="margin-left: 300px; margin-top: 50px;">
+            <form th:action="@{/admin/salesReportForGraph}" method="get" class="form-inline">
+                <label for="timePeriod">Select:</label>
+                <select id="timePeriods" th:name="mode" class="form-control mr-2" onchange="changeSalesReport()">
+                    <option value="DAILY">DAILY</option>
+                    <option value="WEEKLY">WEEKLY</option>
+                    <option value="MONTHLY">MONTHLY</option>
+                </select>
+<!--                <button type="submit" class="btn ntn_primary" style="border: 2px solid red;">Show Graph</button>-->
+            </form>
+        </div>
 
-    <!-- Sidebar -->
-<!--    <aside class="main-sidebar  elevation-4" style="background-color:#000000">-->
-<!--        &lt;!&ndash; Sidebar content goes here &ndash;&gt;-->
-<!--        <div class="sidebar">-->
-<!--            <div class="user-panel mt-3 pb-3 mb-3 d-flex">-->
-<!--                <div class="image">-->
-<!--                    <img src="user.jpg" class="img-circle elevation-2" alt="User Image">-->
-<!--                </div>-->
-<!--                <div class="info">-->
-<!--                    <a href="#" class="d-block" style="color: #ffffff;font-weight:bold;">A L L S T A R</a>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <nav class="mt-2">-->
-<!--                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">-->
-<!--                    <li class="nav-item">-->
-<!--                        <a href="#" class="nav-link">-->
-<!--                            <i class="nav-icon fas fa-tachometer-alt" style="color: #ffffff;"></i>-->
-<!--                            <p style="font-size:18px;margin-left:15px;" >Dashboard</p>-->
-<!--                        </a>-->
-<!--                    </li>-->
-<!--                    <li class="nav-item">-->
-<!--                        <a href="#" class="nav-link">-->
-<!--                            <i class="nav-icon fas fa-cubes" style="color: #ffffff;"></i>-->
-<!--                            <p style="font-size:18px;margin-left:15px;" >Products</p>-->
-<!--                        </a>-->
-<!--                    </li>-->
-<!--                    <li class="nav-item">-->
-<!--                        <a href="#" class="nav-link">-->
-<!--                            <i class="fa-solid fa-grip" style="color: #ffffff;"></i>-->
-<!--                            <p style="font-size:18px;margin-left:26px;" >Category</p>-->
-<!--                        </a>-->
-<!--                    </li>-->
-<!--                    <li class="nav-item">-->
-<!--                        <a href="#" class="nav-link">-->
-<!--                            <i class="fa-solid fa-users" style="color: #ffffff;"></i>-->
-<!--                            <p  style="font-size:18px;margin-left:21px;">Customers</p>-->
-<!--                        </a>-->
-<!--                    </li>-->
-<!--                </ul>-->
-<!--            </nav>-->
-<!--        </div>-->
-<!--    </aside>-->
+        <div class="col-md-3 by-period" style="margin-left: 10px; margin-top: 50px;">
+            <form th:action="@{/admin/dashboard-sale}" method="post" class="form-inline">
+                <label for="timePeriod">Select:</label>
+                <select id="timePeriod" th:name="selectTimePeriod" class="form-control mr-2" >
+                    <option value="DAILY">DAILY</option>
+                    <option value="WEEKLY">WEEKLY</option>
+                    <option value="MONTHLY">MONTHLY</option>
+                </select>
+                <button type="submit" class="btn ntn_primary" style="border: 2px solid red;">Show Report</button>
+            </form>
+        </div>
 
-    <!-- Content Wrapper -->
-    <div class="content-wrapper pt-3" style="background-color:rgb(24,24,27);" >
-        <section class="content">
-            <!-- Page content goes here -->
-            <div class="container-fluid" style="background-color: #171717;">
-                <div class="row">
+        <div class="col-md-3" style="margin-left: 10px;">
+            <form th:action="@{/admin/generate-sales-report}" method="get">
+                <select name="format" class="form-select">
+                    <option value="pdf">PDF</option>
+                    <option value="excel">Excel</option>
+                </select>
+                <button type="submit" class="btn btn-primary my-3">Generate Report</button>
+            </form>
+        </div>
+    </div>
+<div style="background-color:#C6EAFA;margin-bottom:4R0px;padding:10px;">
+    <h3 class="text-center" style="text-align:center;margin-bottom:40px;">Dash-Board</h3>
+</div>
+    <div class="row" style="margin-left:390px;">
+        <div class="col-md-3" style="margin-right:50px;">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header" style="font-weight:bold;text-align:center;"><h4 style="font-weight:bold;">Orders</h4>
 
-                    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-                    <link rel="stylesheet" type="text/css" href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/bootstrap-extended.min.css">
-                    <link rel="stylesheet" type="text/css" href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/fonts/simple-line-icons/style.min.css">
-                    <link rel="stylesheet" type="text/css" href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/colors.min.css">
-                    <link rel="stylesheet" type="text/css" href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/bootstrap.min.css">
-                    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
-
-                    <div class="grey-bg container-fluid">
-                        <section>
-
-                            <div class="row">
-                                <div class="col-xl-3 col-sm-6 col-12 cards">
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="card-body">
-                                                <div class="media d-flex">
-                                                    <div class="align-self-center">
-                                                        <i class="icon-pencil primary font-large-2 float-left"></i>
-                                                    </div>
-                                                    <div class="media-body text-right">
-                                                        <h3 class="text">278</h3>
-                                                        <span class="text">New Posts</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-3 col-sm-6 col-12 cards">
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="card-body">
-                                                <div class="media d-flex">
-                                                    <div class="align-self-center">
-                                                        <i class="icon-speech warning font-large-2 float-left"></i>
-                                                    </div>
-                                                    <div class="media-body text-right">
-                                                        <h3 class="text">156</h3>
-                                                        <span class="text">New Comments</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-3 col-sm-6 col-12 cards">
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="card-body">
-                                                <div class="media d-flex">
-                                                    <div class="align-self-center">
-                                                        <i class="icon-graph success font-large-2 float-left"></i>
-                                                    </div>
-                                                    <div class="media-body text-right">
-                                                        <h3 class="text">64.89 %</h3>
-                                                        <span class="text">>Bounce Rate</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-3 col-sm-6 col-12 cards">
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="card-body">
-                                                <div class="media d-flex">
-                                                    <div class="align-self-center">
-                                                        <i class="icon-pointer danger font-large-2 float-left"></i>
-                                                    </div>
-                                                    <div class="media-body text-right">
-                                                        <h3 class="text">423</h3>
-                                                        <span class="text">Total Visits</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-xl-3 col-sm-6 col-12 cards">
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="card-body">
-                                                <div class="media d-flex">
-                                                    <div class="media-body text-left">
-                                                        <h3 class="danger">278</h3>
-                                                        <span class="text">New Projects</span>
-                                                    </div>
-                                                    <div class="align-self-center">
-                                                        <i class="icon-rocket danger font-large-2 float-right"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-3 col-sm-6 col-12 cards">
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="card-body">
-                                                <div class="media d-flex">
-                                                    <div class="media-body text-left">
-                                                        <h3 class="success">156</h3>
-                                                        <spanv class="text">New Clients</spanv>
-                                                    </div>
-                                                    <div class="align-self-center">
-                                                        <i class="icon-user success font-large-2 float-right"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-xl-3 col-sm-6 col-12 cards">
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="card-body">
-                                                <div class="media d-flex">
-                                                    <div class="media-body text-left">
-                                                        <h3 class="warning">64.89 %</h3>
-                                                        <span class="text">Conversion Rate</span>
-                                                    </div>
-                                                    <div class="align-self-center">
-                                                        <i class="icon-pie-chart warning font-large-2 float-right"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-3 col-sm-6 col-12 cards">
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="card-body">
-                                                <div class="media d-flex">
-                                                    <div class="media-body text-left">
-                                                        <h3 class="primary">423</h3>
-                                                        <span class="text">Support Tickets</span>
-                                                    </div>
-                                                    <div class="align-self-center">
-                                                        <i class="icon-support primary font-large-2 float-right"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-xl-3 col-sm-6 col-12 cards">
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="card-body">
-                                                <div class="media d-flex">
-                                                    <div class="media-body text-left">
-                                                        <h3 class="primary">278</h3>
-                                                        <span class="text">New Posts</span>
-                                                    </div>
-                                                    <div class="align-self-center">
-                                                        <i class="icon-book-open primary font-large-2 float-right"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="progress mt-1 mb-0" style="height: 7px;">
-                                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-3 col-sm-6 col-12 cards">
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="card-body">
-                                                <div class="media d-flex">
-                                                    <div class="media-body text-left">
-                                                        <h3 class="warning">156</h3>
-                                                        <span class="text">New Comments</span>
-                                                    </div>
-                                                    <div class="align-self-center">
-                                                        <i class="icon-bubbles warning font-large-2 float-right"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="progress mt-1 mb-0" style="height: 7px;">
-                                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 35%" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-xl-3 col-sm-6 col-12 cards">
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="card-body">
-                                                <div class="media d-flex">
-                                                    <div class="media-body text-left">
-                                                        <h3 class="success">64.89 %</h3>
-                                                        <span class="text">Bounce Rate</span>
-                                                    </div>
-                                                    <div class="align-self-center">
-                                                        <i class="icon-cup success font-large-2 float-right"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="progress mt-1 mb-0" style="height: 7px;">
-                                                    <div class="progress-bar bg-success" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-3 col-sm-6 col-12 cards">
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="card-body">
-                                                <div class="media d-flex">
-                                                    <div class="media-body text-left">
-                                                        <h3 class="danger">423</h3>
-                                                        <span class="text">Total Visits</span>
-                                                    </div>
-                                                    <div class="align-self-center">
-                                                        <i class="icon-direction danger font-large-2 float-right"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="progress mt-1 mb-0" style="height: 7px;">
-                                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section id="stats-subtitle">
-
-
-                            <div class="row">
-                                <div class="col-xl-6 col-md-12 cards">
-                                    <div class="card overflow-hidden">
-                                        <div class="card-content">
-                                            <div class="card-body cleartfix">
-                                                <div class="media align-items-stretch">
-                                                    <div class="align-self-center">
-                                                        <i class="icon-pencil primary font-large-2 mr-2"></i>
-                                                    </div>
-                                                    <div class="media-body">
-                                                        <h4 class="text">Total Posts</h4>
-                                                        <span class="text">Monthly blog posts</span>
-                                                    </div>
-                                                    <div class="align-self-center">
-                                                        <h1 class="text">18,000</h1>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-xl-6 col-md-12 cards">
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="card-body cleartfix">
-                                                <div class="media align-items-stretch">
-                                                    <div class="align-self-center">
-                                                        <i class="icon-speech warning font-large-2 mr-2"></i>
-                                                    </div>
-                                                    <div class="media-body">
-                                                        <h4 class="text">Total Comments</h4>
-                                                        <span class="text">Monthly blog comments</span>
-                                                    </div>
-                                                    <div class="align-self-center">
-                                                        <h1 class="text">84,695</h1>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-xl-6 col-md-12 cards">
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="card-body cleartfix">
-                                                <div class="media align-items-stretch">
-                                                    <div class="align-self-center">
-                                                        <h1 class="mr-2">$76,456.00</h1>
-                                                    </div>
-                                                    <div class="media-body">
-                                                        <h4 class="text">Total Sales</h4>
-                                                        <span class="text">Monthly Sales Amount</span>
-                                                    </div>
-                                                    <div class="align-self-center">
-                                                        <i class="icon-heart danger font-large-2"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-xl-6 col-md-12 cards">
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <div class="card-body cleartfix">
-                                                <div class="media align-items-stretch">
-                                                    <div class="align-self-center">
-                                                        <h1 class="mr-2">$36,000.00</h1>
-                                                    </div>
-                                                    <div class="media-body">
-                                                        <h4 class="text">Total Cost</h4>
-                                                        <span class="text">Monthly Cost</span>
-                                                    </div>
-                                                    <div class="align-self-center">
-                                                        <i class="icon-wallet success font-large-2"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                      </div>
+                </div>
+                <div class="media d-flex">
+                    <div class="media-body text-left" style="margin-left:20px;margin-top:10px;">
+                        <h3 class="danger">0</h3>
+                        <span>Sales</span>
+                    </div>
+                    <div class="align-self-center" style="margin-bottom:24px;">
+                        <i class="fa-brands fa-salesforce font-large-4 float-right"
+                           style="color: #fff;"></i>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="col-md-3" style="margin-right:50px;">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-header" style="font-weight:bold;text-align:center;"><h4 style="font-weight:bold;">Customers</h4></div>
+                <div class="card-body">
+                    <div class="media d-flex">
+                        <div class="media-body text-left">
+                            <h3 class="success"></h3>
+                            <span>Customers</span>
+                        </div>
+                        <div class="align-self-center" style="margin-bottom:13px;">
+                            <i class="icon-user success font-large-2 float-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3" style="margin-right:50px;">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-header" style="text-align:center;"><h4 style="font-weight:bold;">Total</h4></div>
+                <div class="card-body">
+                    <div class="media align-items-stretch">
+                        <div class="align-self-center">
+                            <h1 class="mr-2">0</h1>
+                        </div>
+                        <div class="media-body">
+                            <h4>Total Cost</h4>
+                            <span>Monthly Cost</span>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="icon-wallet success font-large-2"></i>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div style="background-color:#C6EAFA;padding:50px;">
+      <div class="row" style="margin-left:460px;" >
+         <div class="col-xl-3 col-sm-6 col-10">
+            <div class="card" style="border-radius:10px;">
+                <div class="card-content" style="border-radius:10px;">
+                    <div class="card-body" style="background-color:white;border-radius:10px;">
+                        <div class="media d-flex">
+                            <div class="media-body text-left">
+                                <span>Daily Total</span>
+                            </div>
+                            <div class="align-self-center">
+                                <h3 class="danger">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 col-12">
+            <div class="card" style="border-radius:10px;">
+                <div class="card-content" style="border-radius:10px;">
+                    <div class="card-body" style="background-color:white;border-radius:10px;">
+                        <div class="media d-flex">
+                            <div class="media-body text-left">
+                                <h3 class="success"></h3>
+                                <span>Weekly Total</span>
+                            </div>
+                            <div class="align-self-center">
+                                <h3 class="danger">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-sm-6 col-12">
+            <div class="card" style="border-radius:10px;">
+                <div class="card-content" style="border-radius:10px;">
+                    <div class="card-body" style="background-color:white;border-radius:10px;">
+                        <div class="media d-flex">
+                            <div class="media-body text-left">
+                                <h3 class="primary"></h3>
+                                <span>Monthly Total</span>
+                            </div>
+                            <div class="align-self-center">
+                                <h3 class="danger">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+
+    <div class="col-md-6" style="margin-left:450px;">
+        <canvas id="allTimeSalesChart" width="380" height="200"></canvas>
+    </div>
+
+<!--end graph-->
+
+    <div class="container-fluid p-0 " style="margin-left:290px; width:79%; margin-right:100px "  >
+
+
+        <section
+                class="container"
+                style="
+      background-color: rgb(198, 234, 250);
+      padding: 5px;
+      border: 2px solid rgb(240, 177, 177);
+      border-radius: 15px;">
+            <link
+                    rel="stylesheet"
+                    type="text/css"
+                    href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"/>
+            <link
+                    rel="stylesheet"
+                    type="text/css"
+                    href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/bootstrap-extended.min.css"/>
+            <link
+                    rel="stylesheet"
+                    type="text/css"
+                    href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/fonts/simple-line-icons/style.min.css"/>
+            <link
+                    rel="stylesheet"
+                    type="text/css"
+                    href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/colors.min.css"/>
+            <link
+                    rel="stylesheet"
+                    type="text/css"
+                    href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/bootstrap.min.css"/>
+            <link
+                    href="https://fonts.googleapis.com/css?family=Montserrat&display=swap"
+                    rel="stylesheet"/>
+
+            <div class="grey-bg container-fluid">
+                <h3 class="text-center p-2">Dash-Board</h3>
+                <section id="minimal-statistics">
+                    <!-- <div class="row">
+                  <div class="col-12 mt-3 mb-1">
+                    <h4 class="text-uppercase">Minimal Statistics Cards</h4>
+                    <p>Statistics on minimal cards.</p>
+                  </div>
+                </div> -->
+                    <div class="row">
+                        <div class="row">
+                            <div class="col-xl-3 col-sm-6 col-10">
+                                <div class="card" style="border-radius:10px;">
+                                    <div class="card-content" style="border-radius:10px;">
+                                        <div class="card-body" style="background-color:white;border-radius:10px;">
+                                            <div class="media d-flex">
+                                                <div class="media-body text-left">
+                                                    <h3 class="danger">0</h3>
+                                                    <span>Sales</span>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <!-- <i class="icon-rocket danger fa-beat font-large-2 float-right"></i> -->
+                                                    <i
+                                                            class="fa-brands fa-salesforce font-large-3 float-right"
+                                                            style="color: #258827"
+                                                    ></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-sm-6 col-12">
+                                <div class="card" style="border-radius:10px;">
+                                    <div class="card-content" style="border-radius:10px;">
+                                        <div class="card-body" style="background-color:white;border-radius:10px;">
+                                            <div class="media d-flex">
+                                                <div class="media-body text-left">
+                                                    <h3 class="success"></h3>
+                                                    <span>Customers</span>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <i
+                                                            class="icon-user success font-large-2 float-right"
+                                                    ></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xl-3 col-sm-6 col-12">
+                                <div class="card" style="border-radius:10px;">
+                                    <div class="card-content" style="border-radius:10px;">
+                                        <div class="card-body" style="background-color:white;border-radius:10px;">
+                                            <div class="media d-flex">
+                                                <div class="media-body text-left">
+                                                    <h3 class="primary"></h3>
+                                                    <span>products</span>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <!-- <i class="icon-support primary font-large-2 float-right"></i> -->
+                                                    <i
+                                                            class="fa-brands fa-product-hunt font-large-3 float-right"
+                                                            style="color: #7f62ea"
+                                                    ></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xl-3 col-sm-6 col-12">
+                                <div class="card" style="border-radius:10px;">
+                                    <div class="card-content" style="border-radius:10px;">
+                                        <div class="card-body" style="background-color:white;border-radius:10px;">
+                                            <div class="media d-flex">
+                                                <div class="media-body text-left">
+                                                    <h3 class="warning"></h3>
+                                                    <span>Orders</span>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <i
+                                                            class="icon-pie-chart warning font-large-2 float-right"
+                                                    ></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-sm-6 col-12">
+                            <div class="card" style="border-radius:10px;">
+                                <div class="card-content" style="border-radius:10px;">
+                                    <div class="card-body" style="background-color:white;border-radius:10px;">
+                                        <div class="media d-flex">
+                                            <div class="align-self-center">
+                                                <!-- <i class="icon-pencil primary fa-fade font-large-2 float-left"></i> -->
+                                                <!-- <i class="fa-solid fa-spinner fa-spin font-large-2 float-left" style="color: #8aadf5;"></i> -->
+                                                <i
+                                                        class="fa-solid fa-rotate-left font-large-2 float-left"
+                                                        style="color: #8aadf5"
+                                                ></i>
+                                            </div>
+                                            <div class="media-body text-right">
+                                                <h3>0</h3>
+                                                <span>Order-processing</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 col-12">
+                            <div class="card" style="border-radius:10px;">
+                                <div class="card-content" style="border-radius:10px;">
+                                    <div class="card-body" style="background-color:white;border-radius:10px;">
+                                        <div class="media d-flex">
+                                            <div class="align-self-center">
+                                                <!-- <i class="icon-speech warning fa-fade font-large-2 float-left"></i> -->
+                                                <i
+                                                        class="fa-solid fa-rotate-left font-large-2 float-left"
+                                                        style="color: #df8862"
+                                                ></i>
+                                            </div>
+                                            <div class="media-body text-right">
+                                                <h3>0</h3>
+                                                <span>Order-Returns</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 col-12">
+                            <div class="card" style="border-radius:10px;">
+                                <div class="card-content" style="border-radius:10px;">
+                                    <div class="card-body" style="background-color:white;border-radius:10px;">
+                                        <div class="media d-flex">
+                                            <div class="align-self-center">
+                                                <i class="icon-graph success font-large-2 float-left"></i>
+                                            </div>
+                                            <div class="media-body text-right">
+                                                <h3>0</h3>
+                                                <span>Categories</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 col-12">
+                            <div class="card" style="border-radius:10px;">
+                                <div class="card-content" style="border-radius:10px;">
+                                    <div class="card-body" style="background-color:white;border-radius:10px;">
+                                        <div class="media d-flex">
+                                            <div class="align-self-center">
+                                                <i
+                                                        class="icon-pointer danger font-large-2 float-left"
+                                                ></i>
+                                            </div>
+                                            <div class="media-body text-right">
+                                                <h3>0</h3>
+                                                <span>Total Visits</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="stats-subtitle">
+                    <!-- <div class="row">
+                <div class="col-12 mt-3 mb-1">
+                  <h4 class="text-uppercase">Statistics With Subtitle</h4>
+                  <p>Statistics on minimal cards with Title &amp; Sub Title.</p>
+                </div>
+              </div> -->
+
+                    <div class="row">
+                        <div class="col-xl-5 col-md-10">
+                            <div class="card overflow-hidden" style="border-radius:10px;">
+                                <div class="card-content" style="border-radius:10px;">
+                                    <div class="card-body cleartfix" style="background-color:white;border-radius:10px;">
+                                        <div class="media align-items-stretch">
+                                            <div class="align-self-center">
+                                                <i class="icon-pencil primary font-large-2 mr-2"></i>
+                                            </div>
+                                            <div class="media-body">
+                                                <h4>Daily Sales</h4>
+                                                <!-- <span>Daily Sales</span> -->
+                                            </div>
+                                            <div class="align-self-center">
+                                                <h1>0</h1>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-5 col-md-10">
+                            <div class="card"  style="border-radius:10px;">
+                                <div class="card-content"  style="border-radius:10px;">
+                                    <div class="card-body cleartfix" style="background-color:white;border-radius:10px;">
+                                        <div class="media align-items-stretch">
+                                            <div class="align-self-center">
+                                                <i class="icon-speech warning font-large-2 mr-2"></i>
+                                            </div>
+                                            <div class="media-body">
+                                                <h4>Weekly Sales</h4>
+                                                <!-- <span>Monthly blog comments</span> -->
+                                            </div>
+                                            <div class="align-self-center">
+                                                <h1>0</h1>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xl-5 col-md-10">
+                            <div class="card"  style="border-radius:10px;">
+                                <div class="card-content"  style="border-radius:10px;">
+                                    <div class="card-body cleartfix" style="background-color:white;border-radius:10px;">
+                                        <div class="media align-items-stretch">
+                                            <div class="align-self-center">
+                                                <h1 class="mr-2">0</h1>
+                                            </div>
+                                            <div class="media-body">
+                                                <h4>Monthly Sales</h4>
+                                                <!-- <span>Monthly Sales Amount</span> -->
+                                            </div>
+                                            <div class="align-self-center">
+                                                <i class="icon-heart danger font-large-2"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-5 col-md-10">
+                            <div class="card"  style="border-radius:10px;">
+                                <div class="card-content"  style="border-radius:10px;">
+                                    <div class="card-body cleartfix" style="background-color:white;border-radius:10px;" >
+                                        <div class="media align-items-stretch">
+                                            <div class="align-self-center">
+                                                <h1 class="mr-2">0</h1>
+                                            </div>
+                                            <div class="media-body">
+                                                <h4>Total Cost</h4>
+                                                <span>Monthly Cost</span>
+                                            </div>
+                                            <div class="align-self-center">
+                                                <i class="icon-wallet success font-large-2"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <!-- chart -->
         </section>
-  </div>
+    </div>
 
-      <style>
-       .text{
-        color:white;
-       }
-       .card
-       {
-       background-color:black;
+<!--    <div class="container">-->
+<!--        <hr class="line bg-dark" />-->
+<!--    </div>-->
+<!--    -->
+<!--    &lt;!&ndash;  ~~~~~~~~  Nav end ~~~~~~~~ &ndash;&gt;-->
 
+<!--    <div class="container">-->
+<!--        <hr class="line bg-dark" />-->
+<!--    </div>-->
 
-       }
-       </style>
 </section>
+
+
+</section>
+
+
+
+<div style="width:80%">
+    <div class="container m-md-1 bg-white rounded" >
+        <!--  #################  Chart Section of Full Orders ################# -->
+        <div class="row mt-md-2 pb-md-2 shadow" id="totalSales">
+            <div class="col-md-6 col-sm-12 grid-margin">
+                <div class="card" style="border-radius:10px;">
+                    <div class="card-body" style="background-color:white;border-radius:10px;">
+                        <div class="clearfix" style="border-radius:10px;" >
+                            <h4 class="card-title float-left">Sales Statistics</h4>
+                            <div
+                                    id="visit-sale-chart-legend"
+                                    class="rounded-legend legend-horizontal legend-top-right float-right"
+                            ></div>
+                        </div>
+                        <section>
+                            <div class="container">
+                                <div class="row">
+
+                                    <div class="col-lg-6">
+                                        <div
+                                                class="d-flex justify-content-between align-items-center"
+                                        >
+                                            <select
+                                                    name="cars"
+                                                    id="CataFilter"
+                                                    class="btnYear fw-bold mt-3"
+                                            >
+                                                <option>select</option>
+
+                                                <option value="<%=data.payment.method %>">
+
+                                                </option>
+
+                                            </select>
+                                            <form action="/admin/dashboard/salesReport" method="get">
+                                                <Button
+                                                        type="submit"
+                                                        class="btn btn-danger"
+                                                        style="text-align: end"
+                                                >Sales Report</Button
+                                                >
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div>
+                                            <canvas id="myChart"></canvas>
+                                        </div>
+
+                                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+                                        <script>
+
+
+              <!--graph-->
+
+
+document.addEventListener('DOMContentLoaded', () => {
+fetch('/admin/getGraphReport')
+        .then(response => response.json())
+        .then(data => {
+            var months = data.monthlyLabels;
+            var amounts = data.monthlyAmounts;
+            console.log("sree",data.monthlySales)
+            const monthsArray = []; // Array for keys (months)
+            const valuesArray = []; // Array for values
+
+        for (const key in data.monthlySales) {
+            if (data.monthlySales.hasOwnProperty(key)) {
+                monthsArray.push(key);
+                valuesArray.push(data.monthlySales[key]);
+            }
+        }
+        var options = {
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: true
+        },
+        gridLines: {
+          color: "rgba(204, 204, 204,0.1)"
+        }
+      }],
+      xAxes: [{
+        gridLines: {
+          color: "rgba(204, 204, 204,0.1)"
+        }
+      }]
+    },
+    legend: {
+      display: false
+    },
+    elements: {
+      point: {
+        radius: 0
+      }
+    }
+  };
+            const data1 = {
+    labels: monthsArray,
+    datasets: [{
+        label: 'All Time Sales',
+        data: valuesArray,
+        backgroundColor: [
+
+            'purple',
+            'orange',
+             'yellow',
+            'green',
+        ]
+    }]
+};
+            displayChart(data1,options,);
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+  });
+
+});
+<!--graph js end-->
+
+
+
+<!-- filtered sales report -->
+
+    function changeSalesReport(){
+
+    const mode = document.getElementById('timePeriods').value;
+    console.log("mode", mode);
+
+    fetch(`/admin/salesReportForGraph?mode=${mode}`)
+    .then(response => response.json())
+    .then(data => {
+         console.log("Sales graph", data);
+        // Handle the response data here
+
+        // Log specific data
+        console.log("Total Order Count: ", data.totalOrderCount);
+        console.log("Total Revenue: ", data.totalRevenue);
+        console.log("Monthly Labels: ", data.monthlyLabels);
+        console.log("Monthly Amounts: ", data.monthlyAmounts);
+    })
+    .catch(error => {
+        console.error(error);
+    });
+
+
+<!--        const mode = document.getElementById('timePeriod').value;-->
+<!--        console.log("mode",mode);-->
+<!--        -->
+<!--        fetch('/admin/salesReportForGraph?mode=${mode}')-->
+<!--        .then(response => response.json())-->
+<!--        .then(data => {-->
+<!--        console.log("Sales graph",data)-->
+<!--        })-->
+<!--            var months = data.monthlyLabels;-->
+<!--            var amounts = data.monthlyAmounts;-->
+<!--            console.log("sree data",data.monthlySales)-->
+<!--            const monthsArray = []; // Array for keys (months)-->
+<!--            const valuesArray = []; // Array for values-->
+
+<!--        for (const key in data.monthlySales) {-->
+<!--            if (data.monthlySales.hasOwnProperty(key)) {-->
+<!--                monthsArray.push(key);-->
+<!--                valuesArray.push(data.monthlySales[key]);-->
+<!--            }-->
+<!--        }-->
+<!--        var options = {-->
+<!--    scales: {-->
+<!--      yAxes: [{-->
+<!--        ticks: {-->
+<!--          beginAtZero: true-->
+<!--        },-->
+<!--        gridLines: {-->
+<!--          color: "rgba(204, 204, 204,0.1)"-->
+<!--        }-->
+<!--      }],-->
+<!--      xAxes: [{-->
+<!--        gridLines: {-->
+<!--          color: "rgba(204, 204, 204,0.1)"-->
+<!--        }-->
+<!--      }]-->
+<!--    },-->
+<!--    legend: {-->
+<!--      display: false-->
+<!--    },-->
+<!--    elements: {-->
+<!--      point: {-->
+<!--        radius: 0-->
+<!--      }-->
+<!--    }-->
+<!--  };-->
+<!--            const data1 = {-->
+<!--    labels: monthsArray,-->
+<!--    datasets: [{-->
+<!--        label: 'All Time Sales',-->
+<!--        data: valuesArray,-->
+<!--        backgroundColor: [-->
+
+<!--            'purple',-->
+<!--            'orange',-->
+<!--             'yellow',-->
+<!--            'green',-->
+<!--        ]-->
+<!--    }]     -->
+<!--    };-->
+<!--            displayChart(data1,options,);-->
+<!--        })-->
+<!--        .catch(error => {-->
+<!--            console.error('Error fetching data:', error);-->
+<!--  });-->
+<!--  -->
+   }
+
+
+
+
+    function changeSalesReport1(){
+           var options = {
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: true
+        },
+        gridLines: {
+          color: "rgba(204, 204, 204,0.1)"
+        }
+      }],
+      xAxes: [{
+        gridLines: {
+          color: "rgba(204, 204, 204,0.1)"
+        }
+      }]
+    },
+    legend: {
+      display: false
+    },
+    elements: {
+      point: {
+        radius: 0
+      }
+    }
+  };
+
+
+        <!--ithan cheyyande///////////////////////////////////-->
+        fetch(`/admin/salesReportForGraph?modes=${mode}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log("fetch",data);
+            const monthsArray = []; // Array for keys (months)
+            const valuesArray = []; // Array for values
+
+        for (const key in data.monthlySales) {
+            if (data.monthlySales.hasOwnProperty(key)) {
+                monthsArray.push(key);
+                valuesArray.push(data.monthlySales[key]);
+            }
+        }
+        const data1 = {
+    labels: monthsArray,
+    datasets: [{
+        label: 'All Time Sales',
+        data: valuesArray,
+        backgroundColor: [
+
+            'purple',
+            'orange',
+             'yellow',
+            'green',
+        ]
+    }]
+};
+        displayChart(data1,options)
+
+        })
+     }
+<!-- End filtered sales report -->
+
+<!-- filtered sales report -->
+<!--  -->
+
+<!-- chart start -->
+function displayChart(data,option){
+            var ctx = document.getElementById('allTimeSalesChart').getContext('2d');
+            var allTimeSalesChart = new Chart(ctx, {
+                type: 'bar',
+                data: data,
+                options:option
+            });
+}
+<!-- chart ends -->
+
+
+                  </script>
+                                    </div>
+                                    <!-- </form> -->
+                                </div>
+                            </div>
+                        </section>
+
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5 col-sm-12 grid-margin">
+                <div class="card">
+                    <div class="card-body" style="background-color:white;">
+                        <div>
+                            <div>
+                                <div class="grid-margin stretch-card">
+                                    <h3 class="mt-3 ps-4">Order Summary</h3>
+                                </div>
+
+                                <form id="salesForm" action="/admin/dashboard/graph" method="post">
+
+                                    <div class="row m-md-1 bg-white pb-2 shadow rounded ">
+
+                                        <div class="col-md-4 grid-margin stretch-card pt-3">
+                                            <select class="form-select form-select-sm" style="width: 100%; border-color: rgb(119, 145, 207);
+                    border-width: 1px; color: rgb(15, 1, 3); border-radius: 20px; font-weight:
+                    bold; margin-bottom: 5px; margin-top: 5px;" aria-label=".form-select-sm example"
+                                                    name="salesRe" id="sales" onchange="getData()">
+                                                <option selected>Select</option>
+                                                <option value="Daily">Daily</option>
+                                                <option value="Monthly">Monthly</option>
+                                                <option value="Yearly">Yearly</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 grid-margin stretch-card pt-3" style="display: none;"
+                                             id="chooseMonth">
+                                            <select class=" form-select form-select-sm" style="width: 100%; border-color: rgb(161, 216, 112);
+  border-width: 1px; color: rgb(15, 1, 3); border-radius: 20px; font-weight:
+  bold; margin-bottom: 5px; margin-top: 5px;" aria-label=".form-select-sm example" name="month">
+                                                <option selected>Monthly</option>
+                                                <option value="2023-01-01">January</option>
+                                                <option value="2023-02-01">February</option>
+                                                <option value="2023-03-01">March </option>
+                                                <option value="2023-04-01">April </option>
+                                                <option value="2023-05-01">May</option>
+                                                <option value="2023-06-01">June </option>
+                                                <option value="2023-07-01">July </option>
+                                                <option value="2023-08-01">August </option>
+                                                <option value="2023-09-01">September </option>
+                                                <option value="2023-10-01">October </option>
+                                                <option value="2023-11-01">November </option>
+                                                <option value="2023-12-01">December </option>
+                                            </select>
+
+                                        </div>
+                                        <div class="col-md-4 grid-margin stretch-card pt-3" style="display: none;" id="chooseDay">
+                                            <input type="date" name="today">
+
+                                        </div>
+                                        <div class="col-md-4 grid-margin stretch-card pt-3" style="display: none;"
+                                             id="chooseYear">
+                                            <select class=" form-select form-select-sm" style="width: 100%; border-color: palevioletred;
+  border-width: 1px; color: rgb(15, 1, 3); border-radius: 20px; font-weight:
+  bold; margin-bottom: 5px; margin-top: 5px;" aria-label=".form-select-sm example" name="year">
+                                                <option selected>Year</option>
+                                                <option value="2023"> 2023</option>
+                                                <option value="2023"> 2024</option>
+                                                <option value="2023"> 2025</option>
+                                                <option value="2023"> 2026</option>
+                                                <option value="2023"> 2027</option>
+                                                <option value="2023"> 2028</option>
+                                                <option value="2023"> 2029</option>
+                                                <option value="2023"> 2030</option>
+                                                <option value="2023"> 2031</option>
+                                                <option value="2023"> 2032</option>
+                                                <option value="2023"> 2033</option>
+                                                <option value="2023"> 2034</option>
+                                                <option value="2023"> 2025</option>
+
+
+
+                                            </select>
+
+                                        </div>
+                                        <div class="col-md-4 grid-margin stretch-card pt-3">
+                                            <button type="submit" class="btn btn-primary" data-toggle="button" aria-pressed="false"
+                                                    autocomplete="off">
+                                                Submit
+                                            </button>
+
+                                        </div>
+
+
+                                    </div>
+                                </form>
+                            </div>
+                            <canvas id="barChart" class="shadow p-2"></canvas>
+                            <input type="hidden" id="orderStatus" value="" />
+                        </div>
+
+<!--                        <script>-->
+
+            // Initialize the chart instance
+<!--             const bar = document.getElementById('barChart');-->
+<!--             const status = JSON.parse(document.getElementById('orderStatus').value);-->
+<!--             let labels = Object.keys(status);-->
+<!--             let data = Object.values(status);-->
+
+<!--             const myChart = new Chart(bar, {-->
+<!--               type: 'bar',-->
+<!--               data: {-->
+<!--                         labels: [],-->
+<!--                         datasets: [{-->
+<!--                           label: 'Sales Data',-->
+<!--                           data: [],-->
+<!--                           backgroundColor: 'rgba(0, 123, 255, 0.5)'-->
+<!--                         }]-->
+<!--                       }-->
+<!--             });-->
+
+
+
+<!--             document.getElementById('salesForm').addEventListener('submit', async (event) => {-->
+<!--               event.preventDefault();-->
+
+<!--               // Collect form data-->
+<!--               const formData = new FormData(document.getElementById('salesForm'));-->
+<!--               const salesRe = formData.get('salesRe');-->
+<!--               const year = formData.get('year');-->
+<!--               const month = formData.get('month');-->
+<!--               const today = formData.get('today');-->
+
+<!--               console.log("salesRe", salesRe);-->
+<!--               console.log("year", year);-->
+<!--               console.log("formData", formData);-->
+
+<!--               try {-->
+<!--                 const response = await fetch('/admin/dashboard/graph', {-->
+<!--                   method: 'POST',-->
+<!--                   headers: {-->
+<!--                     'Content-Type': 'application/json'-->
+<!--                   },-->
+<!--                   body: JSON.stringify({ salesRe, year, month, today })-->
+<!--                 });-->
+
+<!--                 if (response.ok) {-->
+<!--                   const data = await response.json();-->
+<!--                   console.log('Received data:', data);-->
+
+<!--                   // Process the data and update the chart-->
+<!--                   const labels = data.map(item => item.label);-->
+<!--                   const values = data.map(item => item.value);-->
+<!--                   // Update the chart data and labels-->
+<!--                   myChart.data.labels = labels;-->
+<!--                   myChart.data.datasets[0].data = values;-->
+<!--                   myChart.update();-->
+<!--                 } else {-->
+<!--                   console.error('Error fetching data from the server');-->
+<!--                 }-->
+<!--               } catch (error) {-->
+<!--                 console.error('An error occurred:', error);-->
+<!--               }-->
+<!--             });-->
+<!--           </script>-->
+
+<!--                        <script>-->
+<!--  //Fetch Data ***********************-->
+<!--  function fetchSalesData(url, options, type, id) {-->
+
+<!--    fetch(url, options)-->
+<!--      .then(response => response.json())-->
+<!--      .then(data => {-->
+
+<!--        console.log(data);-->
+
+<!--        createGraph(data, type, id)-->
+
+
+<!--      })-->
+<!--  }-->
+
+<!--  //select sales Order Type*******************-->
+<!--  function getData() {-->
+<!--    const selectedValue = document.getElementById('sales').value;-->
+<!--    console.log(selectedValue);-->
+<!--    const mode = selectedValue;-->
+<!--    let options;-->
+<!--    if (mode === "Daily") {-->
+<!--      document.getElementById('chooseYear').style.display = "none";-->
+<!--      document.getElementById('chooseMonth').style.display = "none";-->
+<!--      document.getElementById('chooseDay').style.display = "block";-->
+<!--    } else if (mode === "Monthly") {-->
+<!--      document.getElementById('chooseDay').style.display = "none";-->
+<!--      document.getElementById('chooseYear').style.display = "none";-->
+<!--      document.getElementById('chooseMonth').style.display = "block";-->
+<!--    } else if (mode === "Yearly") {-->
+<!--      document.getElementById('chooseMonth').style.display = "none";-->
+<!--      document.getElementById('chooseDay').style.display = "none";-->
+<!--      document.getElementById('chooseYear').style.display = "block";-->
+<!--    } else {-->
+
+<!--    }-->
+<!--  }-->
+
+<!--</script>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 </body>
 </html>

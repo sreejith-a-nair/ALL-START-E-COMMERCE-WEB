@@ -3,6 +3,9 @@ package com.mydemo.demoproject.service.admin.product;
 import com.mydemo.demoproject.Entity.Banner;
 import com.mydemo.demoproject.Repository.admin.BannerRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -75,14 +78,12 @@ public class BannerServiceImp implements  BannerService{
     public boolean isOriginalFileNameDuplicate(String newFileName) {
 
         List<String> existingFileNames = getAllOriginalFileNames();
-        System.out.println("existingFileNames>>>>>>>>>>>>>>>>>>   "+existingFileNames+"newFileName.............   "+newFileName);
 
         for (String existingFileName : existingFileNames) {
             // Split the existing file name by hyphen and get the last part
             String[] parts = existingFileName.split("-");
             if (parts.length > 1) {
                 String lastPart = parts[parts.length - 1].trim();
-                System.out.println("existingFileNames>>>>>>>>>>>>>>>>>>   "+lastPart+"newFileName.............   "+newFileName);
                 if (newFileName.equals(lastPart)) {
                     return true;
                 }
@@ -92,8 +93,14 @@ public class BannerServiceImp implements  BannerService{
         return existingFileNames.contains(newFileName);
     }
 
+    @Override
+    public Page<Banner> findPaginated(int pageNo, int pageSize) {
+        Pageable pageable= PageRequest.of(pageNo-1,pageSize);
+        return this.bannerRepo.findAll(pageable);
+    }
+
     public Optional<Banner> findBannerByFileName(String fileName) {
-        System.out.println("hello");
+
 //        bannerRepo.findByFileName(fileName);
         return bannerRepo.findByFileName(fileName);
     }

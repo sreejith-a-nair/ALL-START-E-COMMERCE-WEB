@@ -109,8 +109,14 @@
 
   <div class="form-group">
     <label for="name">Banner Name:</label>
-    <input type="text" id="name" name="name" th:field="*{fileName}" placeholder="Banner Name" required>
+    <input type="text" id="name" name="name" th:field="*{fileName}" placeholder="Banner file Name" required>
   </div>
+
+  <div class="form-group">
+    <label for="bannerName">Banner Name:</label>
+    <input type="text" id="bannerName" name="bannerName" th:field="*{bannerName}" placeholder="Banner Name" required>
+  </div>
+
 
   <div class="form-group">
     <label for="newImage">New Banner Image:</label>

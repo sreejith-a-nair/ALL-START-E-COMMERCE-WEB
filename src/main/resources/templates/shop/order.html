@@ -31,8 +31,9 @@
                 </div>
                 <div class="modal-body">
                     <form th:action="@{/order/applyCoupon}" method="post" >
-                        <input type="text" name="couponCode" class="form-control"
-                               placeholder="Coupon Code">
+                        <input type="text" name="couponCode" class="form-control" placeholder="Coupon Code">
+<!--                        <input type="hidden" name="totalDiscountPrice" th:value="${totalDiscountPrice}" />-->
+                        <input type="hidden" name="totalDiscountPrice" th:value="${totalDiscountPrice}" />
 <!--                        <input type="hidden" name="addressId" th:value="${addressId}" />-->
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -58,32 +59,52 @@
           class="checkout" method="post" name="checkout">
         <div class="container">
             <div class="row" id="checkout-container">
-                <input type="hidden" name="total" th:value="${total}" />
+                <input type="hidden" name="totalDiscountPrice" th:value="${totalDiscountPrice}" />
             <!--    <div class="row" style="padding:100px;">-->
-               <div class="col-md-7" >
+               <div class="col-md-7" style="background-color:#EDF3F6;">
                    <div style="width:100%;height:5%;color:#fff;background-color:#5675F0;
                      font-weight:bold;margin-bottom:15px;text-align:center;">
                       <h3>Your Address</h3>
                    </div>
-                       <div style="width:20%;height:5%;color:#000;font-weight:bold;">
-                         <h5>Choose address</h5>
-                       </div>
 
+
+                   <!-- Wallet -->
+                   <div class="referral-code" style="display: flex; align-items: center;margin-bottom:40px;">
+                       <div style="width:20%;height:5%;color:#000;font-weight:bold;">
+                           <h5>Wallet Money</h5>
+                       </div>
+                       <div class="bar" >
+                           <p style="font-weight:bold; background-color:white;width: 200px; height: 50px; color: black; text-align: center;padding-top:10px; border: 3px solid #333; border-radius: 10px;">
+                               Rs : <span th:text="${totalMoney}"></span>
+                           </p>
+                       </div>
+<!--                       <a th:href="@{/order/referral-discount(walletMoney=${walletMoney}, totalDiscountPrice=${totalDiscountPrice})}">-->
+<!--                           <button style="margin-left: 10px; background-color: #007bff; color: white; border: none; border-radius: 10px; padding: 10px 20px;" type="button" class="btn-apply-money">Apply Money</button>-->
+<!--                       </a>-->
+                   </div>
+
+
+
+                   <div style="width:20%;height:5%;color:#000;font-weight:bold;">
+                       <h5>Choose address</h5>
+                   </div>
                    <!--add address-->
 
-                       <button class="address-button" >
+                       <button class="address-button">
                            <a style=" text-decoration: none;color:#5675F0;" th:href="@{/address/addAddress}">
                            Add Address </a>
                        </button>
 
                    <!--end add address-->
 
-                   <div    th:each="address : ${useraddresses}" class="address-card">
+
+
+                   <div    th:each="address : ${useraddresses}" class="address-card"  style="background-color:white;">
                        <input type="radio" th:id="'addressRadio_' + ${address.uuid}" th:name="selectedAddress"
                               th:value="${address.uuid}" />
                        <label th:for="'addressRadio_' + ${address.uuid}">
                                                <table>
-                                                      <tr>
+                                                      <tr style="background-color:white;">
                                                          <th>Name</th>
                                                            <td th:text="${user.get().username}"></td>
                                                       </tr>
@@ -130,12 +151,12 @@
                            </div>
 
 
-<!--                           <div class="form-check">-->
-<!--                               <input class="form-check-input" type="radio" name="paymentMethod" id="paypal"-->
-<!--                                      th:value="${T(com.mydemo.demoproject.Entity.enumlist.PaymentMode).PAYPAL}">-->
-<!--                               <label class="form-check-label" for="paypal">PayPal</label>-->
-<!--                           </div>-->
-                           <!--                   RAZORPAY-->
+                           <div class="form-check">
+                               <input class="form-check-input" type="radio" name="paymentMethod" id="paypal"
+                                      th:value="${T(com.mydemo.demoproject.Entity.enumlist.PaymentMode).WALLET}">
+                               <label class="form-check-label" for="paypal">Wallet</label>
+                           </div>
+
 
                            <div class="form-check">
                                <input class="form-check-input" type="radio" name="paymentMethod" id="razorpay"
@@ -154,7 +175,7 @@
 
 
                </div>
-                <div class="col-md-5">
+                <div class="col-md-5" style="background-color:#EDF3F6;">
                       <div style="width:100%;height:5%;color:#fff;background-color:#5675F0;
                           font-weight:bold;margin-bottom:15px;text-align:center;">
                            <h3>Price Details</h3>
@@ -164,17 +185,19 @@
                                   <thead style="background-color:#000;color:#fff;font-weight:bold;">
                                         <tr>
                                            <th>Products</th>
+                                            <th>Quantity</th>
                                            <th>Price</th>
                                         </tr>
                                   </thead>
                              <tbody>
                                 <tr th:each="car : ${cartList}">
                                   <td th:text="${car.productInfo.name}"></td>
-                                   <td th:text="${car.productInfo.price}"></td>
+                                    <td th:text="${car.quantity}"></td>
+                                   <td th:text="${car.productInfo.discountedPrice}"></td>
                                 </tr>
                                 <tr>
                                     <td style="padding-top:5px;padding-bottom:20px;"><strong>Total Price:</strong></td>
-                                    <td>   <strong th:text="${total}"></strong></td>
+                                    <td>   <strong th:text="${totalDiscountPrice}"></strong></td>
                                 </tr>
                              </tbody>
                            </table>
@@ -280,6 +303,30 @@
     background-color: black;
     color: white;
 }
+.btn-apply-money {
+    background-color: #000;
+    color: #fff;
+
+
+    cursor: pointer;
+            padding: 15px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+
+}
+
+  .btn-apply-money {
+            background-color: #fff;
+             border: 1px solid #000;
+            border-radius: 5px;
+            color:#000;
+        }
+
+        .bar{
+           margin-top:15px;
+            color:#000;
+
+        }
     </style>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
             integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"

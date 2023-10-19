@@ -27,4 +27,7 @@ public interface CouponService {
      /*pagination*/
      Page<Coupon> findPaginated(int pageNo, int pageSize);
     /*pagination end*/
+
+
+
 }

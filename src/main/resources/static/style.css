@@ -16,25 +16,21 @@
 
     background-color: rgba(128, 99, 255, 0.86);
 
-    height: 780px;
+    height: 980px;
     width: 1536px;
-
-
 
 }
 
 
 .c2{
-    padding-left: 50px;
+    padding-left: 74px;
     padding-top: 30px;
-    height: 550px;
-    width: 400px;
+    height: 650px;
+    width: 450px;
     background-color: white;
     box-shadow: -30px 30px 20px  rgba(128, 99, 255, 0.86);
     transform: translate(140%,20%);
     border-radius: 6px;
-
-
 }
 
 .c3{

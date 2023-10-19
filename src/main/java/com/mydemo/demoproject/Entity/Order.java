@@ -51,4 +51,6 @@ public class Order {
 
     private LocalDate deliveryDate;
 
+    private boolean enable;
+
 }

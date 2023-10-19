@@ -7,6 +7,7 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -19,7 +20,6 @@ import java.util.UUID;
    @Builder
 
     public class UserEntity {
-
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO, generator = "uuid2")
         @GenericGenerator(name = "uuid2", strategy = "uuid2")
@@ -57,6 +57,8 @@ import java.util.UUID;
 
         private boolean verify=false;
 
+
+        private  String newUserReferral;
 /*old cart id*/
 //        @OneToOne(cascade = CascadeType.ALL)
 //        @JoinColumn(name = "cart_id")
@@ -70,6 +72,32 @@ import java.util.UUID;
 
     @OneToMany(mappedBy = "userEntity")
     private List<Address>addresses=new ArrayList<>();
+
+
+    @OneToOne(mappedBy = "userEntity", cascade = CascadeType.ALL)
+    @JoinColumn(name = "wallet_id")
+    @ToString.Exclude
+    private Wallet wallet;
+
+/*NEW UPDATES*/
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid, username, firstname, lastname, contact, email, password, role, phone, enable, verify, newUserReferral);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        UserEntity other = (UserEntity) obj;
+        return Objects.equals(uuid, other.uuid);
+    }
+
+    /*END NEW UPDATE*/
 
     @Override
     public String toString() {

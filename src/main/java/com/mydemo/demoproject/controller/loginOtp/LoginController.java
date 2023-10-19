@@ -1,11 +1,17 @@
 package com.mydemo.demoproject.controller.loginOtp;
 
 import com.mydemo.demoproject.Entity.*;
+import com.mydemo.demoproject.Entity.enumlist.BannerType;
+import com.mydemo.demoproject.Repository.admin.ImageRepository;
+import com.mydemo.demoproject.Repository.admin.ProductRepo;
+import com.mydemo.demoproject.service.admin.brand.BrandService;
 import com.mydemo.demoproject.service.admin.cartegory.CategoryService;
+import com.mydemo.demoproject.service.admin.offer.OfferService;
 import com.mydemo.demoproject.service.admin.product.BannerService;
 import com.mydemo.demoproject.service.admin.product.ImageService;
 import com.mydemo.demoproject.service.admin.product.ProductService;
 import com.mydemo.demoproject.service.otp.OtpService;
+import com.mydemo.demoproject.service.shop.ShopService;
 import com.mydemo.demoproject.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -19,7 +25,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,6 +50,11 @@ import java.util.stream.Collectors;
     @Autowired
     BannerService bannerService;
 
+    @Autowired
+    OfferService offerService;
+
+    @Autowired
+    BrandService brandService;
 
     /*User Authentication checking*/
     @GetMapping("/login")
@@ -65,17 +75,21 @@ import java.util.stream.Collectors;
 //    @GetMapping("/")
     public String home(Authentication authentication, Model model){
 
+
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         String username = authentication.getName();
 
-
-
+/*end*/
         if (((Collection<?>) authorities).contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-//            System.out.println("admin  pageeeeeeeeeeeeeeeeeeeeeeeeeeeee");
             return "redirect:/admin/home";
         } else {
-//           System.out.println("inside......................................................");
+            float discountedPrice=0f;
             UserEntity userEntity = userService.findByUsernames(username);
+
+
+            Wallet wallet=new Wallet();
+            wallet.setUserEntity(userEntity);
+
 
             System.out.println(userEntity);
             System.out.println(userEntity.isVerify());
@@ -83,43 +97,152 @@ import java.util.stream.Collectors;
             if (!userEntity.isVerify()) {
                 model.addAttribute("failed", true);
                 otpService.sendPhoneOtp(userEntity.getContact().toString());
-                model.addAttribute("phone",userEntity.getContact().toString());
+                model.addAttribute("phone", userEntity.getContact().toString());
 
                 return "user/verification";
             }
             Optional<UserEntity> users = userService.getUserdata(username);
-            System.out.println("user>>>>>>>>>>"+users);
             UserEntity user = users.orElse(null);
 
-           /*enable category only show*/
-            List<CategoryInfo> categoryInfo = categoryService.findAll()
-                    .stream()
-                    .filter(category -> category.isEnable()) // Filters categories with enable == true
-                    .collect(Collectors.toList());
-            System.out.println("../login.home...categoryInfo"+categoryInfo);
 
+            /*new update*/
+            CategoryInfo categoryOffer;
+            List<Banner> bannerList = bannerService.findByAllBanner()
+                    .stream()
+                    .filter(Banner::isEnable)
+                    .collect(Collectors.toList());
+
+
+//            List<Banner> bannerList = bannerService.findByAllBanner()
+//                    .stream()
+//                    .filter(Banner::isEnable)
+//                    .collect(Collectors.toList());
+//
+
+
+            /* Filter banners into main and other banners */
+            List<Banner> offerBanner = bannerList.stream()
+                    .filter(banner -> BannerType.OFFER_BANNER.getDisplayName().equals(banner.getBannerName()))
+                    .collect(Collectors.toList());
+
+            for (Banner  bannerName :offerBanner){
+            System.out.println(" banner OFFER>>>>>>"+bannerName);}
+
+
+            List<Banner> mainBanners = bannerList.stream()
+                    .filter(banner -> !BannerType.OFFER_BANNER.getDisplayName().equals(banner.getBannerName()))
+                    .collect(Collectors.toList());
+
+            for (Banner  bannerName :mainBanners){
+                System.out.println("MAIN OTHER banner name>>>>>>"+bannerName);}
+
+//            for (Banner banner:bannerList){
+//               String bannerName= banner.getBannerName();
+//
+//               if(BannerType.Main_Banner.getDisplayName().equals(bannerName)){
+//                   System.out.println("mainn" +bannerName);
+//                   model.addAttribute("bannerList",bannerList);
+//               }else {
+//                   System.out.println("offer"+bannerName);
+//                   model.addAttribute("bannerInfo",bannerList);
+//               }
+//            }
+
+            /*Image*/
+            List<Image>images=imageService.findAllImage();
+            System.out.println("images link>>"+images);
+
+            int offerPercentage;
             /*enable product only show*/
             List<ProductInfo> allProductInfoList = productService.loadAllProduct()
                     .stream()
                     .filter(ProductInfo::isEnable) // Filters products with enable == true
                     .collect(Collectors.toList());
 
-
-
-            List<Banner> bannerList = bannerService.findByAllBanner()
+            List<CategoryInfo> categoryInfo = categoryService.findAll()
                     .stream()
-                    .filter(Banner::isEnable) // Filters banners with enabled == true
+                    .filter(category -> category.isEnable()) // Filters categories with enable == true
                     .collect(Collectors.toList());
 
-            int numberOfRandomProducts = Math.min(6, allProductInfoList.size());
-            Collections.shuffle(allProductInfoList);
 
-            List<ProductInfo> productInfoList = allProductInfoList.subList(0, numberOfRandomProducts);
+            /*new updates category*/
+            for (CategoryInfo category : categoryInfo) {
+                List<Offer> categoryOffers = offerService.getCategoryOffers(category);
+                category.setOffer(categoryOffers);
+            }
+
+            for (CategoryInfo category:categoryInfo){
+
+             Offer offerInCategory=category.getOffer().get(0);
+                System.out.println(offerInCategory);
+
+                  List<Offer> categoryOffers = offerService.getCategoryOffers(category);
+
+                  category.setOffer(categoryOffers);
 
 
-            List<Image>images=imageService.findAllImage();
-            System.out.println("images link>>"+images);
-//            System.out.println("productInfoList/////////"+productInfoList);
+                for( ProductInfo product:allProductInfoList)  {
+                    List<Offer> productOffer = offerService.getProductOffers(product);
+
+                    float productPrice=  product.getPrice();
+                    float productDiscountPrice = productPrice;
+                    for (Offer offerPercent:productOffer) {
+
+                        offerPercentage  =offerPercent.getCategoryOffPercentage();
+                        productDiscountPrice  =productDiscountPrice-(productDiscountPrice*offerPercentage)/100;
+
+                    }
+                    product.setDiscountedPrice(productDiscountPrice);
+                    model.addAttribute("productDiscountPrice",productDiscountPrice);
+
+                    product.setOffer(productOffer);
+                    model.addAttribute("productDiscountPrice",productDiscountPrice);
+                }
+                int numberOfRandomProducts = Math.min(6, allProductInfoList.size());
+                Collections.shuffle(allProductInfoList);
+
+                List<ProductInfo> productInfoList = allProductInfoList.subList(0, numberOfRandomProducts);
+
+                List<Brand> brands = brandService.loadAllBrand();
+
+                  model.addAttribute("brands",brands);
+                  model.addAttribute("offerBanner", offerBanner);
+                  model.addAttribute("mainBanners", mainBanners);
+                  model.addAttribute("images",images);
+                  model.addAttribute("categoryInfo",categoryInfo);
+                  model.addAttribute("productInfoList",productInfoList);
+                  model.addAttribute("user", user);
+                  return  "shop/shopView";
+//              }
+
+            }
+
+            /*NEW OFFER*/
+             for( ProductInfo product:allProductInfoList)  {
+                     List<Offer> productOffer = offerService.getProductOffers(product);
+
+                     float productPrice=  product.getPrice();
+                     float productDiscountPrice = productPrice;
+                     for (Offer offerPercent:productOffer) {
+
+                         offerPercentage  =offerPercent.getCategoryOffPercentage();
+                         productDiscountPrice  =productDiscountPrice-(productDiscountPrice*offerPercentage)/100;
+
+                     }
+                     product.setDiscountedPrice(productDiscountPrice);
+                     model.addAttribute("productDiscountPrice",productDiscountPrice);
+
+                     product.setOffer(productOffer);
+                    model.addAttribute("productDiscountPrice",productDiscountPrice);
+                     }
+                      int numberOfRandomProducts = Math.min(6, allProductInfoList.size());
+                      Collections.shuffle(allProductInfoList);
+
+                       List<ProductInfo> productInfoList = allProductInfoList.subList(0, numberOfRandomProducts);
+
+            List<Brand> brands = brandService.loadAllBrand();
+
+            model.addAttribute("brands",brands);
 
             model.addAttribute("bannerList",bannerList);
             model.addAttribute("images",images);
@@ -129,8 +252,8 @@ import java.util.stream.Collectors;
             return  "shop/shopView";
         }
 
-    }
 
+        }
 
 /* OTP verification for user*/
     @PostMapping("/verify")
@@ -148,7 +271,6 @@ import java.util.stream.Collectors;
 
         }
     }
-
 
     /*generate otp*/
     private String generateOTP() {
@@ -169,7 +291,6 @@ import java.util.stream.Collectors;
     @GetMapping("/")
 //    @GetMapping("/home")
     public String getHomePage(Model model) {
-//        System.out.println("home.............. ////////////////////////////////////////");
         String currentUsername = String.valueOf(getCurrentUsername());
         UserEntity userEntity = userService.findByUsernames(currentUsername);
 
@@ -177,21 +298,14 @@ import java.util.stream.Collectors;
         List<CategoryInfo> categories = categoryService.findAll();
 
         if (!userEntity.isVerify()) {
-//            System.out.println("verification........................");
             String phone = userEntity.getPhone();
             model.addAttribute("phone", phone);
-
             //send otp
             otpService.sendPhoneOtp(phone);
 
             return "user/verification";
-
         }
         else{
-//            model.addAttribute("categories", categories);
-//            model.addAttribute("products", products);
-
-//            return  "shop/shopView";
              return "redirect:/home";
 
         }

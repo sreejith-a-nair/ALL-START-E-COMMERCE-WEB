@@ -52,17 +52,15 @@ public class AdminController {
 
 @GetMapping("/page/{pageNo}")
 public String findPaginated(@PathVariable(value = "pageNo") int pageNo,Model model){
+
     int pageSize=5;
     Page<UserEntity>page=adminService.findPaginated(pageNo,pageSize);
     List<UserEntity>users=page.getContent();
-    System.out.println("users in paginationppppp"+users);
-    System.out.println("page in paginationppppp"+page);
 
     model.addAttribute("currentPage", pageNo);
     model.addAttribute("totalPages", page.getTotalPages());
     model.addAttribute("totalItems", page.getTotalElements());
     model.addAttribute("users", users);
-
     return "admin/users";
 }
 
@@ -89,7 +87,6 @@ public String findPaginated(@PathVariable(value = "pageNo") int pageNo,Model mod
     }catch (Exception e){
 
             e.printStackTrace();
-
             model.addAttribute("errorMessage", "An error occurred while processing your request.");
             return "error";
         }
@@ -122,8 +119,6 @@ public String findPaginated(@PathVariable(value = "pageNo") int pageNo,Model mod
         request.getSession().invalidate();
         return "redirect:/login?logout";
     }
-
-
 
     @GetMapping("/dashboard")
     public  String getDashboard()

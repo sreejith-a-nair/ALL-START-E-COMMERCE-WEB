@@ -107,17 +107,14 @@
     <input type="file" id="fileName" name="fileName" accept="image/*" required>
   </div>
 
-  <!-- Select the associated product for the banner -->
-<!--  <div class="input-group">-->
-<!--    <label for="productUuid">Associated Product:</label>-->
-<!--    <select id="productUuid" name="productUuid" required>-->
-<!--      <option th:each="product : ${productInfo}" th:value="${product.uuid}" th:text="${product.name}">Product Name</option>-->
-<!--    </select>-->
-<!--  </div>-->
+  <div class="input-group">
+    <label for="bannerName">Banner Name:</label>
+    <input type="text" id="bannerName" name="bannerName" >
+  </div>
 
   <button type="submit">Create Banner</button>
-
 </form>
+
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
           integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
           crossorigin="anonymous"></script>

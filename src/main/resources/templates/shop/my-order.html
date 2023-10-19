@@ -1,213 +1,5 @@
 
 
-<!--<!DOCTYPE html>-->
-<!--<html lang="en" xmlns:th="http://www.thymeleaf.org"-->
-<!--      th:replace="shop/base::Layout(~{::section})" xmlns="http://www.w3.org/1999/html">-->
-<!--<head>-->
-<!--  <meta charset="utf-8">-->
-<!--  <meta name="viewport" content="width=device-width, initial-scale=1">-->
-<!--  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"-->
-<!--        rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"-->
-<!--        crossorigin="anonymous">-->
-<!--  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">-->
-<!--  &lt;!&ndash; Include Font Awesome &ndash;&gt;-->
-<!--  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">-->
-<!--  &lt;!&ndash; Include AdminLTE CSS &ndash;&gt;-->
-<!--  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1.0/dist/css/adminlte.min.css">-->
-<!--  <title>My  Order</title>-->
-
-<!--</head>-->
-<!--<body>-->
-<!--<section>-->
-
-<!--    <div class="margin">-->
-<!--        <h4 style="padding-top:5px;margin-bottom:60px;color:white;text-align:center;"> My Order</h4>-->
-<!--     </div>-->
-
-<!--     <div  th:each="myOrder : ${myOrders}" class="container col-md-12" style=" margin-bottom:50px;">-->
-<!--         <div class="row" >-->
-<!--             <div class="order-details  colo-md-12" style="height:auto; padding-top:70px;">-->
-
-<!--                  <div style="display: flex; flex-direction: column;"  class="col-md-4">-->
-<!--                       <div  th:each="orderItems : ${myOrder.orderItems}" class="product display: flex; flex-direction: column;"-->
-<!--                             style="width:auto;height:auto;">-->
-
-<!--                          <div style="text-align: center; display: flex; flex-direction: column;">-->
-<!--                             <a>-->
-<!--                                <img   th:src="@{|/uploads/${orderItems.productInfo.images[0].fileName}|}" alt="Product Image" width="220" height="220" />-->
-<!--                             </a>-->
-<!--                          </div>-->
-<!--                             <h4 style="margin-left:70px;" th:text="${orderItems.productInfo.name}"></h4>-->
-<!--                      </div>-->
-<!--                  </div>-->
-<!--                         <div class="order-info  colo-md-4">-->
-<!--                             <p>Ordered Date:<strong th:text="${myOrder.orderDate}"></strong></p>-->
-<!--                             <p>Total price :<strong th:text="${myOrder.totalPrice}"></strong></p>-->
-<!--                             <button th:text="${myOrder.orderStatus}" class="order-status"></button>-->
-<!--                         </div>-->
-
-<!--                 <div th:if="${myOrder.orderStatus == T(com.mydemo.demoproject.Entity.enumlist.OrderStatus).DELIVERED}">-->
-<!--                     <span style="font-weight:bold;color:#008205;">Your Order Delivered!</span>-->
-<!--                 </div>-->
-<!--                 <div class="button-container colo-md-4">-->
-<!--                     <div th:if="${myOrder.orderStatus == T(com.mydemo.demoproject.Entity.enumlist.OrderStatus).CANCELED}">-->
-<!--                         <p style="font-weight:bold;color:#556DF1;">Your Order Canceled!</p>-->
-<!--                     </div>-->
-<!--                     <div th:if="${myOrder.orderStatus == T(com.mydemo.demoproject.Entity.enumlist.OrderStatus).RETURN}">-->
-<!--                         <p style="font-weight:bold;color:#E3233D;">Your Order Returned!</p>-->
-<!--                     </div>-->
-
-<!--                     <div  th:if="${myOrder.orderStatus == T(com.mydemo.demoproject.Entity.enumlist.OrderStatus).DELIVERED}">-->
-<!--                         <button class="return-button">-->
-<!--                             <a th:href="@{/order/return(orderUuid=${myOrder.uuid})}"-->
-<!--                                style="text-decoration: none;color:white; font-weight:large;"> Return</a>-->
-<!--                         </button>-->
-<!--                     </div>-->
-<!--                     <div th:unless="${myOrder.orderStatus == T(com.mydemo.demoproject.Entity.enumlist.OrderStatus).DELIVERED-->
-<!--                            or myOrder.orderStatus == T(com.mydemo.demoproject.Entity.enumlist.OrderStatus).RETURN-->
-<!--                            or myOrder.orderStatus == T(com.mydemo.demoproject.Entity.enumlist.OrderStatus).CANCELED}">-->
-<!--                         <button class="cancel-button" style="margin-bottom:20px;margin-top:20px;">-->
-<!--                             <a th:href="@{/order/cancel(orderUuid=${myOrder.uuid})}" style="text-decoration: none; font-weight: large;">Cancel</a>-->
-<!--                         </button>-->
-<!--                     </div>-->
-
-<!--                 </div>-->
-<!--                     <button class="track-button" style="margin-top:85px;padding-left:18px;">-->
-<!--                         <a  style="text-decoration: none;color:#80B8D0;text-align:center;" th:href="@{/order/track-order(orderUuid=${myOrder.uuid})}"> Track Order</a>-->
-<!--                     </button>-->
-
-<!--               </div>-->
-<!--             </div>-->
-<!--         </div>-->
-<!--<style>-->
-
-<!--       .container {-->
-<!--            margin: 0 180px;-->
-<!--            /* Add left and right margin */-->
-<!--        }-->
-<!--        .order-details {-->
-<!--            border: 3px solid #000; /* 3px border with black color */-->
-<!--            padding: 20px; /* Add padding for spacing inside the border */-->
-<!--            border-radius:17px;-->
-<!--            height:190px;-->
-<!--        }-->
-
-
-<!--        /* Add your CSS styles here */-->
-<!--        .order-details {-->
-<!--            display: flex;-->
-<!--            align-items: center;-->
-<!--        }-->
-
-<!--        .product {-->
-<!--            display: flex;-->
-<!--            align-items: center;-->
-<!--        }-->
-
-<!--        .product img {-->
-<!--            width: 100px; /* Adjust the image width as needed */-->
-<!--            height: auto;-->
-<!--        }-->
-
-<!--        .product h2 {-->
-<!--            margin-left: 20px; /* Add spacing between the image and the product name */-->
-<!--        }-->
-
-<!--        .order-info {-->
-<!--            margin-left: 20px; /* Add spacing between the product and order info */-->
-<!--        }-->
-
-<!--        .button-container {-->
-<!--        margin-left:50px;-->
-<!--            display: flex;-->
-<!--            margin-top: 90px;-->
-<!--            margin-right:20px;-->
-<!--        }-->
-
-<!--.order-status {width: 120px; /* Set a fixed width for buttons and order status */-->
-<!--        border-radius: 10px; /* Add border radius to buttons and order status */-->
-<!--        padding: 6px 13px; /* Add padding for buttons and order status */-->
-<!--        text-align: center;-->
-<!--        cursor: pointer;-->
-<!--        margin-right:30px;-->
-<!--        margin-top:20px;-->
-<!--        color: #000; }-->
-
-<!--   .return-button{-->
-<!--        width: 120px; /* Set a fixed width for buttons and order status */-->
-<!--        border-radius: 10px; /* Add border radius to buttons and order status */-->
-<!--        padding: 10px 10px; /* Add padding for buttons and order status */-->
-<!--        text-align: center;-->
-<!--        cursor: pointer;-->
-<!--        margin-right:10px;-->
-<!--        color: #fff; /* Text color for buttons and order status */-->
-<!--    }-->
-
-
-<!--    .return-button {-->
-<!--        background-color: #FF0000; /* Red background for "Return" button */-->
-<!--        border: none;-->
-<!--    }-->
-<!--    .cancel-button{-->
-<!--        width: 120px; /* Set a fixed width for buttons and order status */-->
-<!--        border-radius: 10px; /* Add border radius to buttons and order status */-->
-<!--        padding: 10px 10px; /* Add padding for buttons and order status */-->
-<!--        text-align: center;-->
-<!--        cursor: pointer;-->
-<!--        margin-right:10px;-->
-<!--          border: 2px solid #008205;-->
-<!--        color:#000; /* Text color for buttons and order status */-->
-<!--    }-->
-<!--     .cancel-button:hover{-->
-<!--       border: 2px solid #FF0000;-->
-<!--       color:#000;}-->
-
-
-<!--       .return-button:hover {-->
-<!--        background-color: #FF5555; /* Light red background on hover */-->
-<!--    }-->
-
-<!--    .track-button {-->
-<!--        background-color: #000; /* Blue background for "Track Order" button */-->
-<!--        border: none;-->
-<!--      margin-left:50px;-->
-<!--            display: flex;-->
-<!--            margin-top: 90px;-->
-<!--            margin-right:20px;-->
-<!--            width: 120px; /* Set a fixed width for buttons and order status */-->
-<!--        border-radius: 10px; /* Add border radius to buttons and order status */-->
-<!--        padding: 10px 10px; /* Add padding for buttons and order status */-->
-<!--        text-align: center;-->
-<!--        cursor: pointer;-->
-<!--        margin-right:10px;-->
-<!--        color: #fff;-->
-
-<!--    }-->
-
-<!--    .track-button:hover {-->
-<!--        background-color: #fff;-->
-<!--        border: 2px solid #000;/* Light blue background on hover */-->
-<!--        color: #000; /* Change text color to black on hover */-->
-<!--    }-->
-
-<!--    .order-status {-->
-<!--        background-color: #FFFFFF; /* White background for the order status */-->
-<!--        border: 2px solid #000; /* Black border for the order status */-->
-<!--        cursor: default;-->
-<!--    }-->
-<!--        .margin {-->
-<!--               background: rgb(131,58,180);-->
-<!--                background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%);-->
-<!--                border-radius: 10rem;-->
-<!--               height: 40px;-->
-<!--               margin-top: 180px;-->
-<!--               margin-bottom:70px;}-->
-<!--    </style>-->
-<!--</section>-->
-<!--</body>-->
-<!--</html>-->
-
-
 <!--New -->
 
 <!DOCTYPE html>
@@ -254,6 +46,18 @@
                         </a>
                     </div>
                 </li>
+
+                <li class="nav-item">
+                    <div style="display: flex; align-items: center;margin-left:30px;">
+                        <i class="fa-solid fa-wallet" style="color: #ffffff;"></i>
+                        <a th:href="@{/shop/referral-code}" class="nav-link">
+                            <!--                                                  <i class="fas fa-plus" style="color:white;"></i>-->
+                            <p style="font-size:18px;margin-left:22px;font-weight:bold;color:white;margin-top:17px;" >Your Wallet </p>
+                        </a>
+                    </div>
+                </li>
+
+
                 <li class="nav-item">
                     <div style="display: flex; align-items: center;margin-left:30px;">
                         <i class="fas fa-plus" style="color:white;"></i>
@@ -290,6 +94,7 @@
                     <div class="order-info  colo-md-4">
                         <p>Ordered Date:<strong th:text="${myOrder.orderDate}"></strong></p>
                         <p>Total price :<strong th:text="${myOrder.totalPrice}"></strong></p>
+                        <p>Payment mode: <strong th:text="${myOrder.paymentMode}"></strong></p>
                         <button th:text="${myOrder.orderStatus}" class="order-status"></button>
                     </div>
 
@@ -302,13 +107,24 @@
                         </div>
                         <div th:if="${myOrder.orderStatus == T(com.mydemo.demoproject.Entity.enumlist.OrderStatus).RETURN}">
                             <p style="font-weight:bold;color:#E3233D;">Your Order Returned!</p>
+                            <button class="refund-button">
+                                <a th:href="@{/order/returnCashInWalletRazorPay (orderUuid=${myOrder.uuid})}"
+                                   style="text-decoration: none;color:white; font-weight:large;"> Refund</a>
+                            </button>
                         </div>
 
                         <div  th:if="${myOrder.orderStatus == T(com.mydemo.demoproject.Entity.enumlist.OrderStatus).DELIVERED}">
+                            <button class="download-invoice-button" style="margin-bottom:60px;">
+                                <i class="fa-solid fa-download"></i>
+                                <a th:href="@{/order/getinvoice(orderUuid=${myOrder.uuid})}"
+                                   style="text-decoration: none;color:white; font-weight:large;color:red;">Download Invoice</a>
+                            </button>
+
                             <button class="return-button">
                                 <a th:href="@{/order/return(orderUuid=${myOrder.uuid})}"
                                    style="text-decoration: none;color:white; font-weight:large;"> Return</a>
                             </button>
+
                         </div>
                         <div th:unless="${myOrder.orderStatus == T(com.mydemo.demoproject.Entity.enumlist.OrderStatus).DELIVERED
                             or myOrder.orderStatus == T(com.mydemo.demoproject.Entity.enumlist.OrderStatus).RETURN
@@ -422,6 +238,25 @@
         background-color: #FF0000; /* Red background for "Return" button */
         border: none;
     }
+    .refund-button{
+        width: 120px; /* Set a fixed width for buttons and order status */
+        border-radius: 10px; /* Add border radius to buttons and order status */
+        padding: 10px 10px; /* Add padding for buttons and order status */
+        text-align: center;
+        cursor: pointer;
+        margin-right:10px;
+        background-color:#009C7D;
+        color: #fff; /* Text color for buttons and order status */
+    }
+
+
+    .refund-button {
+        background-color: #00A67D; /* Red background for "Return" button */
+        color:#fff;
+        border: none;
+    }
+
+
     .cancel-button{
         width: 120px; /* Set a fixed width for buttons and order status */
         border-radius: 10px; /* Add border radius to buttons and order status */

@@ -1,11 +1,9 @@
 package com.mydemo.demoproject.controller.product;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.mydemo.demoproject.Entity.CategoryInfo;
-import com.mydemo.demoproject.Entity.Image;
-import com.mydemo.demoproject.Entity.ProductInfo;
-import com.mydemo.demoproject.Entity.UserEntity;
+import com.mydemo.demoproject.Entity.*;
 import com.mydemo.demoproject.Repository.admin.ProductRepo;
+import com.mydemo.demoproject.service.admin.brand.BrandService;
 import com.mydemo.demoproject.service.admin.cartegory.CategoryService;
 import com.mydemo.demoproject.service.admin.product.ImageService;
 import com.mydemo.demoproject.service.admin.product.ProductServiceImp;
@@ -49,20 +47,9 @@ public class ProductController {
      @Autowired
      ProductServiceImp productService;
 
-//     @Autowired
-//     ProductRepo productRepo;
+     @Autowired
+    BrandService brandService;
 
-
-    /*home old*/
-//    @GetMapping("/home")
-//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-//    public String showAll(Model model) {
-//        List<ProductInfo> productInfo = productService.findAll();
-//        model.addAttribute("productInfo", productInfo);
-//       System.out.println("product details...................................."+productInfo);
-//        return "admin/product";
-//    }
-/*pagination*/
     @GetMapping("/home")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String showAllProduct(Model model){
@@ -77,8 +64,6 @@ public class ProductController {
         int pageSize=5;
         Page<ProductInfo> page=productService.findPaginated(pageNo,pageSize);
         List<ProductInfo>productInfo=page.getContent();
-        System.out.println("productInfo in pagination"+productInfo);
-        System.out.println("page in pagination"+page);
 
         model.addAttribute("currentPage", pageNo);
         model.addAttribute("totalPages", page.getTotalPages());
@@ -107,6 +92,7 @@ public class ProductController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String addProduct( @RequestParam(value="error",required=false)String error,Model model )throws JsonProcessingException {
         List<CategoryInfo> categories = categoryService.findAllCategory();
+        List<Brand>brands=brandService.loadAllBrand();
 
         if (error != null && error.equals("productExists")) {
             model.addAttribute("error", "Product already exists.");
@@ -115,8 +101,8 @@ public class ProductController {
             model.addAttribute("error", "Category already exists.");
 }
         model.addAttribute("categoryInfo",categories);
+        model.addAttribute("brands",brands);
 
-//        System.out.println("categories>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+productInfo);
         return "admin/add-product";
     }
 
@@ -124,7 +110,6 @@ public class ProductController {
     @GetMapping("deleteImage/{uuid}")
     public String deleteImage(@PathVariable UUID uuid)
     {
-        System.out.println("Im age delete here >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> o1"+uuid);
      productService.deleteImages(uuid);
      return "redirect:/product/home";
     }
@@ -132,9 +117,6 @@ public class ProductController {
 
     @GetMapping("addStock/{uuid}")
     public String addStockForm(@PathVariable UUID uuid, Model model) {
-        System.out.println("stock///////");
-
-
 
         Optional<ProductInfo> productInfo = productService.getProduct(uuid);
         System.out.println(productInfo);
@@ -181,6 +163,7 @@ public class ProductController {
 /*  Post  To add new products*/
     @PostMapping("/addProducts")
     public String addProduct(@RequestParam("uuid")  UUID uuid,
+                             @RequestParam("brandUuid")UUID brandUuid,
                              @RequestParam("images") List<MultipartFile> imageFiles,
                              @RequestParam("name") String name,
                              @RequestParam("price") Float price,
@@ -192,7 +175,7 @@ public class ProductController {
             product.setName(name);
             product.setPrice(price);
             product.setStock(stock);
-            product = productService.addProduct(product,uuid);
+            product = productService.addProduct(product,uuid,brandUuid);
             List<Image> images = new ArrayList<>();
             if(!imageFiles.get(0).getOriginalFilename().equals("")){
                 for (MultipartFile image : imageFiles) {
@@ -206,7 +189,7 @@ public class ProductController {
             if(!imageFiles.get(0).getOriginalFilename().equals("")){
                 product.setImages(images);
             }
-            product = productService.addProduct(product, uuid);
+            product = productService.addProduct(product, uuid,brandUuid);
             return "redirect:/product/home";
 /*
             "redirect:/admin/product"
@@ -222,11 +205,12 @@ public class ProductController {
     @GetMapping("/update/{uuid}")
     public String update(@PathVariable UUID uuid, Model model) {
         Optional<ProductInfo> products = productService.getProduct(uuid);
-        System.out.println("product >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+products);
+
         if (products.isPresent()) {
 //            System.out.println("is present");
             ProductInfo productInfo = products.get();
             model.addAttribute("productInfo",productInfo);
+//            model.addAttribute("brands",brands);
             return "admin/edit-product";
         } else {
             return String.valueOf(model.addAttribute("error message", "Invalid valid data"));
@@ -237,13 +221,19 @@ public class ProductController {
 
 @PostMapping("/update")
 public String updateProduct(@RequestParam("uuid") UUID productUuid,
+                            @RequestParam("brandUuid")UUID brandUuid,
                             @RequestParam("name") String name,
                             @RequestParam("categoryUuid") UUID categoryUuid,
                             @RequestParam("description") String description,
                             @RequestParam("price") Float price,
                             @RequestParam("stock") Long stock,
-                            @RequestParam(value = "newImages" , required = false) List<MultipartFile> newImages
-) throws IOException {
+                            @RequestParam(value = "newImages" , required = false) List<MultipartFile> newImages) throws IOException {
+
+
+     Optional<Brand> brand =brandService.getBrandById(brandUuid);
+     Brand brandInfo= brand.get();
+     System.out.println("select brand>>>"+brandInfo);
+
     System.out.println("image Update: "+newImages);
     ProductInfo updatedProduct = new ProductInfo();
     updatedProduct.setUuid(productUuid);
@@ -253,6 +243,7 @@ public String updateProduct(@RequestParam("uuid") UUID productUuid,
     updatedProduct.setCategory(categoryService.getCategoryById(categoryUuid).orElseThrow());
     updatedProduct.setDescription(description);
     updatedProduct.setEnable(true );
+    updatedProduct.setBrand(brandInfo);
     productService.update(updatedProduct);
     //save new images
 
@@ -336,10 +327,16 @@ public String updateProduct(@RequestParam("uuid") UUID productUuid,
     public String editCategory(@PathVariable UUID uuid, Model model) {
 //        System.out.println("edit product method.>>>>>>>>>>>>>>.............." + uuid);
         Optional<ProductInfo> productInfoOptional = productService.getProduct(uuid);
+
+        System.out.println("hai");
+        List<Brand>brands=brandService.loadAllBrand();
+        System.out.println("product >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+brands);
+
         if (productInfoOptional.isPresent()) {
 //            System.out.println("is present..............................");
             ProductInfo productInfo = productInfoOptional.get();
             model.addAttribute("productInfo",productInfo);
+            model.addAttribute("brands",brands);
             return "admin/edit-product";
         } else {
             return String.valueOf(model.addAttribute("error message", "Invalid valid data"));

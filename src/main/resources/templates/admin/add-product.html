@@ -126,11 +126,16 @@
         </select>
     </div>
 
+    <div class="input-group">
+        <label for="brandUuid">Brand:</label>
+        <select id="brandUuid" name="brandUuid" required style="width: 400px; background-color: white; border-radius: 5px; padding: 10px;">
+            <option th:each="brand : ${brands}" th:value="${brand.uuid}" th:text="${brand.name}">Brand Name</option>
+        </select>
+    </div>
+
+
     <!--add category-->
     <div  style="margin-left:210px;">
-<!--    <a href="/category/addcategory" class="btn btn1 btn-danger" style="border: 2px solid blue; background-color: white; color: blue;">-->
-<!--        <i class="fa-solid fa-plus"></i> Add Category</a>-->
-
             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 Add new</button>
     </div>

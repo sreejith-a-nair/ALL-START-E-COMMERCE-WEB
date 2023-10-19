@@ -90,32 +90,10 @@
 
 <body>
 <section>
-
-
-
     <!--sidebar-->
-
     <div class="container-fluid " style="margin-left:250px;">
-        <!--strt-->
+
         <div class="row">
-<!--        <div class="col-md-1 sidebarsection" style="padding-left:5px;padding-right:5px;">-->
-
-<!--            <div class="sidebar-brand" style="background-color:black;margin-top:130px;height:55px ;-->
-<!--                        text-align:center;font-weight:bold;color:red;">-->
-<!--                A L L S T A R-->
-<!--            </div>-->
-<!--            <div class="list-group" style="border: 2px solid blue;margin-top:1px; font-weight:medium;color :white;">-->
-<!--                <a href="#" class="list-group-item list-group-item-action" style="background-color:black;font-weight:bold;border: 2px solid blue;" >-->
-<!--                    All Categories-->
-<!--                </a>-->
-
-<!--                <a href="#" class="list-group-item list-group-item-action" style="background-color: #111111;">Racket</a>-->
-<!--                <a href="#" class="list-group-item list-group-item-action" style="background-color: #111111;">Shoe</a>-->
-<!--                <a href="#" class="list-group-item list-group-item-action"  style="background-color: #111111;">Bag</a>-->
-<!--                <a href="#" class="list-group-item list-group-item-action"  style="background-color: #111111;">Cloth</a>-->
-<!--            </div>-->
-<!--        </div>-->
-        <!--end-->
             <div class="col-md-11 main-content" style="padding-left:4px;padding-right:10px;">
              <div class="table-container ">
               <div class="buttons-container d-flex">
@@ -146,6 +124,7 @@
                   <tr style="margin-left:2px;">
                     <th scope="col" class="text-center">NO</th>
                     <th scope="col" class="text-center">Name</th>
+                      <th scope="col" class="text-center">Brand</th>
                     <th scope="col" class="text-center">Category</th>
                       <th scope="col" class="text-center">image</th>
                     <th scope="col" class="text-center">Description</th>
@@ -164,18 +143,11 @@
 
                     <td th:text="${product.name}" class="text-center"></td>
 
+                    <td th:text="${product.brand.name}" class="text-center"></td>
+
                     <td th:text="${product.category.categoryname}" class="text-center"></td>
 
                     <td class="row">
-
-<!--                        <div th:each="image : ${product.images}">-->
-<!--                            <img style="margin-left: 4px;width: 50px;height: 57px;border-radius: 20%;"-->
-<!--                                 th:src="@{|/uploads/${image.fileName}|}"-->
-<!--                                 th:alt="${image.fileName}">-->
-
-<!--                            <a th:href="@{/product/deleteImage/{uuid}(uuid=${image.uuid})}"-->
-<!--                               class="fas fa-solid fa-xmark dlt-png" onclick="return confirm('Are you sure you want to delete this image?')"></a>-->
-<!--                            </div>-->
 
                     <!--new -->
                         <div th:each="image : ${product.images}">
@@ -193,12 +165,7 @@
                         </div>
 
                         <!--end-->
-
-
                     <td th:text="${product.description}" class="text-center"></td>
-
-<!--                    <td th:text="${product.stock}" class="text-center"></td>-->
-
                     <td class="text-center">
                         <a th:href="@{/product/addStock/{uuid}(uuid=${product.uuid})}" class="add-stock-icon">
                             <i class="fas fa-plus-circle"></i>
@@ -224,44 +191,11 @@
                            style="background-color: #000; border-radius: 10px; border: 1px solid #1657FA;
                             font-weight: 900; padding: 8px 18px; font-size: 12px;color:white;">Edit</a>
                     </td>
-
                 </tr>
-
-
                 </tbody>
             </table>
            </div>
 
-                     <!--pagination-->
-
-<!--                     <div th:if="${totalPages > 1}">-->
-<!--                         <div class="row col-sm-10">-->
-<!--                             <div class="col-sm-2">-->
-<!--                                 Total Rows : [[${totalItems}]]-->
-<!--                             </div>-->
-
-<!--                             <div class="col-sm-1">-->
-<!--                       <span th:each="i : ${#numbers.sequence(1,totalPages)}">-->
-<!--                       <a th:if="${currentPage != i}" th:href="@{'/product/page/' + ${i} + '?field=' + ${field} + '&sortDirection=' + ${sortDirection}}">[[${i}]]</a>-->
-<!--                      <span th:unless="${currentPage != i}">[[${i}]]</span>-->
-<!--                       </span>-->
-<!--                             </div>-->
-
-<!--                             <div class="col-sm-1">-->
-<!--                                 <a th:if="${currentPage < totalPages}" th:href="@{'/product/page/' + ${currentPage + 1}+'?field='+${field} + '&sortDirection=' + ${sortDirection}}"-->
-<!--                                    class="btn btn-sm btn-success">Next</a>-->
-<!--                                 <span th:unless="${currentPage < totalPages}" class="btn btn-sm btn-success">Next</span>-->
-<!--                             </div>-->
-<!--                             <div class="col-sm-1">-->
-<!--                                 <a th:if="${currentPage < totalPages}" th:href="@{'/product/page/' + ${totalPages}+'?field='+${field} + '&sortDirection=' + ${sortDirection}}"-->
-<!--                                    class="btn btn-sm btn-success">Last</a>-->
-<!--                                 <span th:unless="${currentPage < totalPages}" class="btn btn-sm btn-success">Last</span>-->
-<!--                             </div>-->
-<!--                         </div>-->
-<!--                         </div>-->
-
-
-<!--                    pagination end-->
 
         </div>
       </div>
@@ -269,33 +203,36 @@
 
     </div>
 
-    <div style="background-color:black;margin-left:250px;height:100px;margin-top:2px;margin-bottom:2px;"th:if="${totalPages > 1}">
-        <div style="background-color:black;" class="row col-sm-10">
-            <div  style="border-radius:10px;background-color:white;color:black;margin-left:20px;margin-top:37px;padding-left:30px;padding-top:5px;height:30px;width:30px;" class="col-sm-2">
-                Total Rows : [[${totalItems}]]
-            </div>
-
-            <div style="margin-left:20px;margin-top:37px;padding-left:30px;" class="col-sm-1">
-                      <span style="background-color:#0D6EFD;width:70px;margin-right: 30px;padding-left:10px;padding-right:10px;padding-bottom:7px;padding-top:3px;color:white;border-radius:20px;"
-                            th:each="i : ${#numbers.sequence(1,totalPages)}">
-                             <a style="color:white;height:70px"  th:if="${currentPage != i}"
-                                th:href="@{'/product/page/' + ${i} + '?field=' + ${field} + '&sortDirection=' + ${sortDirection}}">[[${i}]]</a>
-                             <span  style="padding-left:10px;"  th:unless="${currentPage != i}"[[${i}]]></span>
-                </span>
-            </div>
-
-            <div style="background-color:black;margin-left:40px;margin-top:37px;padding-left:30px;"  class="col-sm-1">
-                <a style="padding:8px;" th:if="${currentPage < totalPages}" th:href="@{'/product/page/' + ${currentPage + 1}+'?field='+${field} + '&sortDirection=' + ${sortDirection}}"
-                   class="btn btn-sm btn-primary">Next</a>
-                <span style="padding-left:20px" th:unless="${currentPage < totalPages}" class="btn btn-sm btn-primary">Next</span>
-            </div>
-            <div style="background-color:black;margin-left:4px;margin-top:37px;padding-left:20px;" class="col-sm-1">
-                <a style="padding:8px;" th:if="${currentPage < totalPages}" th:href="@{'/product/page/' + ${totalPages}+'?field='+${field} + '&sortDirection=' + ${sortDirection}}"
-                   class="btn btn-sm btn-primary">Last</a>
-                <span style="padding-left:20px" th:unless="${currentPage < totalPages}" class="btn btn-sm btn-primary">Last</span>
+    <!--new pagination-->
+    <div class="row" style="background-color: #000; margin-left: 250px; height: 100px; margin-top: 2px; margin-bottom: 2px; display: flex;">
+        <div class="col-md-3" style="background-color#000: ;margin:0px auto;display: flex; align-items: center; justify-content: center;">
+            <div style="border-radius:10px;background-color:#fff;color:black;padding:15px;">
+                Total Rows: [[${totalItems}]]
             </div>
         </div>
+        <div class="col-md-4" style="background-color:#000;display: flex; align-items: center; justify-content:start;">
+                              <span style="background-color:#0D6EFD;padding-bottom:7px;padding-top:3px;color:white;border-radius:20px;margin:7px;"
+                                    th:each="i : ${#numbers.sequence(1,totalPages)}">
+                                     <a style="color:white;height:70px;width:auto;padding:15px;"  th:if="${currentPage != i}"
+                                        th:href="@{'/product/page/' + ${i} + '?field=' + ${field} + '&sortDirection=' + ${sortDirection}}">[[${i}]]</a>
+                                  <span    th:unless="${currentPage != i}"[[${i}]]></span>
+                                </span>
+        </div>
+        <div class="col-md-4" style="background-color: #000;display: flex; align-items: center; justify-content:start;padding-right:0px;">
+            <a  style="padding:14px;margin-right:20px;" th:if="${currentPage < totalPages}"
+                th:href="@{'/product/page/' + ${currentPage + 1}+'?field='+${field} + '&sortDirection=' + ${sortDirection}}"
+                class="btn btn-sm btn-primary">Next</a>
+
+            <span style="padding: 14px; margin-right: 20px; background-color: red; color: white;" th:unless="${currentPage < totalPages}" class="btn btn-sm btn-primary">Next</span>
+
+            <a style="padding:14px;"  th:if="${currentPage < totalPages}"
+               th:href="@{'/product/page/' + ${currentPage + 1}+'?field='+${field} + '&sortDirection=' + ${sortDirection}}"
+               class="btn btn-sm btn-primary">Last</a>
+
+            <span style="padding: 14px; margin-right: 20px; background-color: red; color: white;" th:unless="${currentPage < totalPages}" class="btn btn-sm btn-primary">Last</span>
+        </div>
     </div>
+    <!--pagination end-->
 </section>
 </body>
 </html>

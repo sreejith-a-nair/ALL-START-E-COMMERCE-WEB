@@ -1,7 +1,10 @@
 package com.mydemo.demoproject.service.admin.product;
 
+import com.mydemo.demoproject.Entity.Brand;
 import com.mydemo.demoproject.Entity.CategoryInfo;
+import com.mydemo.demoproject.Entity.Offer;
 import com.mydemo.demoproject.Entity.ProductInfo;
+import com.mydemo.demoproject.Repository.admin.BrandRepo;
 import com.mydemo.demoproject.Repository.admin.CategoryRepo;
 import com.mydemo.demoproject.Repository.admin.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,9 @@ public class ProductServiceImp implements ProductService {
 
     @Autowired
     CategoryRepo categoryRepo;
+
+    @Autowired
+    BrandRepo brandRepo;
 
     /* delete image*/
     @Override
@@ -136,11 +142,16 @@ public class ProductServiceImp implements ProductService {
     }
 
 
-    public ProductInfo addProduct(ProductInfo product, UUID categoryId) throws ChangeSetPersister.NotFoundException {
+    public ProductInfo addProduct(ProductInfo product, UUID categoryId,UUID brandId) throws ChangeSetPersister.NotFoundException {
 
         CategoryInfo category = categoryRepo.findById(categoryId)
                 .orElseThrow(ChangeSetPersister.NotFoundException::new);
+
+        Brand brands=brandRepo.findById(brandId)
+                .orElseThrow(ChangeSetPersister.NotFoundException::new);
+
         product.setCategory(category);
+        product.setBrand(brands);
         return productRepo.save(product);
 }
 
@@ -174,6 +185,17 @@ public class ProductServiceImp implements ProductService {
          return  productRepo.findProductsInPriceRange(minPrice, maxPrice,pageable);
 
 
+    }
+
+    @Override
+    public Page<ProductInfo> getProductsInOfferPercentageRange(int minPercentage, int maxPercentage, Pageable pageable) {
+        return productRepo.findProductsInOfferPercentageRange(minPercentage, maxPercentage, pageable);
+    }
+
+    @Override
+    public float getDiscountPrice(float productPrice, int offerPercent) {
+        float discountPrice=productPrice-(productPrice*offerPercent/100);
+        return discountPrice;
     }
 
 

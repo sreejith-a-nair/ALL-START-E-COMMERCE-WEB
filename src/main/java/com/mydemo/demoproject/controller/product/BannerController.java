@@ -2,10 +2,12 @@ package com.mydemo.demoproject.controller.product;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mydemo.demoproject.Entity.Banner;
+import com.mydemo.demoproject.Entity.ProductInfo;
 import com.mydemo.demoproject.Repository.admin.BannerRepo;
 import com.mydemo.demoproject.service.admin.product.BannerService;
 import com.mydemo.demoproject.service.admin.product.ProductServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,35 +29,31 @@ public class BannerController {
     @Autowired
     BannerService bannerService;
 
-    @Autowired
-    BannerRepo bannerRepo;
 
-    @Autowired
-    ProductServiceImp productService;
-//    @PostMapping("/update")
-//    public String updateProduct(@RequestParam("uuid") UUID bannerUUid,
-//                                @RequestParam(value = "newImages" , required = false) List<MultipartFile> newImages
-//    ) {
-//        //save new images
-////        if(newImages!=null) {
-////            for (MultipartFile image : newImages) {
-////                if (image.getOriginalFilename() != "") {
-////                    String fileLocation = handleFileUpload(image);
-////                    Image imageEntity = new Image(fileLocation, productService.getProduct(productUuid).orElseThrow());
-////                    imageService.save(imageEntity);
-////                }
-////            }
-////        }
-////        return "redirect:/product/home";
-//    }
+//   @GetMapping("/home")
+//    public String showBanner(Model model){
+//       List<Banner> bannerInfo  =  bannerService.findByAllBanner();
+//       model.addAttribute("bannerInfo",bannerInfo);
+//    return "admin/banner";
+//   }
 
-@GetMapping("/home")
-    public String showBanner(Model model){
+    @GetMapping("/home")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public String showAllProduct(Model model){
+        return   findPaginated(1,model);
+    }
 
-       List<Banner> bannerInfo  =  bannerService.findByAllBanner();
-    System.out.println("BANNER LIST = "+bannerInfo);
+    @GetMapping("/page/{pageNo}")
+public String findPaginated(@PathVariable(value = "pageNo") int pageNo,Model model){
+    int pageSize=3;
+    Page<Banner> page=bannerService.findPaginated(pageNo,pageSize);
+    List< Banner>bannerInfo=page.getContent();
 
-       model.addAttribute("bannerInfo",bannerInfo);
+    model.addAttribute("currentPage", pageNo);
+    model.addAttribute("totalPages", page.getTotalPages());
+    model.addAttribute("totalItems", page.getTotalElements());
+    model.addAttribute("bannerInfo", bannerInfo);
+
     return "admin/banner";
 }
 
@@ -67,23 +65,20 @@ public String addBanner(@RequestParam(value="error",required=false)String error,
         if (error != null && error.equals("BannerExists")) {
             model.addAttribute("error", "Banner already exists.");
         }
-
     return "admin/add-banner";
 }
 
     @PostMapping("/save-banner")
     public String addBanner(@RequestParam("fileName") List<MultipartFile> fileName,
+                            @RequestParam("bannerName") String bannerName,
                             Model model) throws IOException {
         List<Banner> banners = new ArrayList<>();
-        System.out.println("save banner>>>>>>>>>>>>>>>>>>imggggggggggggg"+fileName);
         boolean hasDuplicate = false;
 
         if (!fileName.isEmpty() && !fileName.get(0).getOriginalFilename().equals("")) {
 
-            System.out.println("image>>>>>>>>>>>>>>>>>>if"+fileName);
 
             for (MultipartFile image : fileName) {
-                System.out.println("image file name "+image);
 
                 String newFileName = image.getOriginalFilename();
 
@@ -93,21 +88,20 @@ public String addBanner(@RequestParam(value="error",required=false)String error,
                 }
                 String fileLocation = handleFileUploading(image);
                 Banner bannerEnity = new Banner(fileLocation);
+                bannerEnity.setBannerName(bannerName);
                 bannerEnity = bannerService.save(bannerEnity);
                 banners.add(bannerEnity);
             }
         }
         else {
-
             Banner banner = new Banner();
             banner.setFileName(banners.get(0).getFileName());
-            System.out.println("banner>>>>" + banner);
-
             bannerService.save(banner);
         }
 
         return "redirect:/banner/home";
     }
+
     /*THIS POST HAVE ERROR*/
     /*edit banner*/
     @GetMapping("/edit/{uuid}")
@@ -121,7 +115,8 @@ public String addBanner(@RequestParam(value="error",required=false)String error,
     }
     @PostMapping("/update")
     public String updateBanner(@ModelAttribute("banner") Banner banner,
-                               @RequestParam("newImage") MultipartFile newImage) throws IOException {
+                               @RequestParam("newImage") MultipartFile newImage,
+                                @RequestParam("bannerName") String bannerName   ) throws IOException {
         UUID bannerId = banner.getUuid();
         if (bannerId != null) {
             Optional<Banner> existingBanner = bannerService.findBannerById(bannerId);
@@ -132,10 +127,11 @@ public String addBanner(@RequestParam(value="error",required=false)String error,
                 String newFileName = newImage.getOriginalFilename();
 
                 if (!newFileName.equals(bannerToUpdate.getFileName())) {
+
                     String fileLocation = handleFileUploading(newImage);
                     bannerToUpdate.setFileName(fileLocation);
 
-                    System.out.println("UpDate banner>>>"+bannerToUpdate);
+                    bannerToUpdate.setBannerName(bannerName);
                     bannerService.save(bannerToUpdate);
 
                     return "redirect:/banner/home";
@@ -144,38 +140,6 @@ public String addBanner(@RequestParam(value="error",required=false)String error,
         }
         return "redirect:/banner/home";
     }
-
-//    @PostMapping("/update")
-//    public String updateBanner(@ModelAttribute("banner") Banner banner,
-//                               @RequestParam("newImage") MultipartFile newImage) throws IOException {
-//        UUID bannerId = banner.getUuid();
-//        if (bannerId != null) {
-//            Optional<Banner> existingBanner = bannerService.findBannerById(bannerId);
-//
-//            if (existingBanner.isPresent()) {
-//                Banner bannerToUpdate = existingBanner.get();
-//
-//                String newFileName = newImage.getOriginalFilename();
-//
-//                // Check if the new image is different from the existing image
-//                if (!newFileName.equals(bannerToUpdate.getFileName())) {
-//                    String fileLocation = handleFileUploading(newImage);
-//                    bannerToUpdate.setFileName(fileLocation);
-//
-//                    // You can update other properties of bannerToUpdate here
-//
-//                    // Save the updated banner
-//                    bannerService.save(bannerToUpdate);
-//
-//                    return "redirect:/success-page"; // Redirect to a success page
-//                }
-//            }
-//        }
-//        return "redirect:/error-page"; // Redirect to an error page
-//    }
-//
-
-
 
     private String handleFileUploading(MultipartFile file) throws IOException {
         String rootPath = System.getProperty("user.dir");
@@ -196,7 +160,6 @@ public String addBanner(@RequestParam(value="error",required=false)String error,
         return fileName;
     }
 
-
     /*Disable Banner*/
     @GetMapping("/block/{uuid}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -215,9 +178,5 @@ public String addBanner(@RequestParam(value="error",required=false)String error,
         bannerService.enableBanner(uuid);
         return  "redirect:/banner/home";
     }
-
-
-
-
 
 }

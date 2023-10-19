@@ -17,12 +17,10 @@ public interface OrderService {
 
     List<Cart>getCartByUser(String username);
 
-
-
     Order saveOrder(Order order);
 
 //    find single product total
-  float findTotalUseQuantity(long quantity,float price);
+  float findTotalUseQuantity(float quantity,float price);
 
    List<Order>getAllOrders();
 
@@ -56,13 +54,10 @@ Optional<Order> findOrderById(UUID savedOrderUuid);
 
    List<Coupon> findCouponByCode(String couponCode);
 /*find order by user*/
-//List<Order> findOrderByUser(String username);
+
+    float applyCouponFindTotal(List<Coupon>couponList,String username,float totalDiscountPrices);
 
 
-
-    Double applyCouponFindTotal(List<Coupon>couponList,String username);
-
-//    public Double applyCouponToOrder(Coupon coupon, float product) ;
      Double applySingleCouponFindTotal(List<Coupon>couponList,String username,float oldtotal);
 
     /*pagination*/
@@ -81,8 +76,6 @@ Optional<Order> findOrderById(UUID savedOrderUuid);
     /*My order*/
     List<Order> getOrderByUsername( String username);
 
-    /*Get order items in One order*/
-//     List<OrderItems> getOrderItemsByOrder(Order order);
 
 /*cancel order*/
  void cancel(UUID orderUuid,String cancelReason,String username);
@@ -90,6 +83,11 @@ Optional<Order> findOrderById(UUID savedOrderUuid);
     void returnOrder(UUID orderUuid, String cancelReason,String  username);
 
 
-    /*update stock*/
-//    void updateStock(Order order);
+    byte[] getOrderInvoice(Order orders) throws Exception;
+
+
+    /*Wallet*/
+    float walletPay(Double total,float walletMoney);
+
+    void updateWallet(float walletPrice,String username,Double totalPrice);
 }

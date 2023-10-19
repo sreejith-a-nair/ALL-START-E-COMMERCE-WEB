@@ -2,9 +2,11 @@ package com.mydemo.demoproject.controller.cart;
 
 
 import com.mydemo.demoproject.Entity.*;
+import com.mydemo.demoproject.service.admin.offer.OfferService;
 import com.mydemo.demoproject.service.admin.product.ImageService;
 import com.mydemo.demoproject.service.admin.product.ProductService;
 import com.mydemo.demoproject.service.shop.CartService;
+import com.mydemo.demoproject.service.shop.ShopService;
 import com.mydemo.demoproject.service.shop.WishListService;
 import com.mydemo.demoproject.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.nio.file.WatchService;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -39,157 +42,209 @@ public class CartController {
     @Autowired
     WishListService wishListService;
 
+    @Autowired
+    OfferService offerService;
+
+
     @PostMapping("/showProductByCategory/{uuid}")
     public String cartView(@PathVariable UUID uuid, Model model) {
-        System.out.println("cart view.........................................................................." + uuid);
+
         Optional<CategoryInfo> cartInfo = cartService.getCategoryDetails(uuid);
         List<Image> images = imageService.findAllImage();
-        System.out.println("cartInfo>>>>>>>>>>>>>>>>>>>>>>>>" + cartInfo);
         model.addAttribute("cartInfo", cartInfo);
         model.addAttribute("images", images);
         return "shop/cart";
 
     }
 
-    /* @get Show cart */
-//    @GetMapping("/addToCart/{uuid}")
-//    public String showSingleProduct(@PathVariable UUID uuid,Model model) {
-////        System.out.println("Single product ID:cart]]]] " + uuid);
-//
-////        cartService.saveToCart(uuid);
-//        Optional<ProductInfo>productInfo=productService.getProduct(uuid);
-////       System.out.println("Single product ID: >>>>>>" + productInfo);
-//
-////        List<Image>images=imageService.findAllImage();
-////        model.addAttribute("images",images);
-//        model.addAttribute("productInfo",productInfo.orElse(null));
-//
-////        System.out.println("Image ID: -----------------" + images);
-////        List<Cart> cartInfo=cartService.getCartInfo();
-////        System.out.println("Cart info======================================="+cartInfo);
-////        model.addAttribute("images",images);
-////        model.addAttribute("cartInfo",cartInfo);
-////        model.addAttribute("productInfo",productInfo.orElse(null));
-//        return "shop/cart";
-//    }
 
-
+    /*NEW UPDATE*/
     @GetMapping("/addToCart/{uuid}")
     public String addToCart(@PathVariable UUID uuid,
+                            @RequestParam(name = "discountedPrice", required = false) Float discountPrice,
                             @AuthenticationPrincipal(expression = "username") String username,
-                           Model model) {
-        System.out.println("hail cart+"+uuid);
+                            Model model) {
+
         ProductInfo productInfo = productService.getProduct(uuid).orElse(null);
-        System.out.println("productInfo"+productInfo);
+
         UserEntity user = userService.findByUsernames(username);
-        System.out.println("user"+user);
 
-        Long currentStock= productInfo.getStock();
-        System.out.println("currentStock>>>>>>>>>>"+currentStock);
-        if(currentStock>=1) {
+//        productInfo.setDiscountedPrice(discountedPrice);
+        /*new*/
+//        float discountedPrices = productInfo.getDiscountedPrice();
+//        System.out.println("discounted price..................." + discountedPrices);
+        System.out.println("single product discounted price>>>>>>>>>>" + discountPrice);
 
+        Long currentStocks = productInfo.getStock();
+        if (currentStocks >= 1) {
+            Cart existingCartItem = cartService.findCartItem(user, productInfo);
 
-            if (productInfo != null && user != null) {
+            if (existingCartItem != null) {
 
-                Cart existingCartItem = cartService.findCartItem(user, productInfo);
-                System.out.println("existingCartItem>>>>>>>>>>>>>>" + existingCartItem);
-                if (existingCartItem != null) {
-                    System.out.println("existingCartItem>>>>>>>>>>>>>>>>>>>>>>>>" + existingCartItem);
-                    existingCartItem.setQuantity(existingCartItem.getQuantity() + 1);
-                    cartService.saveToCart(existingCartItem);
-                } else {
-                    System.out.println("product no null");
-                    Cart cartItem = new Cart();
-                    cartItem.setProductInfo(productInfo);
-                    cartItem.setUserEntity(user);
-                    cartItem.setQuantity(1);
-//            user.setCartItems((List<Cart>) cartItem);
-                    System.out.println("cartlist>>>>>>" + cartItem);
-                    cartService.saveToCart(cartItem);
-                }
+                existingCartItem.setQuantity(existingCartItem.getQuantity() + 1);
+                cartService.saveToCart(existingCartItem);
+            } else {
+                Cart cartItem = new Cart();
+                cartItem.setProductInfo(productInfo);
+                cartItem.setUserEntity(user);
+                cartItem.setQuantity(1);
+                cartService.saveToCart(cartItem);
 
             }
-            return "redirect:/cart/viewCart";
+            productInfo.setDiscountedPrice(discountPrice);
+            productService.update(productInfo);
         }
-        else {
-        model.addAttribute("error", "Product is out of stock");
-            return "shop/message";
-        }
-
+        model.addAttribute("discountPrice", discountPrice);
+        return "redirect:/cart/viewCart";
 
     }
+            /*end*/
+
+
 
     @GetMapping("/viewCart")
     public String viewCart(Model model, @AuthenticationPrincipal(expression = "username") String username) {
         List<Cart> cartItems = cartService.findByUserEntity_Usernames(username);
+        /*new*/
 
         if (cartItems.isEmpty()) {
             model.addAttribute("cartEmpty", true);
         } else {
-            System.out.println("cart after delete[[[[[" + cartItems);
             Optional<UserEntity> user = userService.getUserdata(username);
-            System.out.println("user/////" + user);
+
+            float totalDiscountPrice = 0.0f;
+            for (Cart cartItem : cartItems) {
+
+                ProductInfo productInfo = cartItem.getProductInfo();
+
+                CategoryInfo category = productInfo.getCategory();
+
+                int productQuantity = cartItem.getQuantity();
+                String productName = cartItem.getProductInfo().getName();
+
+
+                List<Offer> categoryOffers = offerService.getCategoryOffers(category);
+
+                List<Offer> productOff = offerService.getProductOffers(productInfo);
+
+                float discountPrice = 0f;
+
+                for (Offer productWiseOffer : productOff) {
+                    for (Offer categoryOffer : categoryOffers) {
+                        if (productWiseOffer.getCategoryOffPercentage() > categoryOffer.getCategoryOffPercentage()) {
+                            // Product offer percentage is greater than category offer percentage
+                            // Handle this case
+                            discountPrice = productInfo.getPrice() - (productInfo.getPrice() * productWiseOffer.getCategoryOffPercentage() / 100);
+                            System.out.println("In cart  products discount Amount  is = " + discountPrice);
+//                              productInfo.setDiscountedPrice(discountPrice);
+                            totalDiscountPrice += discountPrice * productQuantity;
+
+                            System.out.println("  In cart product of is grater  " + productWiseOffer.getCategoryOffPercentage());
+                            System.out.println("TOTAL DISCOUNT PRICE is product grater "+totalDiscountPrice);
+                        } else {
+                            // Product offer percentage is not greater than category offer percentage
+                            // Handle this case
+                            discountPrice = productInfo.getPrice() - (productInfo.getPrice() * categoryOffer.getCategoryOffPercentage() / 100);
+                            System.out.println(" In cart...... category discount Amount  is = " + discountPrice);
+//                              productInfo.setDiscountedPrice(discountPrice);
+                            totalDiscountPrice += discountPrice * productQuantity;
+                            System.out.println(" In cart .......category of is grater  " + categoryOffer.getCategoryOffPercentage());
+
+                            System.out.println("TOTAL DISCOUNT PRICE  is category  grater "+totalDiscountPrice);
+//                            model.addAttribute("productInfo", productInfo);
+
+                        }
+
+                    }
+                }
+
+            }
+            model.addAttribute("totalDiscountPrice", totalDiscountPrice);
             model.addAttribute("total", cartService.findTotal(cartItems));
             model.addAttribute("cartItems", cartItems);
             model.addAttribute("user", user.orElse(null));
         }
-
         return "shop/cart";
     }
 
-    /*@Remove Product from Cart or delete product*/
+        /*end*/
+
+//    @GetMapping("/viewCart")
+//    public String viewCarts(Model model, @AuthenticationPrincipal(expression = "username") String username) {
+//        List<Cart> cartItems = cartService.findByUserEntity_Usernames(username);
+//
+//
+//
+//        if (cartItems.isEmpty()) {
+//            model.addAttribute("cartEmpty", true);
+//        } else {
+//            System.out.println("cart after delete[[[[[" + cartItems);
+//            Optional<UserEntity> user = userService.getUserdata(username);
+//
+//            float totalDiscountPrice = 0.0f;
+//
+//            for (Cart cartItem : cartItems) {
+//                ProductInfo productInfo = cartItem.getProductInfo();
+//                int productQuantity = cartItem.getQuantity();
+//                String productName = cartItem.getProductInfo().getName();
+//
+//                List<Offer> productOffer = productInfo.getOffer();
+//                float discountPrice;
+//
+//                if (productOffer != null && !productOffer.isEmpty()) {
+//                    int productOfferPercent = productOffer.get(0).getCategoryOffPercentage();
+//                    discountPrice = productInfo.getPrice() - (productInfo.getPrice() * productOfferPercent / 100);
+//                } else {
+//                    discountPrice = productInfo.getPrice();
+//                }
+//
+//                totalDiscountPrice += discountPrice * productQuantity;
+//
+//            }
+//                 model.addAttribute("totalDiscountPrice", totalDiscountPrice);
+//                 model.addAttribute("total", cartService.findTotal(cartItems));
+//                 model.addAttribute("cartItems", cartItems);
+//                 model.addAttribute("user", user.orElse(null));
+//        }
+//
+//        return "shop/cart";
+//    }
+
     @GetMapping("/removeFromCart/{uuid}")
     public String removeProduct(@PathVariable UUID uuid,
                                 @AuthenticationPrincipal(expression = "username") String username ) {
 
         cartService.removeFromCart(username,uuid);
-        System.out.println("product uuid///////" + uuid);
-
         return "redirect:/cart/viewCart";
     }
 
-    /*soft delete*/
-//    @GetMapping("/removeFromCart/{uuid}")
-//    public String removeProduct(@PathVariable UUID uuid) {
-//        Optional<Cart> cartItem = cartService.getCartById(uuid);
-//
-//        if (cartItem.isPresent()) {
-//            // Update the deletedById property to mark it as deleted.
-//            cartItem.get().setDeletedById(true);
-//            cartService.saveToCart(cartItem);
-//            System.out.println("Product with UUID " + uuid + " removed from cart.");
-//        } else {
-//            System.out.println("Product with UUID " + uuid + " not found in the cart.");
-//        }
-//
-//        return "redirect:/cart/viewCart";
-//    }
 
-    /*Quantity setting*/
     @PostMapping("/setQuantity")
-    public String SetQuantity(@RequestParam("quantity") int quantity,
-                              @RequestParam("uuid") UUID cartId) {
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>cartId" + cartId);
-        Cart cartInfo = cartService.getCartById(cartId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
-        System.out.println(";;;;;;;;;;;;;;;;;;cartId" + cartInfo);
-        cartInfo.setQuantity(quantity);
-//        cartInfo.setQuantity(1);
-        System.out.println("new cart entity..." + cartInfo);
-        cartService.saveToCart(cartInfo);
-        System.out.println("setQuantity>>>>>>>>>>>>>" + quantity);
+    public String setQuantity(@RequestParam UUID uuid, @RequestParam int quantity,
+                              @RequestParam float price) {
+
+        Optional<Cart> optionalCartItem = cartService.getCartById(uuid);
+
+        if (optionalCartItem.isPresent()) {
+
+            Cart cartItem = optionalCartItem.get();
+            cartItem.setQuantity(quantity);
+            cartItem.getProductInfo().setDiscountedPrice(price);
+            cartService.saveToCart(cartItem);
+        }
 
         return "redirect:/cart/viewCart";
     }
+
 
     /*addToWishlistRemoveFromCart*/
     @GetMapping("/addToWishlistRemoveFromCart/{uuid}")
     public String addRemove(@PathVariable UUID uuid,
                             @AuthenticationPrincipal(expression = "username") String username) {
         ProductInfo productInfo = cartService.getProduct(uuid).orElse(null);
-        System.out.println("product info''''''" + productInfo);
+
         if (productInfo != null) {
-//            cartService.deleteProduct(uuid);
+
             WishList wishList = new WishList();
             wishList.setProductInfo(productInfo);
             wishList.setUserEntity(userService.getUserdata(username).orElse(null));
@@ -197,11 +252,9 @@ public class CartController {
             wishListService.moveToWishList(wishList);
             System.out.println(uuid);
             cartService.deleteProduct(uuid);
-            System.out.println("ProcartService.deleteProduct(uuid);duct with UUID " + uuid + " moved to wishlist and removed from cart.");
+
         } else {
-
             System.out.println("Product with UUID " + uuid + " not found.");
-
         }
         return "redirect:/cart/viewCart";
     }

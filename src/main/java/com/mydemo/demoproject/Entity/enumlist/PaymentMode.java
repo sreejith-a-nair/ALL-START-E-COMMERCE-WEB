@@ -4,7 +4,11 @@ public enum PaymentMode {
 
     COD,
     PAYPAL,
-    RAZORPAY
+    RAZORPAY,
+
+    WALLET,
+
+
 
 }
 

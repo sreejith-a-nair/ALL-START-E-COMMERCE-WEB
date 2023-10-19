@@ -68,7 +68,7 @@ public class BrandController {
         List<Brand> brands = brandService.findAll();
         System.out.println("brands]]]]]]]]"+brands);
 //        model.addAttribute("brands", brands);
-        model.addAttribute("content", "fragments/product-list :: productList");
+        model.addAttribute("brands",brands);
         return "shop/base";
     }
 

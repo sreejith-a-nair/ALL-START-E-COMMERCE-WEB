@@ -111,6 +111,20 @@
            th:value="${productInfo.category.categoryname}" placeholder="" required>
   </div>
 
+<!--  <div class="input-group" >-->
+<!--    <label for="uuuid">Brand:</label>-->
+<!--    <select id="uuuid" name="uuid" required style="width: 400px; background-color: white; border-radius: 5px; padding: 10px;">-->
+<!--      <option th:each="brand : ${brands}" th:value="${brand.uuid}" th:text="${brand.name}">Brand Name</option>-->
+<!--    </select>-->
+<!--  </div>-->
+
+
+  <div class="input-group">
+    <label for="brandUuid">Brand:</label>
+    <select id="brandUuid" name="brandUuid" required style="width: 400px; background-color: white; border-radius: 5px; padding: 10px;">
+      <option th:each="brand : ${brands}" th:value="${brand.uuid}" th:text="${brand.name}">Brand Name</option>
+    </select>
+  </div>
 
   <div class="input-group">
     <label for="stock">Stock:</label>

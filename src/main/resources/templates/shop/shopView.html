@@ -11,84 +11,185 @@
 
 <body>
 <section>
-
-<section class="banner">
-    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" style="margin-top:160px;">
-        <ol class="carousel-indicators">
-            <!-- Add indicators here if needed -->
-        </ol>
-        <div class="carousel-inner" style="margin-top: 30px;">
-            <div th:each="banner, iterStat : ${bannerList}" class="carousel-item" th:classappend="${iterStat.index == 0} ? 'active'">
-                <img th:src="@{|/uploads/${banner.fileName}|}" class="d-block w-100 h-60" alt="Banner Image">
+    <section class="banner">
+        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" style="margin-top:160px;">
+            <ol class="carousel-indicators">
+                <!-- Add indicators here if needed -->
+            </ol>
+            <div class="carousel-inner" style="margin-top: 30px;">
+                <div th:each="banner, iterStat : ${mainBanners}" class="carousel-item" th:classappend="${iterStat.index == 0} ? 'active'">
+                    <img th:src="@{|/uploads/${banner.fileName}|}" class="d-block w-100 h-60" alt="Banner Image">
+                </div>
             </div>
+            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" ariahidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </a>
         </div>
-        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" ariahidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </a>
-    </div>
-</section>
+    </section>
+
+
     <!--CATEGORY SECTION-->
-    <section>
-        <div class="heading">
-            <h2 class="text-center">Shop by Categories</h2>
+    <section style="background-color:#375B8F;height:570px;">
+        <div class="heading" style="margin-bottom:60px;">
+            <h4 class="text-center">SHOP BY CATEGORY </h4>
         </div>
-<!--        <div th:if="${not #lists.isEmpty(categoryInfo)}">-->
-            <div class="row">
-                <div class="col-lg-3 col-md-4 col-sm-6 mb-4 d-flex" th:each="category : ${categoryInfo}">
-                    <div th:if="${category.enable}" class="card w-100 my-2 shadow-2-strong card-style">
-                        <div class="card-body d-flex flex-column">
-                            <a
-                                    style="background-color: #000000;width:100%;"
-                                    th:text="${category.categoryname}"
-                                    class="btn btn-primary shadow-0 me-1"></a>
-                            <button style="border-radius: 2px;margin-top:40px;margin-left:10px;width:170px;height:34px;background-color:#F61B81;">
-                                <a th:href="@{/shop/categoryExplore/{uuid}(uuid=${category.uuid})}"
-                                   style="text-decoration: none; color: white;">Explore</a>
-                            </button>
+
+        <div class="row" >
+            <div class="col-lg-3 col-md-5 col-sm-8 mb-4 d-flex" th:each="category : ${categoryInfo}" style="margin-bottom:10px;margin-top:10px;">
+                <div th:if="${category.enable}" class="card my-3 shadow-2-strong card-style" style="width: auto;height:330px;">
+                    <div class="card-body d-flex flex-column" style="height:auto;">
+                        <!-- Category Image -->
+
+                        <div class="round-image">
+                            <!-- Category Image -->
+                            <div style=" background-color:#background: rgb(246,215,97);
+                                              background: linear-gradient(90deg, rgba(246,215,97,1) 0%, rgba(231,205,75,0.9865196078431373) 18%, rgba(242,200,87,0.9781162464985994) 39%, rgba(244,208,62,0.9837184873949579) 54%, rgba(219,186,40,1) 68%, rgba(226,196,72,0.9697128851540616) 83%, rgba(227,193,68,1) 100%);">
+                                <p th:if="${category.offer.size() > 0}">
+
+                                    <span th:each="offer : ${category.offer}">
+                                       <span style="color: red;margin-left:20px; font-weight: bold;" th:text="${ offer.CategoryOffPercentage + '% '+' OFF ' }"></span>
+                                    </span>
+                                </p>
+                            </div>
+
+                            <img style="height: 140px;width:160px;border: 2px solid #fff;"  th:if="${category.products.size() > 0 && category.products[0].images.size() > 0}"
+                                 th:src="@{|/uploads/${category.products[0].images[0].fileName}|}"
+                                 class="card-img-top rounded-circle border border-white" alt="Category Image">
                         </div>
+                        <a style="width:100%;font-family: serif; font-weight:medium;text-align:center;margin-top:20px;color:#000;"
+                           th:text="${category.categoryname}"></a>
+                        <button style="border-radius: 50px;margin-top:10px;width:100%;height:34px;background-color:#F61B81;">
+                            <a th:href="@{/shop/categoryExplore/{uuid}(uuid=${category.uuid})}"
+                               style="text-decoration: none; color: white;">Explore</a>
+                        </button>
+
+
                     </div>
                 </div>
             </div>
-<!--        </div>-->
+        </div>
+
     </section>
+
+    <div class="brand" style="margin-bottom:60px;">
+        <h4 class="text-center">SHOP BY BRAND</h4>
+    </div>
+
+    <section class="banner">
+        <div id="carouselExampleIndicator" class="carousel slide" data-ride="carousel" style="margin-top: 10px;">
+            <ol class="carousel-indicators">
+                <!-- Add indicators here if needed -->
+            </ol>
+            <div class="carousel-inner" style="margin-top: 30px;">
+                <div th:each="banner, iterStat : ${offerBanner}" class="carousel-item" th:classappend="${iterStat.index == 0} ? 'active'">
+<!--                    <a th:href="@{'shop/filterSpecialOffer?value=30'}">Link Text-->
+<!--                        <a th:href="@{/shop/filterSpecialOffer(value=30)}">Link Text-->
+                           <img th:src="@{|/uploads/${banner.fileName}|}" class="d-block w-100 h-30" alt="Banner Image">
+<!--                        </a>-->
+                </div>
+            </div>
+            <a class="carousel-control-prev" href="#carouselExampleIndicator" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carouselExampleIndicator" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" ariahidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </a>
+        </div>
+    </section>
+
+
+    <div style="background-color:#089A37;">
+    <div class="row" style="display: flex;margin-right:17px;background-color: #089A37;">
+
+        <div class="col-md-4" style="background-color: #1654AB; height: 100px; display: flex; justify-content: center; align-items: center;">
+            <th:block th:each="brand : ${brands}">
+                <div th:if="${brand.name == T(com.mydemo.demoproject.Entity.enumlist.BannerType).VICTOR.displayName}">
+                    <div style="background-color: white; border-radius: 10px; padding: 10px; width: 160px;">
+                        <a th:href="@{/shop/filterByBrand(selectedBrandUuid=${brand.uuid})}">
+                            <button class="btn" style="background-color: white; border: none; border-radius: 10px; color: black; padding-left: 33px;">BUY NOW</button>
+                        </a>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+
+        <div class="col-md-4" style="background-color: #150301; height: 100px; display: flex; justify-content: center; align-items: center;">
+            <th:block th:each="brand : ${brands}">
+                <div th:if="${brand.name == T(com.mydemo.demoproject.Entity.enumlist.BannerType).LINING.displayName}">
+                    <div style="background-color: white; border-radius: 10px; padding: 10px; width: 160px;">
+                        <a th:href="@{/shop/filterByBrand(selectedBrandUuid=${brand.uuid})}">
+                            <button class="btn" style="background-color: white; border: none; border-radius: 10px; color: black; padding-left: 33px;">BUY NOW</button>
+                        </a>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+        <div class="col-md-4" style="background-color:#089A37; height: 100px; display: flex; justify-content: center; align-items: center;">
+            <th:block th:each="brand : ${brands}">
+            <div th:if="${brand.name == T(com.mydemo.demoproject.Entity.enumlist.BannerType).YONEX.displayName}">
+                    <div style="background-color: white; border-radius: 10px; padding: 10px; width: 160px;">
+                        <a th:href="@{/shop/filterByBrand(selectedBrandUuid=${brand.uuid})}">
+                            <button class="btn" style="background-color: white; border: none; border-radius: 10px; color: black; padding-left: 33px;">BUY NOW</button>
+                        </a>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </div>
+    </div>
+
 
     <!--PRODUCT SECTION-->
     <section>
-            <div   class="heading">
-            <h2 >Shop by products</h2>
-           </div>
-        <div class="row">
-
-              <div class="col-lg-3 col-md-3 col-sm-6 mb-5 d-flex" style="margin-left:100px;" th:each="product : ${productInfoList}">
-                <div class="card w-100 my-2 shadow-2-strong" th:if="${product.enable}">
-              <!--view image-->
-                 <a class="card-body d-flex flex-column">
-
-                  <a th:href="@{/shop/singleProduct/{uuid}(uuid=${product.uuid})}">
-                    <img  th:if="${product.images != null and product.images.size() > 0}"
-                         th:src="@{|/uploads/${product.images[0].fileName}|}" class="card-img-top" alt="Product Image">
-                </a>
-
-                  <div style="margin-left:15px;">
-                    <h5 class="card-title" th:text="${product.name}">Product Name</h5>
-                  </div>
-
-                <p class="card-text p-2 mx-2">Price: <span th:text="${product.price}">Price</span></p>
-
-            </a>
-         </div>
-
+        <div class="heading" style="margin-top:20px;">
+            <h4>SHOP BY PRODUCT</h4>
         </div>
-      </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-6 mb-4 d-flex" style="margin-left: 100px;height:500;" th:each="product : ${productInfoList}">
+                <div class="card  my-2 shadow-2-strong" th:if="${product.enable}" style="width: 310px;">
+                    <div style=" padding-30px;background: rgb(228,44,125);   border-bottom-right-radius: 20px;   border-bottom-left-radius: 20px;
+                    background: linear-gradient(90deg, rgba(228,44,125,1) 0%, rgba(248,29,125,1) 25%, rgba(241,46,128,1) 50%, rgba(217,22,108,1) 71%, rgba(248,42,118,1) 100%);">
+                        <p th:if="${product.offer.size() > 0}">
+                        <span th:each="offer : ${product.offer}">
+                            <span style="margin-left:49px;color: #fff; font-weight: bold;" th:text="${ offer.CategoryOffPercentage + '% '+' OFF ' }"></span>
+                        </span>
+                        </p>
+                    </div>
+
+                    <!-- View image -->
+                    <a class="card-body d-flex flex-column">
+                        <a th:href="@{/shop/singleProduct/{uuid}(uuid=${product.uuid})}">
+                            <img th:if="${product.images != null and product.images.size() > 0}"
+                                 th:src="@{|/uploads/${product.images[0].fileName}|}" class="card-img-top" alt="Product Image"
+                                 style="max-height: 280px; max-width: 90%;">
+                        </a>
+                        <div style="margin-left: 15px;">
+                            <h5 class="card-title" th:text="${product.name}">Product Name</h5>
+                        </div>
+                        <p class="card-text p-1 mx-2">MRP : <span th:text="${product.price}" style="text-decoration: line-through;color: red; font-weight: bold;"></span></p>
+                        <p class="card-text p-1 mx-2" th:if="${product.discountedPrice != null}">
+                            Offer Price : <span style=" font-weight: bold;" th:text="${product.discountedPrice}">Price</span>
+                        </p>
+                        <div class="card-footer">
+
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
         <button class="blue-button">
             <a th:href="@{/shop/showAllProductsList}">Show More</a>
         </button>
     </section>
+
+
 
     <style>
 
@@ -188,17 +289,33 @@
           align-items: center;
       }
     .heading {
-    background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%);
-                border-radius: 10rem;
-    height: 70px;
-    margin-top: 150px;
-    margin-bottom: 200px;
-    color: white;
+
+
+    height: 47px;
+    margin-top: 120px;
+    margin-bottom:160px;
+    color: black;
     text-align: center;
     display: flex;
     justify-content: center;
     align-items: center;
+  background-color:#93C5FD;
+
+
 }
+.brand{
+    height: 47px;
+    margin-top: 10px;
+    margin-bottom:160px;
+    color: black;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+  background-color:#93C5FD;
+}
+
 .blue-button {
 margin-left:45%;
     background-color: #007bff; /* Blue color */

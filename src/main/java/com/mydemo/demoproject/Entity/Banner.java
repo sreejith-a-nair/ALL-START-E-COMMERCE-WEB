@@ -23,6 +23,8 @@ public class Banner {
 
     private String fileName;
 
+    private String bannerName;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private ProductInfo productInfo;

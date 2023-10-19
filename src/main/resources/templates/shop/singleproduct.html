@@ -15,6 +15,9 @@
 </head>
 <body>
 <section >
+  <script src="https://unpkg.com/js-image-zoom@0.4.1/js-image-zoom.js" type="application/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-image-zoom/dist/js/bootstrap-image-zoom.min.js"></script>
+
   <section>
   <div  style="margin-left: 100px; margin-right: 100px;">
     <div class="row">
@@ -33,29 +36,44 @@
           <!-- Small product images -->
           <div class="product-gallery" >
               <div style="margin-top:60px;border: 2px solid #FF0000;" class="product-gallery-item" th:each="image : ${product.get().images}">
-                  <img th:src="@{|/uploads/${image.fileName}|}" class="card-img-top" alt="Product Image">
+                  <img th:src="@{|/uploads/${image.fileName}|}" class="card-img-top sideimg" alt="Product Image">
               </div>
           </div>
           <!-- Main product image -->
           <div style="margin-top: 35px; margin-right: 50px;">
+
             <h1 th:text="${product.get().name}" style="padding-bottom:30px;">Product Name</h1>
-              <div class="img" style="width:400;height:500px;">
-                <img th:src="@{|/uploads/${product.get().images[0].fileName}|}"  class="card-img-top"  alt="Product Image">
+              <div class="img" style="width:400;height:500px;padding:50px;padding-top:10px;">
+                <div class="product-images">
+                  <a  th:href="@{/wishlist/moveToWishlist/{uuid}(uuid=${product.get().uuid})}">
+                    <i  class="fas fa-heart fa-2x   wishlist-buttons" style="color: #ff0000;margin-left:330px;padding:10px;margin-top:10px;"></i>
+                  </a>
+                  <div id="image-div" class="image-container">
+                        <img th:src="@{|/uploads/${product.get().images[0].fileName}|}"  class="card-img-top mainimg"  alt="Product Image">
+                  </div>
+                      <div class="d-flex mt-2">
+                         <div th:each="image : ${image}" class="m-1">
+                          <img onclick="change_image(this)" th:src="@{|/uploads/${image.fileName}|}" class="rounded-4 fit img-fluid thumbnail" alt="Product Image" style="max-width: 80px; max-height: 80px;" />
+                        </div>
+                      </div>
+                  </div>
+
               </div>
-<!--            <div class="d-flex  align-items-center">-->
-              <!--new-->
-<!--              <a href="#" class="btn size-chart mr-2">Size Chart</a>-->
 
-              <a th:href="@{/cart/addToCart/{uuid}(uuid=${product.get().uuid})}" style="text-decoration: none; color: black;">
-                <p class="card-text p-2 mx-2"
-                   style="background-color: black; color: white; font-weight: bold;width:416px;text-align: center;" >Price:
-                  <span th:text="${product.get().price}" >Price</span></p>
-                <button type="submit" class="cart-button mb-3 mx-1">Add to cart</button>
+<!--            <a th:href="@{/cart/addToCart/{uuid}(uuid=${product.get().uuid})}" style="text-decoration: none; color: black;">-->
+              <a th:href="@{/cart/addToCart/{uuid}(uuid=${product.get().uuid}, discountedPrice=${product.get().discountedPrice})}"
+                 style="text-decoration: none; color: black;">
+                <div style="border: 1px solid #ff0000;padding:10px;">
+                      <p class="card-text p-2 mx-2"
+                         style="; color: black; font-weight: bold;width:416px;text-align: center;" >M R P:
+                        <span th:text="${product.get().price}" >Price</span>
+                      </p>
+                      <p class="card-text p-2 mx-2" style=" color: black; font-weight: bold;width:416px;text-align: center;" >
+                         Offer Price: <span th:text="${product.get().discountedPrice}">discount price</span>
+                     </p>
+                </div>
+                <button type="submit" class="cart-button mb-3 mx-1" style="width:100%;margin-top:20px;">Add to cart</button>
               </a>
-
-                   <a   th:href="@{/wishlist/moveToWishlist/{uuid}(uuid=${product.get().uuid})}">
-                      <i class="fas fa-heart fa-2x   wishlist-buttons" style="color: #ff0000;"></i>
-                   </a>
 
 <!--            </div>-->
           </div>
@@ -64,7 +82,17 @@
             <h3 th:text="${product.get().name}"  style="font-weight: bold;width:216px;text-align: center;">Product Name</h3>
             <p th:text="${product.get().description}">Product Description</p>
             <!-- Price -->
-            <p th:text="'Price: RS  : ' + ${product.get().price}">Price: RS:</p>
+<!--            <p th:text="'M R P  : ' + ${product.get().price}"></p>-->
+<!--            <p th:text="'Discount price : ' + ${product.get().discountedPrice}"></p>-->
+            <p th:if="${product.get().discountedPrice != null}">
+              <span th:text="'M R P  : ' + ${product.get().price}"></span><br/>
+              <span th:text="'Offer Price : ' + ${product.get().discountedPrice}"></span>
+            </p>
+
+            <!-- Display only the product price if there is no discount -->
+            <p th:unless="${product.get().discountedPrice != null}">
+              <span th:text="'Price : ' + ${product.get().price}"></span>
+            </p>
             <!-- Rating (You can replace this with your actual rating logic) -->
 
           </div>
@@ -82,8 +110,8 @@
   <style>
 
   .img {
-  max-width: 500px; /* Adjust the size as needed */
-  height: 600px; /* Maintain aspect ratio */
+  max-width: 400px; /* Adjust the size as needed */
+  height: 500px; /* Maintain aspect ratio */
 }
 
       /* Style for buttons */
@@ -165,7 +193,7 @@
             cursor: pointer;
             border-radius: 3px;
             margin-right: Opx;
-             border: 1px solid black;
+
         }
 
 
@@ -213,11 +241,18 @@
 
 
 
-}
+
     </style>
 
 <!--   JavaScript to change the main image -->
   <script th:inline="javascript">
+      const mainimg = document.querySelector('.mainimg');
+      document.querySelectorAll('.sideimg').forEach(e => {
+         e.onclick = function() {
+            mainimg.src = e.src;
+         }
+      });
+
       function changeMainImage(newImage) {
         var mainImage = document.getElementById("mainImage");
         mainImage.src = newImage.src;
@@ -232,6 +267,19 @@
         // Implement your add to wishlist logic here
         alert('Added product with ID ' + productId + ' to wishlist.');
       }
+
+
+      var options = {
+            width: 300,
+            zoomWidth: 300,
+            offset: { vertical: 100, horizontal: 100 }
+        }
+        new ImageZoom(document.getElementById('image-div'), options);
+
+        function change_image(image) {
+            var container = document.getElementById("main-image");
+            container.src = image.src;
+        }
     </script>
 </section>
 </body>

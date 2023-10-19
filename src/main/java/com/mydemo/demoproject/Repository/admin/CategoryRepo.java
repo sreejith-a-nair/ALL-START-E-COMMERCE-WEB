@@ -36,6 +36,6 @@ public interface CategoryRepo extends JpaRepository<CategoryInfo,UUID> {
 
     Optional<CategoryInfo> findById(UUID uuid);
 
-
+    boolean existsByUuid(UUID uuid);
 
 }
