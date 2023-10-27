@@ -51,7 +51,7 @@ public class AdminController {
     @GetMapping("/home")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String adminHome(Model model){
-        System.out.println("hello myre");
+        System.out.println("hello sreejith");
       return   findPaginated(1,model);
     }
 
