@@ -121,60 +121,6 @@
 
 
 
-
-
-<!--    <div style="text-align:center;font-weight:bold;color:#6C757D;margin-top:50px;margin-bottom:40px">-->
-
-<!--        <form th:action="@{/admin/generate-sales-report}" method="get">-->
-<!--            <select name="format" class="form-select">-->
-<!--                <option value="pdf">PDF</option>-->
-<!--                <option value="excel">Excel</option>-->
-<!--            </select>-->
-<!--            <button type="submit" class="btn btn-primary my-3">Generate Report</button>-->
-<!--        </form>-->
-
-<!--        <h4>SALES-REPORT</h4>-->
-<!--    </div>-->
-    <!--new-->
-<!--    <div class="row">-->
-<!--        <div class="col-md-12 mb-1">-->
-<!--            <div class="card shadow">-->
-<!--                <div class="card-body">-->
-<!--                    &lt;!&ndash; Dropdown for Time Period Filter &ndash;&gt;-->
-<!--                    <form th:action="@{/admin/get-orders-by-date-range}"-->
-<!--                          class="d-flex justify-content-between mb-2" method="post" onsubmit="storeDateFilterValues()">-->
-<!--                        <div class="form-group">-->
-<!--                            &lt;!&ndash;                                    <label for="timeFilter">Select Time Period:</label>&ndash;&gt;-->
-<!--                            <select  style="margin-left:280px;" id="timeFilter" class="form-control">-->
-<!--                                <option value="" disabled selected>Choose Time-->
-<!--                                    Period</option>-->
-<!--                                <option value="daily"><i class="fas fa-box"></i>Daily</option>-->
-<!--                                <option value="monthly"><i class="fas fa-cog"></i>Monthly</option>-->
-<!--                                <option value="yearly"><i class="fas fa-tags"></i>Yearly</option>-->
-<!--                                <option value="range"><i class="fas fa-tags"></i>Range</option>-->
-<!--                            </select>-->
-<!--                        </div>-->
-<!--                        <div id="dailySection" style="display: none;">-->
-<!--                            &lt;!&ndash;                                    <label for="date"><i class="fas fa-calendar"></i> Date:</label>&ndash;&gt;-->
-<!--                            <input type="date" class="form-control" id="date" name="date">-->
-<!--                        </div>-->
-<!--                        <div id="yearlySection" style="display: none;">-->
-<!--                            &lt;!&ndash;                                    <label for="yearly"><i class="fas fa-calendar"></i> Year:</label>&ndash;&gt;-->
-<!--                            <select id="yearly" name="year" class="form-select">-->
-<!--                                <option value="" disabled selected>Select Year</option>-->
-<!--                                <option value="2022">2022</option>-->
-<!--                                <option value="2023">2023</option>-->
-<!--                            </select>-->
-
-<!--                        </div>-->
-<!--                        <button class="btn btn-outline-info" type="submit">Apply</button>-->
-<!--                    </form>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-
-
     <!--end-->
     <div class="container-fluid " style="margin-left:250px;;">
 
@@ -201,7 +147,8 @@
                                 <td th:text="${rowStat.index + 1}" class="text-center"></td>
                                 <td th:text="${order.uuid}" class="text-center"></td>
                                 <td th:text="${order.userEntity.username}" class="text-center"></td>
-                                <td th:text="${order.orderItems[0].productInfo.name}" class="text-center"></td>
+<!--                                <td th:text="${order.orderItems[0].productInfo.name}" class="text-center"></td>-->
+                                 <td th:text="${order.orderItems[0]?.productInfo?.name}" class="text-center"></td>
                                  <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm:ss')}" class="text-center"></td>
                                 <td th:text="${order.orderStatus}" class="text-center"></td>
                                 <td th:text="${order.totalPrice}" class="text-center"></td>

@@ -36,5 +36,6 @@ public interface BrandService {
 
     Page<ProductInfo> getBrandProducts(UUID selectedBrandUuid, Pageable pageable);
 
+    int findBrandCount();
 
 }

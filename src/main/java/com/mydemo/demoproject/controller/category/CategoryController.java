@@ -28,15 +28,6 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-//    /* 1 Show home old */
-//    @GetMapping("/home")
-//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-//    public String showAll(Model model) {
-//        List<CategoryInfo> categoryInfo = categoryService.findAll();
-//        model.addAttribute("categoryInfo", categoryInfo);
-//        return "admin/category";
-//    }
-
     /*pagination in category*/
 
     @GetMapping("/home")
@@ -53,8 +44,7 @@ public class CategoryController {
         int pageSize=5;
         Page<CategoryInfo> page=categoryService.findPaginated(pageNo,pageSize);
         List<CategoryInfo>categoryInfo=page.getContent();
-        System.out.println("users in paginationppppp"+categoryInfo);
-        System.out.println("page in paginationppppp"+page);
+
 
         model.addAttribute("currentPage", pageNo);
         model.addAttribute("totalPages", page.getTotalPages());
@@ -65,9 +55,6 @@ public class CategoryController {
     }
 
     /*pagination end*/
-
-
-
 
 
     /* 2 add Category*/
@@ -98,21 +85,11 @@ public class CategoryController {
     }
 
 
-    /*  edit category*/
-
-//    @GetMapping("/edits")
-//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-//    public String editCategory() {
-//        return "admin/edit-category";
-//    }
-
     @GetMapping("/edit/{uuid}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String editCategory(@PathVariable UUID uuid, Model model) {
-//        System.out.println("editCategory method..............." + id);
         Optional<CategoryInfo> categoryopptional = categoryService.getCategory(uuid);
         if (categoryopptional.isPresent()) {
-            System.out.println("is present");
             CategoryInfo categoryInfo = categoryopptional.get();
             model.addAttribute("categoryInfo",categoryInfo);
             return "admin/edit-category";
@@ -127,7 +104,6 @@ public class CategoryController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String enableCategory(@PathVariable UUID uuid)
     {
-//        System.out.println("enable is worked]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]][[[[[");
         categoryService.enableCategory(uuid);
         return "redirect:/category/home";
     }
@@ -136,49 +112,9 @@ public class CategoryController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String disableCategory(@PathVariable UUID uuid)
     {
-//        System.out.println("disable is worked]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]");
         categoryService.disableCategory(uuid);
         return  "redirect:/category/home";
     }
-
-
-
-//    /*search category*/
-
-//    @GetMapping(value = "/search", params = "keyword")
-//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-//    public String searchCategory(Model model, @RequestParam("keyword") String keyword) {
-////        System.out.println("search>begin.....>>>>>>>");
-//
-//        try {
-//
-//            List<CategoryInfo> categoryList;
-//
-//            if (keyword != null && !keyword.isEmpty()) {
-//                categoryList = categoryService.searchCategory(keyword);
-//
-//                System.out.println("search>>>>if" + categoryList);
-//
-//            } else {
-//                System.out.println("search--else------->>>");
-//
-//                categoryList = categoryService.loadAllCategory();
-//            }
-//
-//            model.addAttribute("categoryInfo", categoryList);
-//
-//            return "admin/category";
-//
-//        } catch (Exception e) {
-//
-//            e.printStackTrace();
-//
-//            model.addAttribute("errorMessage", "An error occurred while processing your request.");
-//            return "error";
-//        }
-//
-//    }
-
 
     /*NEW SEARCH*/
 @GetMapping("/search")

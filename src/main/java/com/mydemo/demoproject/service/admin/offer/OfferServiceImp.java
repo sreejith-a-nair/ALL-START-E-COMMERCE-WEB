@@ -28,11 +28,7 @@ public class OfferServiceImp implements  OfferService{
 
     @Autowired
     ProductRepo productRepo;
-//    @Override
-//    public void saveOffer(Offer offer) {
-//        offer.set(true);
-//        offerRepo.save(offer);
-//    }
+
 
     @Override
     public Page<Offer> findPaginated(int pageNo, int pageSize) {
@@ -55,7 +51,6 @@ public class OfferServiceImp implements  OfferService{
     public void unblockOffer(UUID uuid) {
         Optional<Offer> offer =offerRepo.findById(uuid);
         if (offer.isPresent()) {
-            System.out.println("unblocked offer>>>>>>>>>>>>");
             Offer offerData = offer.get();
             offerData.setEnabled(true);
             offerRepo.save(offerData);
@@ -68,7 +63,6 @@ public class OfferServiceImp implements  OfferService{
     public void blockOffer(UUID uuid) {
         Optional<Offer> offer =offerRepo.findById(uuid);
         if (offer.isPresent()) {
-            System.out.println("blocked offer>>>>>>>>>>>>");
             Offer offerData = offer.get();
             offerData.setEnabled(false);
             offerRepo.save(offerData);
@@ -117,9 +111,5 @@ public class OfferServiceImp implements  OfferService{
     public List<Offer> getProductOffers(ProductInfo productOff) {
         return offerRepo.findByProductInfo(productOff);
     }
-
-
-
-
 
 }

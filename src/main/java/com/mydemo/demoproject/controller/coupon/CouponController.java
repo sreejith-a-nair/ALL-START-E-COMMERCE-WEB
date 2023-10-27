@@ -36,17 +36,7 @@ public class CouponController {
     public  String saveCoupon(@ModelAttribute("coupon")Coupon coupon, Model model){
 
 /*find duplicate coupon add or not*/
-//       Optional<Coupon> existingCoupon = couponService.getCouponBYId(UUID.fromString(coupon.getCode()));
-//       String newCouponCode=coupon.getCode();
-//       List<Coupon> couponList=couponService.findAll();
-//       for(Coupon exsistCode: couponList) {
-//
-//           if(exsistCode.getCode().equals(newCouponCode)){
-//
-//               model.addAttribute()
-//           }
-//
-//       }
+
 
        System.out.println("coupon>>"+coupon);
        try {
@@ -83,14 +73,6 @@ public class CouponController {
 
 
 /*Coupon home old*/
-//    @GetMapping("/home")
-//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-//    public String showAllCoupon(Model model) {
-//        List<Coupon> couponList = couponService.findAll();
-//        model.addAttribute("couponList", couponList);
-//        return "admin/coupon";
-//    }
-
 
    @GetMapping("/home")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -106,8 +88,6 @@ public class CouponController {
         int pageSize=5;
         Page<Coupon> page=couponService.findPaginated(pageNo,pageSize);
         List<Coupon>couponList=page.getContent();
-        System.out.println("Coupon in pagination(("+couponList);
-        System.out.println("page in pagination(("+page);
 
         model.addAttribute("currentPage", pageNo);
         model.addAttribute("totalPages", page.getTotalPages());
@@ -143,10 +123,8 @@ public class CouponController {
     @GetMapping("/edit/{uuid}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String editOffer(@PathVariable UUID uuid, Model model) {
-//        System.out.println("edit product method.>>>>>>>>>>>>>>.............." + uuid);
         Optional<Coupon> couponById = couponService.getCouponBYId(uuid);
         if (couponById.isPresent()) {
-//            System.out.println("is present..............................");
             Coupon couponInfo = couponById.get();
             model.addAttribute("coupon",couponInfo);
             return "admin/edit-coupon";

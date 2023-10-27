@@ -86,18 +86,18 @@ public class OtpServiceImpl implements OtpService {
         generatedOtp = otpRepo.save(generatedOtp);
         System.out.println("new otp generated");
 
-//        final String ACCOUNT_SID = "ACddad013c6e6bf651da4c2df9fd5a1d5c";
-//        final String AUTH_TOKEN = "5c3523e170b3dd3d21570ee48b116cf0";
-//
-//        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-//        PhoneNumber from = new PhoneNumber("+12518424102");
-//        PhoneNumber to = new PhoneNumber("+919074792270");
-//
-//
-//        String content = "This is your account verification OTP. Valid for 5 minutes. OTP: " + generatedOtp.getOtp();
-//        MessageCreator messageCreator = new MessageCreator(to, from,  content);
-//        Message res = messageCreator.create();
-//        System.out.println(res.getSid());
+        final String ACCOUNT_SID = "ACddad013c6e6bf651da4c2df9fd5a1d5c";
+        final String AUTH_TOKEN = "878ede21baabe4bc3b300079e1486ca5";
+
+        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+        PhoneNumber from = new PhoneNumber("+12518424102");
+        PhoneNumber to = new PhoneNumber("+919074792270");
+
+
+        String content = "This is your account verification OTP. Valid for 5 minutes. OTP: " + generatedOtp.getOtp();
+        MessageCreator messageCreator = new MessageCreator(to, from,  content);
+        Message res = messageCreator.create();
+        System.out.println(res.getSid());
     }
 
     @Override

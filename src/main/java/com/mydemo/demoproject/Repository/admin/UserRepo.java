@@ -2,6 +2,8 @@ package com.mydemo.demoproject.Repository.admin;
 
 import com.mydemo.demoproject.Entity.CategoryInfo;
 import com.mydemo.demoproject.Entity.UserEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -23,10 +25,8 @@ public interface UserRepo extends JpaRepository<UserEntity,UUID> {
     public  UserEntity findByContact(Long phone);
 
 
-//    Optional<UserEntity>findBycontact(Long contact);
-//
-//    Optional<UserEntity>findBypassword(String password );
-
     UserEntity findByNewUserReferral(String referralCode);
+
+    Page<UserEntity> findByUsernameContainingIgnoreCase(String keyword, Pageable pageable);
 
 }

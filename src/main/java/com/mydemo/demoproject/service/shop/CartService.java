@@ -28,8 +28,6 @@ public interface CartService {
       Cart findByProductInfo_Uuid(UUID productUuid);
 
 
-      /*new update*/
-//      boolean productExistsInCart(UserEntity userEntity, ProductInfo productInfo);
 
     /*remove from cart*/
     void removeFromCart(String username, UUID productId);
@@ -41,7 +39,7 @@ public interface CartService {
 
 
 
-/*single product authetication*/
+/*single product authentication*/
  Cart findCartItem(UserEntity userEntity, ProductInfo productInfo);
 
 

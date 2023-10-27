@@ -73,7 +73,25 @@ public class ProductController {
         return "admin/product";
     }
 
-/*pagination end*/
+
+/*search */
+    @GetMapping("/search")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public String searchProduct(Model model, @RequestParam(name = "keyword", required = false) String keyword,
+                                @RequestParam(name = "page", defaultValue = "0") int pageNo) {
+        int pageSize = 5;
+        Page<ProductInfo> productPage = productService.searchProductPageable(keyword, pageNo, pageSize);
+
+        model.addAttribute("productInfo", productPage.getContent());
+        model.addAttribute("currentPage", pageNo);
+        model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("totalItems", productPage.getTotalElements());
+
+        return "admin/product";
+    }
+
+
+    /*pagination end*/
 
     /*3 save / update*/
     @PostMapping("/addCategory")
@@ -134,26 +152,18 @@ public class ProductController {
     @PostMapping("/save")
     public String saveProduct(@ModelAttribute("productInfo") ProductInfo productInfo,
                               Model model) {
-        System.out.println("product;;;;"+productInfo);
         Optional<ProductInfo> existingProduct = productService.getProduct(productInfo.getUuid());
-        System.out.println("product;;;;"+existingProduct);
 
         if (existingProduct.isPresent()) {
-            // Calculate the new stock by adding the existing stock with the input new stock
-            System.out.println("product in if;;;;"+existingProduct);
             Long currentStock = existingProduct.get().getStock();
             Long newStock = productInfo.getStock();
             Long totalStock = currentStock + newStock;
-            System.out.println("Sum of stock..."+totalStock);
 
-            // Update the product's stock quantity
             productInfo.setStock(totalStock);
             productService.updateStock(productInfo.getUuid(), totalStock);
 
-            // Redirect to a success page or wherever you need
             return "redirect:/product/home";
         } else {
-            // Handle the case where the product is not found
             return "redirect:/product/not-found";
         }
     }
@@ -232,9 +242,7 @@ public String updateProduct(@RequestParam("uuid") UUID productUuid,
 
      Optional<Brand> brand =brandService.getBrandById(brandUuid);
      Brand brandInfo= brand.get();
-     System.out.println("select brand>>>"+brandInfo);
 
-    System.out.println("image Update: "+newImages);
     ProductInfo updatedProduct = new ProductInfo();
     updatedProduct.setUuid(productUuid);
     updatedProduct.setName(name);
@@ -245,7 +253,6 @@ public String updateProduct(@RequestParam("uuid") UUID productUuid,
     updatedProduct.setEnable(true );
     updatedProduct.setBrand(brandInfo);
     productService.update(updatedProduct);
-    //save new images
 
     if(newImages!=null) {
         for (MultipartFile image : newImages) {
@@ -300,7 +307,6 @@ public String updateProduct(@RequestParam("uuid") UUID productUuid,
         if (file.exists()) {
 
             file.delete();
-            System.out.println("File deleted successfully!");
         } else {
             System.out.println("File not found!");
         }
@@ -325,15 +331,11 @@ public String updateProduct(@RequestParam("uuid") UUID productUuid,
     @GetMapping("/edit/{uuid}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String editCategory(@PathVariable UUID uuid, Model model) {
-//        System.out.println("edit product method.>>>>>>>>>>>>>>.............." + uuid);
         Optional<ProductInfo> productInfoOptional = productService.getProduct(uuid);
 
-        System.out.println("hai");
         List<Brand>brands=brandService.loadAllBrand();
-        System.out.println("product >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+brands);
 
         if (productInfoOptional.isPresent()) {
-//            System.out.println("is present..............................");
             ProductInfo productInfo = productInfoOptional.get();
             model.addAttribute("productInfo",productInfo);
             model.addAttribute("brands",brands);
@@ -343,37 +345,6 @@ public String updateProduct(@RequestParam("uuid") UUID productUuid,
         }
     }
 
-    /*search*/
-    @GetMapping(value = "/search", params = "keyword")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public String searchProduct(Model model, @Param("keyword") String keyword) {
-//        System.out.println("search>begin.....>>>>>>>");
-        try {
-            List<ProductInfo> productInfo;
-
-            if (keyword != null && !keyword.isEmpty()) {
-                productInfo = productService.searchProductName(keyword);
-                //System.out.println("search>>>>if" + categoryList);
-
-            } else {
-                //System.out.println("search--else------->>>");
-
-                productInfo = productService.loadAllProduct();
-            }
-
-            model.addAttribute("productInfo", productInfo);
-
-            return "admin/product";
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-
-            model.addAttribute("errorMessage", "An error occurred while processing your request.");
-            return "error";
-        }
-
-    }
 
 
    /*Block Product*/

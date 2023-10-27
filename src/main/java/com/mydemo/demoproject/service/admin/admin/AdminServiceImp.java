@@ -32,9 +32,7 @@ public class AdminServiceImp implements UserDetailsService {
         }
     }
 
-//    public UserEntity findByPhone(String phone) {
-//        return adminRepo.findByPhone(phone);
-//    }
+
 
 
 }

@@ -3,6 +3,11 @@ package com.mydemo.demoproject.controller.admin;
 import com.mydemo.demoproject.Entity.UserEntity;
 import com.mydemo.demoproject.service.admin.admin.AdminService;
 
+import com.mydemo.demoproject.service.admin.brand.BrandService;
+import com.mydemo.demoproject.service.admin.cartegory.CategoryService;
+import com.mydemo.demoproject.service.admin.order.OrderService;
+import com.mydemo.demoproject.service.admin.product.ProductService;
+import com.mydemo.demoproject.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.data.domain.Page;
@@ -13,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,19 +30,20 @@ public class AdminController {
     @Autowired
     AdminService adminService;
 
+    @Autowired
+    UserService userService;
 
-      /*home old*/
-//    @GetMapping("/home")
-//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-//    public String adminHome(Model model){
-////        System.out.println("hai admin//////////////////////////////////////////");
-//        List<UserEntity> users = adminService.findAll();
-////        System.out.println("search list" + users);
-//
-//
-//        model.addAttribute("users", users);
-//        return "admin/users";
-//    }
+    @Autowired
+    OrderService orderService;
+
+    @Autowired
+    ProductService productService;
+
+    @Autowired
+    CategoryService categoryService;
+
+    @Autowired
+    BrandService brandService;
 
 
     /*pagination*/
@@ -44,6 +51,7 @@ public class AdminController {
     @GetMapping("/home")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String adminHome(Model model){
+        System.out.println("hello java");
       return   findPaginated(1,model);
     }
 
@@ -63,34 +71,25 @@ public String findPaginated(@PathVariable(value = "pageNo") int pageNo,Model mod
     model.addAttribute("users", users);
     return "admin/users";
 }
+/*search.....*/
+    @GetMapping("/search")
+    public String searchUsers(
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "page", defaultValue = "1") int pageNo,
+            Model model) {
+        int pageSize = 3;
 
-/*end pagination*/
+        Page<UserEntity> users = userService.searchUsers(keyword, pageNo, pageSize);
 
-    /*search user*/
-    @GetMapping(value = "/search",params = "keyword")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public String searchUsers(Model model, @Param("keyword") String keyword){
-        try{
-        List<UserEntity> users;
-        if(keyword != null && !keyword.isEmpty()){
-            users = adminService.searchUsers(keyword);
-        }
-        else{
-            users = adminService.loadAllUsers();
-        }
-
-
-        model.addAttribute("users",users);
+        model.addAttribute("users", users.getContent());
+        model.addAttribute("currentPage", pageNo);
+        model.addAttribute("totalPages", users.getTotalPages());
+        model.addAttribute("totalItems", users.getTotalElements());
 
         return "admin/users";
-
-    }catch (Exception e){
-
-            e.printStackTrace();
-            model.addAttribute("errorMessage", "An error occurred while processing your request.");
-            return "error";
-        }
     }
+
+/*end pagination*/
 
 
    /*   block  user /unblock user  */
@@ -120,12 +119,54 @@ public String findPaginated(@PathVariable(value = "pageNo") int pageNo,Model mod
         return "redirect:/login?logout";
     }
 
+
     @GetMapping("/dashboard")
-    public  String getDashboard()
+    public  String getDashboard(Model model)
     {
+
+        /*new update*/
+        int totalCustomer =userService.totalCustomers();
+
+        int totalOrder=orderService.totalOrders();
+
+        Long totalOrderPrice =orderService.totalOrderPrice();
+
+        int totalProducts =productService.findProductCount();
+        int totalBrands=brandService.findBrandCount();
+        int totalCategory=categoryService.findCategoryCount();
+
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusDays(1);
+        LocalDateTime monthlyStartDate = endDate.minusMonths(1);
+        LocalDateTime weeklyStartDate=endDate.minusDays(7);
+
+        int dailySale=orderService.getDailyTotalSale(startDate,endDate);
+        int monthlySale=orderService.getMonthlyTotalSale(monthlyStartDate,endDate);
+        int weeklySale=orderService.getWeeklyTotalSale(weeklyStartDate,endDate);
+
+        int deliveredCount=orderService.getDeliveredCount();
+        int canceledCount=orderService.getCanceledCount();
+        int returnedCount=orderService.getReturnedCount();
+        int shippedCount=orderService.getShippedCount();
+
+
+
+        model.addAttribute("deliveredCount",deliveredCount);
+        model.addAttribute("canceledCount",canceledCount);
+        model.addAttribute("returnedCount",returnedCount);
+        model.addAttribute("shippedCount",shippedCount);
+        model.addAttribute("dailySale",dailySale);
+        model.addAttribute("monthlySale",monthlySale);
+        model.addAttribute("weeklySale",weeklySale);
+        model.addAttribute("totalBrands",totalBrands);
+        model.addAttribute("totalCategory",totalCategory);
+        model.addAttribute("totalOrderPrice", totalOrderPrice);
+        model.addAttribute("totalProducts",totalProducts);
+        model.addAttribute("totalCustomer",totalCustomer);
+        model.addAttribute("totalOrder",totalOrder);
+
         return "admin/dashboard";
     }
-
 
 
 }

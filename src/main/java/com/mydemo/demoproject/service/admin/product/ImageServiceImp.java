@@ -44,7 +44,6 @@ public class ImageServiceImp implements ImageService {
     /*Delete*/
     @Override
     public void deleteImages(UUID uuid) {
-        System.out.println("image delete in Image service+++++++++++++++++++++++++++"+uuid);
         imageRepository.deleteById(uuid);
     }
 
@@ -54,8 +53,6 @@ public class ImageServiceImp implements ImageService {
 
         return imageRepository.findById(uuid).orElse(null);
     }
-
-
 
    /* delete unused*/
     @Override
@@ -77,24 +74,22 @@ public class ImageServiceImp implements ImageService {
         File directory = new File(uploadDir);
 
 
-//        // Check if the directory exists
         if (directory.exists() && directory.isDirectory()) {
 
-            // Get the list of files in the directory
+
             File[] files = directory.listFiles();
 
-            // Iterate over the files
             for (File file : files) {
                 if (file.isFile()) {
-                    // Get the file name
+
                     String fileName = file.getName();
 
                     if (!imagesInUse.contains(fileName)) {
-                        // Call your handleDelete method with the file name
+
                         try {
                             handleDelete(fileName);
                         } catch (IOException e) {
-                            // Handle any exceptions
+
                             e.printStackTrace();
                         }
                     }
@@ -135,7 +130,7 @@ public class ImageServiceImp implements ImageService {
 
     /*Crop img*/
     public BufferedImage cropImageSquare(byte[] image) throws IOException {
-        // Get a BufferedImage object from a byte array
+
         InputStream in = new ByteArrayInputStream(image);
         BufferedImage originalImage = ImageIO.read(in);
 

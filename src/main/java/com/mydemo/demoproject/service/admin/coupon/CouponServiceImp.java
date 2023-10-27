@@ -37,7 +37,6 @@ public class CouponServiceImp implements  CouponService{
     public void blockCoupon(UUID uuid) {
         Optional<Coupon> coupon =couponRepo.findById(uuid);
         if (coupon.isPresent()) {
-            System.out.println("blocked coupon>>>>>>>>>>>>>>>>>>>");
             Coupon couponData = coupon.get();
             couponData.setEnabled(false);
             couponRepo.save(couponData);
@@ -51,7 +50,6 @@ public class CouponServiceImp implements  CouponService{
     public void unblockCoupon(UUID uuid) {
         Optional<Coupon> coupon =couponRepo.findById(uuid);
         if (coupon.isPresent()) {
-            System.out.println("unblocked coupon>>>>>>>>>>>>");
             Coupon couponData = coupon.get();
             couponData.setEnabled(true);
             couponRepo.save(couponData);

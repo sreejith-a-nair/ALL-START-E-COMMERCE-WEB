@@ -34,13 +34,13 @@ import java.util.stream.Collectors;
 
     @Autowired
     OtpService otpService;
-//
+
     @Autowired
     UserService userService;
-//
+
     @Autowired
     ProductService productService;
-//
+
     @Autowired
     CategoryService categoryService;
 
@@ -126,7 +126,7 @@ import java.util.stream.Collectors;
                     .collect(Collectors.toList());
 
             for (Banner  bannerName :offerBanner){
-            System.out.println(" banner OFFER>>>>>>"+bannerName);}
+            }
 
 
             List<Banner> mainBanners = bannerList.stream()
@@ -134,23 +134,12 @@ import java.util.stream.Collectors;
                     .collect(Collectors.toList());
 
             for (Banner  bannerName :mainBanners){
-                System.out.println("MAIN OTHER banner name>>>>>>"+bannerName);}
+            }
 
-//            for (Banner banner:bannerList){
-//               String bannerName= banner.getBannerName();
-//
-//               if(BannerType.Main_Banner.getDisplayName().equals(bannerName)){
-//                   System.out.println("mainn" +bannerName);
-//                   model.addAttribute("bannerList",bannerList);
-//               }else {
-//                   System.out.println("offer"+bannerName);
-//                   model.addAttribute("bannerInfo",bannerList);
-//               }
-//            }
+
 
             /*Image*/
             List<Image>images=imageService.findAllImage();
-            System.out.println("images link>>"+images);
 
             int offerPercentage;
             /*enable product only show*/
@@ -262,7 +251,6 @@ import java.util.stream.Collectors;
                              Model model) {
 
         boolean verified = otpService.verifyPhoneOtp(otp, phone);
-        System.out.println(verified);
         if (verified) {
             return "redirect:/home";
         } else {
@@ -277,7 +265,6 @@ import java.util.stream.Collectors;
         // Generate a random 6-digit OTP
         Random random = new Random();
         int otpNumber = 100_000 + random.nextInt(900_000);
-        System.out.println("Otp.........................."+otpNumber);
         return String.valueOf(otpNumber);
     }
 

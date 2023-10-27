@@ -32,29 +32,29 @@ public class SalesReportServiceImp implements  SalesReportService {
 
     @Override
     public List<Order> getOrderByTimePeriod(ReportFrequency timePeriod) {
+
         LocalDateTime startDate;
         LocalDateTime endDate = LocalDateTime.now();
 
         switch (timePeriod) {
-            case DAILY -> {
-                startDate = endDate;
+            case DAILY:
+                startDate = endDate.minusDays(1);
                 break;
-            }
-            case WEEKLY -> {
-                startDate = endDate.minusDays(6);
+            case WEEKLY:
+                startDate = endDate.minusDays(7);
                 break;
-            }
-            case MONTHLY -> {
+            case MONTHLY:
                 startDate = endDate.minusMonths(1);
                 break;
-            }
-            default -> {
-                throw new IllegalArgumentException("unsupported time period " + timePeriod);
-            }
+            default:
+                throw new IllegalArgumentException("Unsupported time period: " + timePeriod);
         }
-        return orderRepo.findByOrderDateBetween(startDate, endDate);
+
+        List<Order> timePeriodOrder= orderRepo.findByOrderDateBetween(startDate, endDate);
+        return timePeriodOrder;
     }
-/*new update graph */
+
+    /*new update graph */
 
     public Map<String, Object> getSalesReportForGraph(ReportFrequency timePeriod) {
         LocalDateTime startDate;
@@ -103,26 +103,10 @@ public class SalesReportServiceImp implements  SalesReportService {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /*pdf*/
 
     public byte[] generateSalesReport(List<Order> orders) throws Exception {
         double grandTotal = 0.0;
-        System.out.println("grandTotal>>>>>>>>>>>>>>>>>>>>>>>>");
         String sales = "<html><body>";
         sales += "<h2>All-STAR SALES REPORT</h2>";
         sales += "<h4>Order summary</h4>";
@@ -196,7 +180,6 @@ public class SalesReportServiceImp implements  SalesReportService {
         result.put("totalOrderCount", totalCount);
         result.put("totalRevenue", totalRevenue);
         result.put("monthlySales", monthlySales);
-        System.out.println("Result>>>>>>>>>>>>>>>>>"+result);
            return result;
         }
 
@@ -204,7 +187,6 @@ public class SalesReportServiceImp implements  SalesReportService {
     public byte[] generateExcelReport(List<Order> ordersList) throws Exception {
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("SalesReport");
-        System.out.println("Selected Format: service>>>>>excel>>>>>>>>>>>>>>>>>>>>>>>>>>>3 " + ordersList);
         // Create headers
         String[] headers = {"User", "Product", "Quantity", "Price", "Date"};
         XSSFRow headerRow = sheet.createRow(0);
@@ -212,7 +194,6 @@ public class SalesReportServiceImp implements  SalesReportService {
             XSSFCell cell = headerRow.createCell(col);
             cell.setCellValue(headers[col]);
         }
-        System.out.println("Selected Format: service>>>>>excel>>>>>>>>>>>>>>>>>>>>>>>>>>>4 " + ordersList);
         // Populate data
         int rowNum = 1;
         for (Order order : ordersList) {
@@ -226,7 +207,6 @@ public class SalesReportServiceImp implements  SalesReportService {
                 row.createCell(4).setCellValue(order.getOrderDate().toString());
             }
         }
-        System.out.println("Selected Format: service>>>>>excel>>>>>>>>>>>>>>>>>>>>>>>>>>>5 " + ordersList);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         workbook.write(outputStream);
         workbook.close();

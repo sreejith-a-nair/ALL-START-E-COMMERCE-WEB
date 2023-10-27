@@ -18,7 +18,6 @@ public interface CartRepo extends JpaRepository<Cart, UUID> {
 
     Cart findByProductInfo_Uuid(UUID productUuid);
 
-//    boolean productExistsInCart(UserEntity userEntity, ProductInfo productInfo);
 
     Cart findByUserEntityAndProductInfo(UserEntity userEntity, ProductInfo productInfo);
 

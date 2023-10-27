@@ -18,21 +18,8 @@ public interface CategoryRepo extends JpaRepository<CategoryInfo,UUID> {
 
 
 
-
-
-
-//    @Query(value = "SELECT * FROM category_info WHERE category_name LIKE %:keyword%", nativeQuery = true)
-//    List<CategoryInfo> findByCategoryKeyword (@Param("keyword") String keyword);
-
-
     Page<CategoryInfo> findBycategorynameContaining(String keyword, Pageable pageable);
 
-
-
-
-//    void deleteById(Long id);
-
-//    Optional<ProductInfo> findById(UUID productId);
 
     Optional<CategoryInfo> findById(UUID uuid);
 

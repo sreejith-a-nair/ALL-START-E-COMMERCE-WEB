@@ -16,11 +16,6 @@ public interface OrderRepo extends JpaRepository<Order,UUID> {
     List<Order> findByUserEntity_Username(String username);
 
 
-
-
-    /*Search query*/
-//    @Query("SELECT order FROM Order order JOIN order.userEntity userEntity WHERE userEntity.username LIKE %:keyword%")
-//    List<Order> findByUserNameKeyword(@Param("keyword") String keyword);
     @Query("SELECT orders FROM Order orders WHERE orders.userEntity.username LIKE %:keyword%")
     List<Order> findByUserNameKeyword(@Param("keyword") String keyword);
 

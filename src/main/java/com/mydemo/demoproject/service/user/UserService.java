@@ -3,6 +3,9 @@ package com.mydemo.demoproject.service.user;
 import com.mydemo.demoproject.Entity.UserEntity;
 import com.mydemo.demoproject.Repository.admin.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -16,8 +19,6 @@ public class UserService{
     private UserRepo userRepo;
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-
 
     public  String  addUser(UserEntity userEntity , Model model,String referralId)
     {
@@ -74,7 +75,7 @@ public UserEntity findByUsernames(String username) {
         try {
             contact = Long.parseLong(phone);
         } catch (NumberFormatException e) {
-            // Handle the case where the phone string is not a valid long
+
             return null; // or throw an exception or handle the error in a different way
         }
         return userRepo.findByContact(contact);
@@ -94,6 +95,20 @@ public UserEntity findByUsernames(String username) {
     public  UserEntity findByReferralCode(String referralCode){
 
     return userRepo.findByNewUserReferral(referralCode);
+    }
+
+    public  int totalCustomers(){
+        int count = 0;
+        List<UserEntity> userList=userRepo.findAll();
+        for (UserEntity users:userList){
+            count++;
+        }
+        return count;
+    }
+
+    public Page<UserEntity> searchUsers(String keyword, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize); // Page numbers start from 0
+        return userRepo.findByUsernameContainingIgnoreCase(keyword, pageable);
     }
 }
 

@@ -18,13 +18,11 @@ public class WishListServiceImp implements WishListService {
 
     @Override
     public void deleteProduct(UUID uuid) {
-        System.out.println("service in wishlist" + uuid);
         wishListRepo.deleteById(uuid);
     }
 
     @Override
     public void moveToWishList(WishList wishlist) {
-        System.out.println("saved________________________________" + wishlist);
         wishListRepo.save(wishlist);
     }
 

@@ -24,7 +24,6 @@ public class AddressServiceImp implements AddressService{
     @Override
     public List<Address> findByUserEntity_Usernames(String username) {
         List<Address> addressList= addressRepo.findByUserEntity_Username(username);
-//        System.out.println("find user ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"+cartList);
         return addressList;
     }
 
@@ -43,7 +42,6 @@ public class AddressServiceImp implements AddressService{
     public void blockAddress(UUID uuid) {
         Optional<Address> addressInfo =addressRepo.findById(uuid);
         if (addressInfo.isPresent()) {
-            System.out.println("blocked product>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             Address address = addressInfo.get();
             address.setEnabled(false);
             addressRepo.save(address);
@@ -56,7 +54,6 @@ public class AddressServiceImp implements AddressService{
     public void unBlockAddress(UUID uuid) {
         Optional<Address> addressInfo =addressRepo.findById(uuid);
         if (addressInfo.isPresent()) {
-            System.out.println("blocked product>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             Address address = addressInfo.get();
             address.setEnabled(true);
             addressRepo.save(address);

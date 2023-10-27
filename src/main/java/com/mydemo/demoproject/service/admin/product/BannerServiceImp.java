@@ -80,7 +80,7 @@ public class BannerServiceImp implements  BannerService{
         List<String> existingFileNames = getAllOriginalFileNames();
 
         for (String existingFileName : existingFileNames) {
-            // Split the existing file name by hyphen and get the last part
+
             String[] parts = existingFileName.split("-");
             if (parts.length > 1) {
                 String lastPart = parts[parts.length - 1].trim();
@@ -101,7 +101,6 @@ public class BannerServiceImp implements  BannerService{
 
     public Optional<Banner> findBannerByFileName(String fileName) {
 
-//        bannerRepo.findByFileName(fileName);
         return bannerRepo.findByFileName(fileName);
     }
 }

@@ -21,5 +21,4 @@ public interface BrandRepo extends JpaRepository<Brand, UUID> {
 
    Optional<Brand>findById(UUID uuid);
 
-//    Page<ProductInfo> findByBrand_Uuid(UUID brandUuid, Pageable pageable);
 }

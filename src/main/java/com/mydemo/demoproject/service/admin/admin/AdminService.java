@@ -18,8 +18,6 @@ public class AdminService {
     @Autowired
     AdminRepo adminRepo;
 
-//    @Autowired
-//    private PasswordEncoder passwordEncoder;
 
     public UserEntity save(UserEntity user) {
         return adminRepo.save(user);

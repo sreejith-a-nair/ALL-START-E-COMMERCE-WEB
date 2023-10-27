@@ -30,13 +30,6 @@ public class BannerController {
     BannerService bannerService;
 
 
-//   @GetMapping("/home")
-//    public String showBanner(Model model){
-//       List<Banner> bannerInfo  =  bannerService.findByAllBanner();
-//       model.addAttribute("bannerInfo",bannerInfo);
-//    return "admin/banner";
-//   }
-
     @GetMapping("/home")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String showAllProduct(Model model){
@@ -61,7 +54,6 @@ public String findPaginated(@PathVariable(value = "pageNo") int pageNo,Model mod
 @GetMapping("/add-banner")
 @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public String addBanner(@RequestParam(value="error",required=false)String error,Model model )throws JsonProcessingException {
-    System.out.println("add banner page");
         if (error != null && error.equals("BannerExists")) {
             model.addAttribute("error", "Banner already exists.");
         }

@@ -31,8 +31,6 @@ public class UserController {
     ShopService shopService;
 
 
-
-
     @Autowired
     private UserService userService;
 
@@ -86,7 +84,6 @@ public class UserController {
         for (UserEntity existingUsers : existingUser) {
             Long existContact = existingUsers.getContact();
             if (newContactNumber.equals(existContact)) {
-                System.out.println("new number " + newContact + " exists number " + existContact);
                 model.addAttribute("errorMessage", "Phone number is already exist");
                 model.addAttribute("userEntity", userEntity);
                 return "user/signup";
@@ -102,7 +99,6 @@ public class UserController {
 
                         String existingUsername = referredUser.getUsername();
                         Wallet userWallet = shopService.getWalletByUser(existingUsername);
-                        System.out.println("old user wallet" + userWallet);
                             float referralMoney =+ 100f;
                         userWallet.setEarnedMoney(referralMoney);
                         userWallet.setTotalMoney(referralMoney);
@@ -122,16 +118,14 @@ public class UserController {
                             shopService.saveWallet(newUseWallet);
                     }
 
-            System.out.println("referralCode>>>>>>>>>>>>elseeeeee>" + referralCode);
             String userReferralCode= shopService.getReferralCode(username);
-            System.out.println("userReferralCode>>>>>>>>>>>>>"+userReferralCode);
             userEntity.setRole("ROLE_USER");
             String result = userService.addUser(userEntity, model, userReferralCode);
 
             newUseWallet.setUserEntity(userEntity);
             shopService.saveWallet(newUseWallet);
 
-            return result;
+            return  "user/signup";
         }
 
 

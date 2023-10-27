@@ -22,7 +22,7 @@ public interface OfferRepo extends JpaRepository<Offer,UUID> {
 
     List<Offer>findByProductInfo(ProductInfo product);
 
-//    List<Offer> findByCategoryOffPercentage(int categoryOffPercentage);
+
 
 
 }

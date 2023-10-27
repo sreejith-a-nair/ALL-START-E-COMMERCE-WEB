@@ -55,11 +55,8 @@ public class DashboardController {
     public String generateReport(@RequestParam("selectTimePeriod") String selectTimePeriod,
                                  Model model) {
         ReportFrequency timePeriod = ReportFrequency.valueOf(selectTimePeriod);
-        System.out.println("Selected time period: " + timePeriod);
         List<Order> orderList = salesReportService.getOrderByTimePeriod(timePeriod);
 
-        System.out.println("Selected time period: " + timePeriod);
-        System.out.println(orderList);
 
         model.addAttribute("orderList", orderList);
         return "admin/sales-report"; // Redirect back to the dashboard page.
@@ -70,11 +67,9 @@ public class DashboardController {
     public ResponseEntity<byte[]> generateSalesReport(@RequestParam(value = "format", required = false, defaultValue = "pdf") String format
     )
             throws Exception {
-        System.out.println("Selected Format: 1" + format);
 
 
         List<Order> ordersInRange = orderService.getAllOrders();
-        System.out.println("Selected Format:2 " + ordersInRange);
 
         byte[] reportBytes;
         String contentType;
@@ -103,11 +98,7 @@ public class DashboardController {
         return new ResponseEntity<>(reportBytes, headers, HttpStatus.OK);
     }
 
-    //  @GetMapping("/getGraphReport")
-//    public  ResponseEntity<Order> showGraphReport(){
-//      Map<String, Object>salesReport=salesReportService.getTotalSalesReprotInGraph();
-//      return ResponseEntity.ok((Order) salesReport);
-//  }
+
     @GetMapping("/getGraphReport")
     public ResponseEntity<Map<String, Object>> showGraphReport() {
         Map<String, Object> salesReport = salesReportService.getTotalSalesReprotInGraph();
@@ -115,36 +106,13 @@ public class DashboardController {
         return ResponseEntity.ok(salesReport);
     }
 
-//    @PostMapping("/dashboard-filter-graph")
-//    public String graphFilterInGraph(@RequestParam("selectTimePeriod") String selectTimePeriod,
-//                                     Model model) {
-//        ReportFrequency timePeriod = ReportFrequency.valueOf(selectTimePeriod);
-//        System.out.println("Selected time period: " + timePeriod);
-//        List<Order> orderList = salesReportService.getOrderByTimePeriod(timePeriod);
-//
-//        System.out.println("Selected time period: " + timePeriod);
-//        System.out.println(orderList);
-//
-//        model.addAttribute("orderList", orderList);
-//        return "admin/sales-report"; // Redirect back to the dashboard page.
-//
-//    }
-
-
-
 
     @GetMapping("/salesReportForGraph")
     public ResponseEntity<Map<String, Object>> graphFilterInGraph(@RequestParam("mode") String mode) throws Exception {
-        System.out.println("MODE<<<<<<<<<<<<<<<<<<<<" + mode);
         ReportFrequency timePeriod = ReportFrequency.valueOf(mode);
-        System.out.println("Selected time period: " + timePeriod);
 
         Map<String, Object> salesReport = salesReportService.getSalesReportForGraph(timePeriod);
-        System.out.println("SalesReport ................."+salesReport);
-        System.out.println("Total Order Count: " + salesReport.get("totalOrderCount"));
-        System.out.println("Total Revenue: " + salesReport.get("totalRevenue"));
-        System.out.println("Monthly Labels: " + salesReport.get("monthlyLabels"));
-        System.out.println("Monthly Amounts: " + salesReport.get("monthlyAmounts"));
+
 
         return ResponseEntity.ok(salesReport);
     }

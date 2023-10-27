@@ -69,7 +69,6 @@ Page<ProductInfo> findProductsInPriceRange(
 
     boolean existsByUuid(UUID uuid);
 
-//    @Query("SELECT p FROM ProductInfo p JOIN p.offer o WHERE o IN :offers")
-//    Page<ProductInfo> findProductsByOffers(@Param("offers") List<Offer> offers, Pageable pageable);
+    Page<ProductInfo> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
 }

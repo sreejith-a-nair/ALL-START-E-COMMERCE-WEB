@@ -21,10 +21,6 @@ public interface CategoryService {
     String addCategory(CategoryInfo categoryInfo, Model model);
 
 
-/* Search method*/
-//List<CategoryInfo> searchCategory(String keyword);
-
-
     /*Load category*/
      List<CategoryInfo> loadAllCategory() ;
 
@@ -56,6 +52,9 @@ public interface CategoryService {
 
    /* FindByCategory  */
     List<CategoryInfo> findAllCategory();
+
+
+    int findCategoryCount();
 
 
 }

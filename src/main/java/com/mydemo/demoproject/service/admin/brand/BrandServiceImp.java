@@ -61,7 +61,6 @@ public class BrandServiceImp implements BrandService{
 
         Optional<Brand> brand =brandRepo.findById(uuid);
         if (brand.isPresent()) {
-            System.out.println("Blocked brand>>>>>>>>>>>>>>>>>>");
             Brand brandInfo = brand.get();
             brandInfo.setEnable(false);
             brandRepo.save(brandInfo);
@@ -73,7 +72,6 @@ public class BrandServiceImp implements BrandService{
     public void unblockBrand(UUID uuid) {
         Optional<Brand> brand =brandRepo.findById(uuid);
         if (brand.isPresent()) {
-            System.out.println("Unblocked brand>>>>>>>>>>>");
             Brand brandInfo = brand.get();
             brandInfo.setEnable(true);
             brandRepo.save(brandInfo);
@@ -85,6 +83,17 @@ public class BrandServiceImp implements BrandService{
     @Override
     public Page<ProductInfo> getBrandProducts(UUID selectedBrandUuid, Pageable pageable) {
         return productRepo.findByBrand_Uuid(selectedBrandUuid,pageable);
+    }
+
+
+    @Override
+    public int findBrandCount() {
+        int count =0;
+        List<Brand>brandList=brandRepo.findAll();
+        for(Brand brands:brandList){
+            count++;
+        }
+        return count;
     }
 
 }

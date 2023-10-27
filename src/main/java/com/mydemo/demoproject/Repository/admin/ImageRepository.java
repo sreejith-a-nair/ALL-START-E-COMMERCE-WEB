@@ -14,10 +14,6 @@ public interface ImageRepository extends JpaRepository<Image,UUID> {
     List<Image> findByProductId(@Param("uuid") UUID uuid);
 
 
-//    public void deleteById(UUID uuid);
 
-//
-//    @Query(value = "DELETE FROM image WHERE uuid = :uuid", nativeQuery = true)
-//    void deleteImagesByProductId(@Param("uuid") UUID uuid);
 
 }

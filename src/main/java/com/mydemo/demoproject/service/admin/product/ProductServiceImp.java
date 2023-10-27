@@ -38,7 +38,6 @@ public class ProductServiceImp implements ProductService {
     /* delete image*/
     @Override
     public void deleteImages(UUID uuid) {
-        System.out.println("service layer??????????????????????????????????????????????"+uuid);
        imageService .deleteImages(uuid);
     }
 
@@ -88,10 +87,6 @@ public class ProductServiceImp implements ProductService {
         return productRepo.findById(uuid);
     }
 
-//    @Override
-//    public Optional<ProductInfo> getCategoryByProduct(UUID uuid) {
-//        return Optional.empty();
-//    }
 
     @Override
     public List<ProductInfo> getCategoryByProduct(UUID uuid) {
@@ -110,7 +105,6 @@ public class ProductServiceImp implements ProductService {
     public void blockProduct(UUID uuid) {
         Optional<ProductInfo> productInfo =productRepo.findById(uuid);
         if (productInfo.isPresent()) {
-            System.out.println("blocked product>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             ProductInfo product = productInfo.get();
             product.setEnable(false);
             productRepo.save(product);
@@ -123,7 +117,6 @@ public class ProductServiceImp implements ProductService {
     public void unblockProduct(UUID uuid) {
         Optional<ProductInfo> productInfo =productRepo.findById(uuid);
         if (productInfo.isPresent()) {
-            System.out.println("unblocked product>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             ProductInfo product = productInfo.get();
             product.setEnable(true);
             productRepo.save(product);
@@ -162,10 +155,9 @@ public class ProductServiceImp implements ProductService {
         if (optionalProduct.isPresent()) {
             ProductInfo product = optionalProduct.get();
 
-            // Update only the stock field
+
             product.setStock(stock);
-            System.out.println("service"+product);
-            // Save the updated product back to the database
+
             productRepo.save(product);
         }
     }
@@ -180,7 +172,6 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public Page<ProductInfo> getProductsInPriceRange(float minPrice, float maxPrice, Pageable pageable) {
-        System.out.println("service     maxPrice"+minPrice   + "and"+ "minprice"+maxPrice);
 
          return  productRepo.findProductsInPriceRange(minPrice, maxPrice,pageable);
 
@@ -199,4 +190,20 @@ public class ProductServiceImp implements ProductService {
     }
 
 
+    @Override
+    public int findProductCount() {
+        List <ProductInfo> productInfo=productRepo.findAll();
+        int count =0;
+        for(ProductInfo products : productInfo){
+            System.out.println(products.getName());
+            count++;
+        }
+        return count;
+    }
+
+
+    public Page<ProductInfo> searchProductPageable(String keyword, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        return productRepo.findByNameContainingIgnoreCase(keyword, pageable);
+    }
 }

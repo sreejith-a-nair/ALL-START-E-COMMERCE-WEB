@@ -22,14 +22,6 @@ public class BrandController {
     @Autowired
     BrandService brandService;
 
-//    /*old home*/
-//    @GetMapping("/home")
-//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-//    public String showAllBrand(Model model) {
-//        List<Brand> brands = brandService.findAll();
-//        model.addAttribute("brands", brands);
-//        return "admin/brand";
-//    }
 
     /*pagination */
 
@@ -47,8 +39,6 @@ public class BrandController {
         int pageSize=5;
         Page<Brand> page=brandService.findPaginated(pageNo,pageSize);
         List<Brand>brands=page.getContent();
-        System.out.println("Brands in pagination(("+brands);
-        System.out.println("page in pagination(("+page);
 
         model.addAttribute("currentPage", pageNo);
         model.addAttribute("totalPages", page.getTotalPages());
@@ -64,10 +54,9 @@ public class BrandController {
 
     @GetMapping("/brandItems")
     public String showBrand(Model model) {
-        System.out.println("hello brand======");
+
         List<Brand> brands = brandService.findAll();
-        System.out.println("brands]]]]]]]]"+brands);
-//        model.addAttribute("brands", brands);
+
         model.addAttribute("brands",brands);
         return "shop/base";
     }
@@ -105,19 +94,6 @@ public class BrandController {
     /*3 save / update*/
     @PostMapping("/save")
     public String save(@ModelAttribute Brand brand, Model model) {
-        System.out.println("Save//////////////////////");
-
-//        String errorMessage= String.valueOf(categoryService.save(categoryInfo));
-//
-//        if(!errorMessage.equals("success"))
-//        {
-//            model.addAttribute("error",errorMessage);
-//            return "admin/add-category";
-//        }
-//        System.out.println("not present////////////////////////");
-
-//        categoryService.save(categoryInfo);
-//       return "redirect:/category/home";
 
         try {
             brandService.save(brand);
@@ -135,7 +111,6 @@ public class BrandController {
     @GetMapping("/edit/{uuid}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String editBrand(@PathVariable UUID uuid, Model model) {
-//        System.out.println("editCategory method..............." + id);
         Optional<Brand> brandOptional = brandService.getBrandById(uuid);
         if (brandOptional.isPresent()) {
             System.out.println("is present");
@@ -152,8 +127,6 @@ public class BrandController {
     public String updateBrand(@ModelAttribute("brand") Brand updateBrand) {
 
         Optional<Brand> brandData = brandService.getBrandById(updateBrand.getUuid());
-
-
                 Brand updateBrandData = brandData.get();
                 updateBrandData.setName(updateBrand.getName());
                 brandService.save(updateBrandData);
@@ -166,19 +139,16 @@ public class BrandController {
     @GetMapping(value = "/search", params = "keyword")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String searchCategory(Model model, @RequestParam("keyword") String keyword) {
-//        System.out.println("search>begin.....>>>>>>>");
 
         try {
 
             List<Brand> brands;
 
             if (keyword != null && !keyword.isEmpty()) {
+
                 brands= brandService.searchBrand(keyword);
 
-                System.out.println("search>>>>if" + brands);
-
             } else {
-                System.out.println("search--else------->>>");
 
                 brands = brandService.loadAllBrand();
             }

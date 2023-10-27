@@ -16,12 +16,10 @@ public interface SalesReportService {
 
      byte[] generateExcelReport(List<Order> ordersList) throws Exception;
 
-//     byte[] generateSalesReport(Page<Order> ordersPage) throws Exception;
 
       byte[] generateSalesReport(List<Order> orders) throws Exception;
 
     Map<String, Object> getTotalSalesReprotInGraph();
 
-//    Map<String, Object> getFilterSalesReportInGraph( );
      Map<String, Object> getSalesReportForGraph(ReportFrequency timePeriod);
 }

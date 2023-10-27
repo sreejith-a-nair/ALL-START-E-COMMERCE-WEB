@@ -34,10 +34,6 @@ public class ShopServiceImp implements  ShopService{
     private JavaMailSender mailSender;
 
 
-//    @Override
-//    public List<ProductInfo> searchProductName(String keyword) {
-//        return productRepo.findByProductNameKeyword(keyword);
-//    }
 
     @Override
     public List<ProductInfo> loadAllProduct() {
@@ -90,7 +86,6 @@ public class ShopServiceImp implements  ShopService{
     @Override
     public Wallet getWalletByUser(String username) {
         Wallet walletData= walletRepo.findByUserEntity_Username(username);
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>"+walletData);
         return walletData;
     }
 
@@ -99,7 +94,6 @@ public class ShopServiceImp implements  ShopService{
        Wallet userWallet =walletRepo.findByUserEntity_Username(username);
            Wallet wallet =userWallet;
         float walletMoney  =  wallet.getEarnedMoney();
-        System.out.println("walletMoney>>>>>>>>>>>>>>"+walletMoney);
         return walletMoney;
     }
 
@@ -109,24 +103,11 @@ public class ShopServiceImp implements  ShopService{
         if(walletMoney>=20){
 
              totalDiscountPrice=totalDiscount-walletMoney;
-            System.out.println("total wallet discount in cart.............."+totalDiscount);
         }
         return totalDiscountPrice;
     }
 
-//    public  void sendMail(String toEmail,
-//                          String subject,
-//                          String body){
-//
-//        SimpleMailMessage message=new SimpleMailMessage();
-//        message.setFrom("anairsreejith1998@gmail.com");
-//        message.setTo(toEmail);
-//        message.setSubject(body);
-//        message.setSubject(subject);
-//        mailSender.send(message);
-//
-//        System.out.println("Mail send successfully.......");
-//    }
+
     public void sendMail(String toEmail, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("anairsreejith1998@gmail.com");
@@ -135,7 +116,6 @@ public class ShopServiceImp implements  ShopService{
         message.setText(body);       // Set the email body content
         mailSender.send(message);
 
-        System.out.println("Mail send successfully....");
     }
    public boolean validateEmail(String email){
 

@@ -26,6 +26,6 @@ public interface AdminRepo extends JpaRepository<UserEntity,UUID> {
 
     Optional<UserEntity> findById(UUID uuid);
 
-//    or first_name like  %:keyword%"
+
 
 }

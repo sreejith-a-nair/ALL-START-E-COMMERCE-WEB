@@ -69,12 +69,6 @@ public class CartController {
 
         UserEntity user = userService.findByUsernames(username);
 
-//        productInfo.setDiscountedPrice(discountedPrice);
-        /*new*/
-//        float discountedPrices = productInfo.getDiscountedPrice();
-//        System.out.println("discounted price..................." + discountedPrices);
-        System.out.println("single product discounted price>>>>>>>>>>" + discountPrice);
-
         Long currentStocks = productInfo.getStock();
         if (currentStocks >= 1) {
             Cart existingCartItem = cartService.findCartItem(user, productInfo);
@@ -132,26 +126,16 @@ public class CartController {
                 for (Offer productWiseOffer : productOff) {
                     for (Offer categoryOffer : categoryOffers) {
                         if (productWiseOffer.getCategoryOffPercentage() > categoryOffer.getCategoryOffPercentage()) {
-                            // Product offer percentage is greater than category offer percentage
-                            // Handle this case
+
                             discountPrice = productInfo.getPrice() - (productInfo.getPrice() * productWiseOffer.getCategoryOffPercentage() / 100);
-                            System.out.println("In cart  products discount Amount  is = " + discountPrice);
-//                              productInfo.setDiscountedPrice(discountPrice);
+
                             totalDiscountPrice += discountPrice * productQuantity;
 
-                            System.out.println("  In cart product of is grater  " + productWiseOffer.getCategoryOffPercentage());
-                            System.out.println("TOTAL DISCOUNT PRICE is product grater "+totalDiscountPrice);
                         } else {
-                            // Product offer percentage is not greater than category offer percentage
-                            // Handle this case
-                            discountPrice = productInfo.getPrice() - (productInfo.getPrice() * categoryOffer.getCategoryOffPercentage() / 100);
-                            System.out.println(" In cart...... category discount Amount  is = " + discountPrice);
-//                              productInfo.setDiscountedPrice(discountPrice);
-                            totalDiscountPrice += discountPrice * productQuantity;
-                            System.out.println(" In cart .......category of is grater  " + categoryOffer.getCategoryOffPercentage());
 
-                            System.out.println("TOTAL DISCOUNT PRICE  is category  grater "+totalDiscountPrice);
-//                            model.addAttribute("productInfo", productInfo);
+                            discountPrice = productInfo.getPrice() - (productInfo.getPrice() * categoryOffer.getCategoryOffPercentage() / 100);
+
+                            totalDiscountPrice += discountPrice * productQuantity;
 
                         }
 
@@ -168,47 +152,6 @@ public class CartController {
     }
 
         /*end*/
-
-//    @GetMapping("/viewCart")
-//    public String viewCarts(Model model, @AuthenticationPrincipal(expression = "username") String username) {
-//        List<Cart> cartItems = cartService.findByUserEntity_Usernames(username);
-//
-//
-//
-//        if (cartItems.isEmpty()) {
-//            model.addAttribute("cartEmpty", true);
-//        } else {
-//            System.out.println("cart after delete[[[[[" + cartItems);
-//            Optional<UserEntity> user = userService.getUserdata(username);
-//
-//            float totalDiscountPrice = 0.0f;
-//
-//            for (Cart cartItem : cartItems) {
-//                ProductInfo productInfo = cartItem.getProductInfo();
-//                int productQuantity = cartItem.getQuantity();
-//                String productName = cartItem.getProductInfo().getName();
-//
-//                List<Offer> productOffer = productInfo.getOffer();
-//                float discountPrice;
-//
-//                if (productOffer != null && !productOffer.isEmpty()) {
-//                    int productOfferPercent = productOffer.get(0).getCategoryOffPercentage();
-//                    discountPrice = productInfo.getPrice() - (productInfo.getPrice() * productOfferPercent / 100);
-//                } else {
-//                    discountPrice = productInfo.getPrice();
-//                }
-//
-//                totalDiscountPrice += discountPrice * productQuantity;
-//
-//            }
-//                 model.addAttribute("totalDiscountPrice", totalDiscountPrice);
-//                 model.addAttribute("total", cartService.findTotal(cartItems));
-//                 model.addAttribute("cartItems", cartItems);
-//                 model.addAttribute("user", user.orElse(null));
-//        }
-//
-//        return "shop/cart";
-//    }
 
     @GetMapping("/removeFromCart/{uuid}")
     public String removeProduct(@PathVariable UUID uuid,

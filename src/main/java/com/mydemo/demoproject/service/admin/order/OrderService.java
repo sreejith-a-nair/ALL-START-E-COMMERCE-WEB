@@ -5,6 +5,7 @@ import com.mydemo.demoproject.Entity.*;
 import com.mydemo.demoproject.Entity.enumlist.PaymentMode;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,7 +35,7 @@ public interface OrderService {
      TransactionDetails prepareTransactionDetails(com.razorpay.Order order);
 
 
-    /*trtansacton end*/
+    /*transaction end*/
 
     /*get cartItem after save*/
   List<OrderItems> getCartItems();
@@ -90,4 +91,23 @@ Optional<Order> findOrderById(UUID savedOrderUuid);
     float walletPay(Double total,float walletMoney);
 
     void updateWallet(float walletPrice,String username,Double totalPrice);
+
+    /*new update   */
+
+    int totalOrders();
+
+    Long totalOrderPrice();
+
+
+    int getDailyTotalSale(LocalDateTime startDate, LocalDateTime endDate);
+    int getMonthlyTotalSale(LocalDateTime startDate,LocalDateTime endDate);
+    int getWeeklyTotalSale(LocalDateTime startDate,LocalDateTime endDate);
+
+    int getDeliveredCount();
+    int getCanceledCount();
+    int getShippedCount();
+
+    int getReturnedCount();
+
+
 }

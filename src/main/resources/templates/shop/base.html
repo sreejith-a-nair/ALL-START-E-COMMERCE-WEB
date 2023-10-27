@@ -75,37 +75,36 @@ background: linear-gradient(90deg, rgba(6,4,20,1) 0%, rgba(2,2,9,0.9865196078431
 
   <div class="container-fluid">
     <ul class="navbar-nav me-auto" style="margin-left:300px;">
-      <li class="nav-item dropdown" style="margin-left:100px; color :white;">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-bs-toggle="dropdown"
-           aria-expanded="false" style="color :black;">
-          PRODUCTS
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <li><a class="dropdown-item" href="#">RACKETS</a></li>
-          <li><a class="dropdown-item" href="#">BAGS</a></li>
-          <li><a class="dropdown-item" href="#">CLOTHES</a></li>
-          <li><a class="dropdown-item" href="#">SHOES</a></li>
-        </ul>
-      </li>
-      <li class="nav-item" style=" margin-left:100px;color :white;">
-        <a class="nav-link active" aria-current="page" href="#">NEW</a>
-      </li>
-      <li class="nav-item dropdown" style="margin-left:100px;">
-        <a class="nav-link dropdown-toggle"
-           id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="true" style="color :black;" >
-          BRANDS
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-<!--          <li><a class="dropdown-item" th:href="@{/brands.name}">LINING</a></li>-->
-<!--          <li><a class="dropdown-item" th:href="@{/brands.name}">YONEX</a></li>-->
-<!--          <li><a class="dropdown-item" th:href="@{brands.name}">VICTOR</a></li>-->
-          <li><hr class="dropdown-divider"></li>
-<!--          <li><a class="dropdown-item" th:href="@{/other}">Something else here</a></li>-->
-        </ul>
-      </li>
-      <li class="nav-item" style="margin-left:100px;color :white;">
-        <a class="nav-link active" aria-current="page" style="color :black;" th:href="@{/shop/about}">ABOUT</a>
-      </li>
+
+        <!--new update 1-->
+        <li class="nav-item dropdown" style="margin-left:100px; color :white;">
+            <a class="nav-link dropdown-toggle"  role="button"
+               th:href="@{/shop/showAllProductsList}" style="color: black;">
+                PRODUCTS
+            </a>
+        </li>
+
+        <li class="nav-item" style="margin-left:100px; color :white;">
+            <a class="nav-link dropdown-toggle"  role="button"
+               th:href="@{/shop/navCategoryProducts}" style="color: black;">
+                CATEGORY
+            </a>
+        </li>
+
+        <li class="nav-item" style="margin-left:100px; color :white;">
+            <a class="nav-link dropdown-toggle"  role="button"
+               th:href="@{/shop/showNavBrands}" style="color: black;">
+                BRAND
+            </a>
+        </li>
+
+        <!-- end new update 1-->
+
+        <li class="nav-item" style="margin-left:100px;color :white;">
+            <a class="nav-link active" aria-current="page" style="color :black;"
+               th:href="@{/shop/about}">ABOUT</a>
+        </li>
+
     </ul>
   </div>
 

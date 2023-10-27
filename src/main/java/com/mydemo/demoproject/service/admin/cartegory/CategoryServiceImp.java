@@ -67,13 +67,6 @@ public class CategoryServiceImp implements CategoryService {
 
 
 
-    /*Search category old*/
-//    @Override
-//    public List<CategoryInfo> searchCategory(String keyword) {
-//        return  categoryRepo.findByCategoryKeyword(keyword);
-//    }
-  /*Load allCategory*/
-
 
     /*Pagination */
     @Override
@@ -106,7 +99,6 @@ public class CategoryServiceImp implements CategoryService {
 
     @Override
     public void disableCategory(UUID uuid) {
-//        System.out.println("service enable..............................................."+id);
     Optional<CategoryInfo> categoryInfo  = categoryRepo.findById(uuid);
     if(categoryInfo.isPresent()){
      CategoryInfo category= categoryInfo.get();
@@ -130,17 +122,9 @@ public class CategoryServiceImp implements CategoryService {
     @Override
     public void save(CategoryInfo categoryInfo) {
 
-//        String name=categoryInfo.getCategoryname();
-//        System.out.println("category find   ========================="+name);
-//        Optional<CategoryInfo> existname =categoryRepo.findBycategoryname(name);
-//       if(existname.isPresent())
-//       {
-//           return "Category already exists. Please choose a different category name.";
-//       }
 
         categoryRepo.save(categoryInfo);
 
-//       return "success";
 
     }
 
@@ -151,6 +135,18 @@ public class CategoryServiceImp implements CategoryService {
         categoryList =  categoryRepo.findAll();
         return categoryList;
     }
+
+    @Override
+    public int findCategoryCount() {
+        int count =0;
+        List<CategoryInfo>categories=categoryRepo.findAll();
+        for(CategoryInfo categoryInfo:categories){
+            System.out.println(categoryInfo.getCategoryname());
+            count++;
+        }
+        return count;
+    }
+
 
 
 }

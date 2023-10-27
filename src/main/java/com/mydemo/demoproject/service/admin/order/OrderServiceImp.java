@@ -96,12 +96,6 @@ public class OrderServiceImp implements OrderService {
         return userCart;
     }
 
-//    @Override
-//    public List<Order> findOrderByUser(String username) {
-//        List<Order> userOrders=orderRepo.findByUserEntity_Username(username);
-//        System.out.println("<<<<<<<<<<<<<<<<<userOrders>>>>>>>>>>>>>>>>service>"+userOrders);
-//        return  userOrders;
-//    }
 
     @Override
     public Order saveOrder(Order order) {
@@ -111,7 +105,6 @@ public class OrderServiceImp implements OrderService {
     @Override
     public float findTotalUseQuantity(float quantity, float price) {
         float total = price * quantity;
-        System.out.println("total in service>>>>>>" + total);
         return total;
     }
 
@@ -119,7 +112,6 @@ public class OrderServiceImp implements OrderService {
     @Override
     public List<Order> getAllOrders() {
         List<Order> orderList = orderRepo.findAll();
-        System.out.println("admin side orderList" + orderList);
         return orderList;
     }
 
@@ -139,7 +131,6 @@ public class OrderServiceImp implements OrderService {
                 } else if (paymentMode == PaymentMode.RAZORPAY) {
                     order.setOrderStatus(OrderStatus.PENDING);
                 } else {
-                    System.out.println("else case >>>>>>>>>>>>>>"+paymentMode);
                     order.setOrderStatus(OrderStatus.CONFIRMED);
                 }
                 order.setAddress(address);
@@ -149,19 +140,16 @@ public class OrderServiceImp implements OrderService {
                 /*CouponApplied price set */
 
                 if (totalPrice.equals(totalold)) {
-                    System.out.println("}OldddTotal++++$5$676re.....equal................................." + totalold);
                     order.setTotalPrice(totalold);
                 } else {
-                    System.out.println("}NewwwTotal++++$5$676re,not equal,,>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + totalPrice);
                     order.setTotalPrice(totalPrice);
                 }
                 /*end*/
 
-                System.out.println("cart 1");
+
                 /*     order Items*/
                 List<OrderItems> orderItemsList = new ArrayList<>();
 
-                System.out.println("cart 2");
                 for (Cart cartItem : cartlist) {
 
                     OrderItems orderItem = new OrderItems();
@@ -172,20 +160,20 @@ public class OrderServiceImp implements OrderService {
                     orderItemsList.add(orderItem);
                 }
 
-                System.out.println("cart 3");
+
                 order.setOrderItems(orderItemsList);
-                System.out.println("cart 4");
+
                 orderRepo.save(order);
-                System.out.println("5");
+
                 return order;
 
             } catch (Exception e) {
                 e.printStackTrace();
-                System.out.println("6");
+
             }
 
         }
-        System.out.println("7 ");
+
         return null;
     }
 
@@ -201,11 +189,9 @@ public class OrderServiceImp implements OrderService {
         Optional<ProductInfo> existProduct = productRepo.findById(existProductUuid);
         Long existProductStock = existProduct.get().getStock();
 
-        System.out.println("orderQuantity     .." + orderQuantity);
-        System.out.println("existProductStock...." + existProductStock);
 
         Long newStock = existProductStock - orderQuantity;
-        System.out.println("new stock in service update stock  =" + newStock);
+
 
         return newStock;
     }
@@ -222,7 +208,7 @@ public class OrderServiceImp implements OrderService {
 
 
                     if (cartuuid.equals(productUuid)) {
-                        System.out.println("cartuuid>>>>" + cartuuid);
+
                         cartRepo.delete(cartItem);
                     }
 
@@ -230,7 +216,7 @@ public class OrderServiceImp implements OrderService {
             }
 
         } catch (Exception e) {
-            System.out.println("error occurred>>>>>>>>>>>>>>>>when delete from cart");
+
         }
 
     }
@@ -239,10 +225,11 @@ public class OrderServiceImp implements OrderService {
     @Override
     public TransactionDetails createTransaction(Double amount) {
         try {
-            // Construct the JSON request
+            int amountRazorpay = (int) (amount * 100);
+
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("amount", amount * 100);
-//            jsonObject.put("currency", "INR");
+            jsonObject.put("amount", amountRazorpay);
+
             jsonObject.put("currency", CURRENCY);
 
 
@@ -257,6 +244,7 @@ public class OrderServiceImp implements OrderService {
         } catch (RazorpayException e) {
 
             e.printStackTrace();
+            System.err.println("Razorpay error: " + e.getMessage());
 
         } catch (Exception e) {
 
@@ -268,6 +256,7 @@ public class OrderServiceImp implements OrderService {
     }
 
 
+
     @Override
     public TransactionDetails prepareTransactionDetails(com.razorpay.Order order) {
         String orderId = order.get("id");
@@ -275,7 +264,6 @@ public class OrderServiceImp implements OrderService {
         Integer amount = order.get("amount");
 
         TransactionDetails transactionDetails = new TransactionDetails(orderId, currency, amount, KEY);
-        System.out.println("transactionDetails>>>>>>>>>in service..." + transactionDetails);
         return transactionDetails;
     }
 
@@ -289,7 +277,6 @@ public class OrderServiceImp implements OrderService {
     @Override
     public List<Coupon> findCouponByCode(String couponCode) {
         List<Coupon> couponList = couponRepo.findByCode(couponCode);
-        System.out.println("couponList>>>>>>>>>>>>>>>>>>>>" + couponList);
         return couponList;
     }
 
@@ -301,16 +288,13 @@ public class OrderServiceImp implements OrderService {
                 .map(Coupon::getOffPercentage)
                 .max(Integer::compare);
         int percentage = maxOffPercentage.orElse(0);
-        System.out.println("maxOffPercentage>>>>>>>>>>" + percentage);
 
 
         Optional<Integer> maxOfferPrice = couponList.stream()
                 .map(Coupon::getMaxOff)
                 .max(Integer::compare);
         int offerPrice = maxOfferPrice.orElse(0);
-        System.out.println(">>>>>offerPrice>>>>>>" + offerPrice);
 
-//
         List<Cart> cartlist = cartRepo.findByUserEntity_Username(username);
 
         /*new end*/
@@ -319,20 +303,17 @@ public class OrderServiceImp implements OrderService {
         for (Cart cart : cartlist) {
             total += cart.getQuantity() * cart.getProductInfo().getPrice();
         }
-        System.out.println("fiind     total  " + total);
+
 
         if (total > 10000 || totalDiscountPrices > 10000) {
-            System.out.println("inside if>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             int maxOffPercentageDiscount = (int) (percentage * totalDiscountPrices);
             int newMaxPercentage = maxOffPercentageDiscount / 100;
 
-            System.out.println("newMaxPercentage=" + newMaxPercentage + "maximumMaxOff=" + offerPrice);
 
             if (offerPrice < newMaxPercentage) {
 
                 float offerPriceApplied = (totalDiscountPrices - offerPrice);
 
-                System.out.println("offerPriceApplied  service  offerPrice > max = " + offerPriceApplied);
 
                 return offerPriceApplied;
 
@@ -340,15 +321,11 @@ public class OrderServiceImp implements OrderService {
 
                 float offerPercent = (totalDiscountPrices - newMaxPercentage);
 
-                System.out.println("offerPriceApplied  service  = " + offerPercent);
-
-                System.out.println("end if>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                 return offerPercent;
 
             }
 
         } else {
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>total" + total);
             return totalDiscountPrices;
         }
 
@@ -361,38 +338,30 @@ public class OrderServiceImp implements OrderService {
                 .map(Coupon::getOffPercentage)
                 .max(Integer::compare);
         int percentage = maxOffPercentage.orElse(0);
-        System.out.println("maxOffPercentage>>>>>applySingleCouponFindTotal>>>>>" + percentage);
 
 
         Optional<Integer> maxOfferPrice = couponList.stream()
                 .map(Coupon::getMaxOff)
                 .max(Integer::compare);
         int offerPrice = maxOfferPrice.orElse(0);
-        System.out.println(">>>>>offerPrice>>>>>>" + offerPrice);
 
         if (oldTotal > 10000) {
             int maxOffPercentageDiscount = (int) (percentage * oldTotal);
             int newMaxPercentage = maxOffPercentageDiscount / 100;
 
-            System.out.println("newMaxPercentage single order=" + newMaxPercentage + "maximumMaxOff single order =" + offerPrice);
-
             if (offerPrice > newMaxPercentage) {
                 Double offerPriceApplied = (double) (oldTotal - offerPrice);
-                System.out.println("offerPriceApplied   = " + offerPriceApplied);
 
                 return offerPriceApplied;
 
             } else {
 
                 Double offerPercent = (double) (oldTotal - offerPrice);
-
-                System.out.println("offerPriceApplied   = " + offerPercent);
                 return offerPercent;
 
             }
 
         } else {
-            System.out.println(">>>>>>>>>total" + oldTotal);
             return oldTotal;
         }
 
@@ -419,7 +388,6 @@ public class OrderServiceImp implements OrderService {
     @Override
     public List<Order> getOrderByUsername(String username) {
         List<Order> userOrders = orderRepo.findByUserEntity_Username(username);
-        System.out.println(">>>>>>>>>>>>>>>>>>userOrders" + userOrders);
         return userOrders;
     }
 
@@ -429,11 +397,9 @@ public class OrderServiceImp implements OrderService {
 
         Optional<UserEntity> userDetails = getUserDataById(username);
         UserEntity userEntity = userDetails.get();
-        System.out.println("userDetails>>>>>>" + userDetails);
 
         Optional<Order> cancelOrder = orderRepo.findById(orderUuid);
         Order orderInfo = cancelOrder.get();
-        System.out.println("Cancel order...." + orderInfo);
 
         CancelOrder cancelData = new CancelOrder();
         cancelData.setOrder(orderInfo);
@@ -460,11 +426,8 @@ public class OrderServiceImp implements OrderService {
             if (existProductData.getUuid().equals(canceledProduct.getUuid())) {
 //                Long cancelledProductQuantity= canceledProduct.getStock();
                 Long existProductQuantity = existProductData.getStock();
-
-                System.out.println("cancelledProductQuantity     " + cancelledOrderQuantity + "existProductQuantity>>>>>" + existProductQuantity);
                 Long updateStock = cancelledOrderQuantity + existProductQuantity;
 
-                System.out.println("UPDATED STOCK AFTER CANCEL " + updateStock);
 
                 existProductData.setStock(updateStock);
                 productRepo.save(existProductData);
@@ -481,11 +444,9 @@ public class OrderServiceImp implements OrderService {
 
         Optional<UserEntity> userDetails = getUserDataById(username);
         UserEntity userEntity = userDetails.get();
-        System.out.println("userDetails>>>>>>" + userDetails);
 
         Optional<Order> orderReturn = orderRepo.findById(orderUuid);
         Order orderInfo = orderReturn.get();
-        System.out.println("Cancel order...." + orderInfo);
 
         ReturnOrder returnOrder = new ReturnOrder();
         returnOrder.setOrder(orderInfo);
@@ -512,9 +473,7 @@ public class OrderServiceImp implements OrderService {
 
                 if (existProductData.getUuid().equals(returnProduct.getUuid())) {
                     Long existProductQuantity = existProductData.getStock();
-                    System.out.println("returnedProductQuantity     " + returnOrderQuantity + "existProductQuantity>>>>>" + existProductQuantity);
                     Long updateStock = returnOrderQuantity + existProductQuantity;
-                    System.out.println("UPDATED STOCK AFTER RETURN   " + updateStock);
                     existProductData.setStock(updateStock);
                     productRepo.save(existProductData);
 
@@ -530,7 +489,6 @@ public class OrderServiceImp implements OrderService {
     @Override
     public byte[] getOrderInvoice(Order orders) throws Exception {
         double grandTotal = 0.0;
-        System.out.println("grandTotal>>>>>>>>>>>>>>>>>>>>>>>>");
 
         Address userAddress = orders.getAddress();
 
@@ -614,13 +572,11 @@ public class OrderServiceImp implements OrderService {
 /*Update wallet */
     @Override
     public void updateWallet(float newWalletPrice, String username,Double totalPrice) {
-        System.out.println("Wallet total usernmae>>>actual total of order>>>>>>>>"+newWalletPrice + " "  +username + "  "+totalPrice);
 
         Wallet wallet=shopService.getWalletByUser(username);
         float walletTotal= wallet.getTotalMoney();
 
         if(walletTotal!=newWalletPrice&&totalPrice!=newWalletPrice){
-        System.out.println("Wallet total update>>>>>>>>>>>>>>>>>"+newWalletPrice);
 
         wallet.setTotalMoney(newWalletPrice);
         shopService.saveWallet(wallet);
@@ -631,6 +587,120 @@ public class OrderServiceImp implements OrderService {
         }
     }
 
+
+
+    //    new update
+    @Override
+    public int totalOrders() {
+        List<Order> allOrder= orderRepo.findAll();
+        int totalOrderCount=0;
+        for (Order totalOrder:allOrder){
+            System.out.println(totalOrder.getTotalPrice());
+            totalOrderCount++;
+        }
+        return totalOrderCount;
+    }
+
+    @Override
+    public Long totalOrderPrice() {
+        List<Order> allOrder= orderRepo.findAll();
+        Long totalOrderPrice=0l;
+
+        for (Order totalOrder:allOrder){
+            System.out.println(totalOrder.getTotalPrice());
+            totalOrderPrice = (long) (totalOrderPrice+totalOrder.getTotalPrice());
+        }
+        return totalOrderPrice;
+    }
+
+
+
+    /*New*/
+
+    @Override
+    public int getDailyTotalSale(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Order> dailyOrder=orderRepo.findByOrderDateBetween(startDate, endDate);
+        int dailyTotalPrice=0;
+        for (Order orders:dailyOrder){
+            dailyTotalPrice  = (int) (dailyTotalPrice+orders.getTotalPrice());
+
+        }
+        return dailyTotalPrice;
+    }
+
+    @Override
+    public int getMonthlyTotalSale(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Order> monthlyOrder=orderRepo.findByOrderDateBetween(startDate, endDate);
+        int monthlyTotalPrice=0;
+        for (Order orders:monthlyOrder){
+            monthlyTotalPrice  = (int) (monthlyTotalPrice+orders.getTotalPrice());
+
+        }
+        return monthlyTotalPrice;
+    }
+
+    @Override
+    public int getWeeklyTotalSale(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Order> weeklyOrder=orderRepo.findByOrderDateBetween(startDate, endDate);
+        int weeklyTotalPrice=0;
+        for (Order orders:weeklyOrder){
+            weeklyTotalPrice = (int) (weeklyTotalPrice+orders.getTotalPrice());
+
+        }
+        return weeklyTotalPrice;
+    }
+
+    @Override
+    public int getDeliveredCount() {
+        List<Order>orders=orderRepo.findAll();
+        int count=0;
+        for (Order orderList:orders){
+
+            if(orderList.getOrderStatus().equals(OrderStatus.DELIVERED)){
+                count++;
+            }
+        }
+        return count;
+    }
+
+    @Override
+    public int getCanceledCount() {
+        List<Order>orders=orderRepo.findAll();
+        int count=0;
+        for (Order orderList:orders){
+
+            if(orderList.getOrderStatus().equals(OrderStatus.CANCELED)){
+                count++;
+            }
+        }
+        return count;
+    }
+
+    @Override
+    public int getShippedCount() {
+        List<Order>orders=orderRepo.findAll();
+        int count=0;
+        for (Order orderList:orders){
+
+            if(orderList.getOrderStatus().equals(OrderStatus.SHIPPED)){
+                count++;
+            }
+        }
+        return  count;
+    }
+
+    @Override
+    public int getReturnedCount() {
+        List<Order>orders=orderRepo.findAll();
+        int count=0;
+        for (Order orderList:orders){
+
+            if(orderList.getOrderStatus().equals(OrderStatus.RETURN)){
+                count++;
+            }
+        }
+        return  count;
+    }
 
 }
 

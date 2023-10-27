@@ -70,8 +70,7 @@ public class OfferController {
         List<ProductInfo> productInfo = productService.loadAllProduct();
 
         List<CategoryInfo> categoryInfo = categoryService.findAllCategory();
-        System.out.println("productInfo" + productInfo);
-        System.out.println("productInfo" + productInfo);
+
         if (error != null && error.equals("offerExists")) {
             model.addAttribute("error", "Offer already exists.");
         }
@@ -92,22 +91,18 @@ public class OfferController {
 
 
         if (categoryInfo != null && productInfo != null) {
-            System.out.println("ifffffffffffffffffffffffffffffffffff  f&&& ffffffffffffffffffffffffff................................");
             return "redirect:/offer/addOffer?error=chooseOne";
         }
         if (productInfo != null) {
             Optional<ProductInfo> product = productService.getProduct(productInfo);
             String productName = product.get().getName();
-            System.out.println("iffffffffffffffffffffffffffffffffff22222222222ffffffffffffffffffffffffffff................................");
             if (offerService.offerExistsForProductByName(productName)) {
                 return "redirect:/offer/addOffer?error=offerExists";
             }
         } else if (categoryInfo != null) {
             Optional<CategoryInfo> category = categoryService.getCategoryById(categoryInfo);
             String categoryName = category.get().getCategoryname();
-            System.out.println("iffffffffffffffffffffffffff  else if   fffffffffffffffffffffffffffffffffffff................................");
             if (offerService.offerExistsForCategoryByName(categoryName)) {
-                System.out.println("iffffffffffffffffffffffffffffffffff if    fffffffffffffffffffff................................");
                 return "redirect:/offer/addOffer?error=offerExists";
             }
         }
@@ -119,7 +114,7 @@ public class OfferController {
                 offer.setEnabled(true);
                 offer.setExpiryDate(expiryDate);
                 offer.setCount(count);
-                System.out.println("get-it>>>");
+
 
                 if (categoryInfo != null) {
                     offer = offerService.addOfferCategory(offer, categoryInfo);
@@ -138,10 +133,8 @@ public class OfferController {
     @GetMapping("/edit/{uuid}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String editOffer(@PathVariable UUID uuid, Model model) {
-//        System.out.println("edit product method.>>>>>>>>>>>>>>.............." + uuid);
         Optional<Offer> offerById = offerService.getCouponBYId(uuid);
         if (offerById.isPresent()) {
-//            System.out.println("is present..............................");
             Offer offerInfo = offerById.get();
             model.addAttribute("offer",offerInfo);
             return "admin/edit-offer";
@@ -226,7 +219,7 @@ public class OfferController {
         model.addAttribute("categoryInfoList", categoryInfoList);
         model.addAttribute("productInfoList", productInfoList);
 
-        return "shop/shopView"; // Replace with your actual template name
+        return "shop/shopView";
     }
 
 }
